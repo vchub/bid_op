@@ -37,7 +37,9 @@ Requirements
 
 I tried it wiht Eclipse 4 (Juno). It wasn't a very good experience.
 
-### Project structure
+### Project
+After cloning the repository, you can import the Project to Eclipse. (File->Import->General->Project)
+
 Analytical module source dir - app/models/optimizer/
 
 ### Tests
