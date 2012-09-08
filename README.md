@@ -15,9 +15,9 @@ You're there. Register.
 Basically:
 
 1. install git
-1. clone dev branch to your computer
+1. clone dev branch to your computer: git clone https://github.com/vchub/bid_op.git
 1. add, change files
-1. push changes to the repository
+1. push changes to the repository: git push origin master
 
 
 
