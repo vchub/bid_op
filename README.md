@@ -29,7 +29,7 @@ update site link: http://download.scala-ide.org/releases-29/stable/site
 
 Requirements
 JDK 5 or JDK 6 (JDK 7 can be used with some caveats).
-Eclipse, including the JDT. “Eclipse Classic” is sufficient, but any Eclipse package can be used.
+Eclipse, including the JDT. â€œEclipse Classicâ€� is sufficient, but any Eclipse package can be used.
 Both Eclipse 3.6 (Helios) and Eclipse 3.7 (Indigo) are supported.
 
 I tried it wiht Eclipse 4 (Juno). It wasn't a very good experience.
@@ -41,4 +41,37 @@ Analytical module source dir - app/models/optimizer/
 dir:  test/models/optimizer/
 
 There are a couple JUnit test examples. I gonna add more soon.
+
+
+download git for windows
+http://cloud.github.com/downloads/msysgit/git/Git-1.7.11-preview20120710.exe
+it has graphical interface
+put in редактировать-настройки user name: ... email: ....
+
+
+download play framework
+http://download.playframework.org/releases/play-2.0.3.zip
+uzip
+add play dir to PATH variable. Like PATH;c:\vlad\bin\play-2.0.3
+
+clone project from repo:
+
+in c:\vlad\code> git clone https://github.com/vchub/bid_op.git
+
+>cd bid_op 	// cd to the new dir
+
+>play // run the play framework:
+
+[]# compile 	// compile project
+
+[]# eclipsify	// run command eclipsify. it prepares eclipse project
+
+open eclipse and import the project.
+
+it looks ugly though. many jars stay on root level. I don't know how change it right now
+
+
+
+
+
 
