@@ -52,15 +52,15 @@ I tried it wiht Eclipse 4 (Juno). It wasn't a very good experience. On the other
 ### Prepare the Eclipse project
 * clone project from repo like:
 
-      c:\vlad\code> git clone https://github.com/vchub/bid_op.git
+      $> c:\vlad\code> git clone https://github.com/vchub/bid_op.git
 
 * cd to the new dir
 
-      >cd bid_op
+      $> cd bid_op
 
 * run play framework
 
-      >play
+      $> play
 
 * compile project
 
@@ -68,7 +68,7 @@ I tried it wiht Eclipse 4 (Juno). It wasn't a very good experience. On the other
 
 * run command eclipsify. it prepares eclipse project
 
-      []# eclipsify
+      [bid]# eclipsify
 
 * open eclipse and import the project.
 
@@ -79,7 +79,8 @@ It looks ugly though. many jars stay on root level. I don't know how change it r
 * Analytical module in bid_op/app/models/optimizer
 * The project is built by sbt (simple built tool). To run the project and complete stack of Tests "play" command can be used, like
 
-      >play
+      $> cd bid_op
+      $> play
       [bid]# ~compile   //to compile on every change in source files
       [bid]# test       // to run tests
 
