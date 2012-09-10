@@ -23,7 +23,7 @@ Basic workflow:
 1. install git
 1. clone dev branch to your computer
 1. add, change files
-1. pull current state of the branch fro repository (git pull origin dev)
+1. pull current state of the branch from repository (git pull origin dev)
 1. push changes to the repository
 1. continue adding and changing files
 
@@ -41,7 +41,7 @@ Requirements
 * Eclipse, including the JDT. Eclipse Classic is sufficient
 * Both Eclipse 3.6 (Helios) and Eclipse 3.7 (Indigo) are supported
 
-I tried it wiht Eclipse 4 (Juno). It wasn't a very good experience. ON the other hand it may be fixed already.
+I tried it wiht Eclipse 4 (Juno). It wasn't a very good experience. On the other hand it may be fixed already.
 
 ### Play framework
 * Play framework is the application framework used in the project
@@ -51,15 +51,25 @@ I tried it wiht Eclipse 4 (Juno). It wasn't a very good experience. ON the other
 
 ### Prepare the Eclipse project
 * clone project from repo like:
+
       c:\vlad\code> git clone https://github.com/vchub/bid_op.git
+
 * cd to the new dir
+
       >cd bid_op
+
 * run play framework
+
       >play
+
 * compile project
+
       [bid]# compile
+
 * run command eclipsify. it prepares eclipse project
+
       []# eclipsify
+
 * open eclipse and import the project.
 
 It looks ugly though. many jars stay on root level. I don't know how change it right now
