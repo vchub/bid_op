@@ -20,6 +20,11 @@ public class SampleTest{
       assertThat(a).isEqualTo(2);
   }
 
+  @Test
+  public void loosyCheck() {
+      String s = "hi";
+      assertThat(s).containsIgnoringCase("H");
+  }
 
 
   //using AppDb - play application in memory DB
