@@ -78,6 +78,7 @@ It looks ugly though. many jars stay on root level. I don't know how change it r
 * Most of the source code is in bid_op/app
 * Analytical module in bid_op/app/models/optimizer
 * The project is built by sbt (simple built tool). To run the project and complete stack of Tests "play" command can be used, like
+
       >play
       [bid]# ~compile   //to compile on every change in source files
       [bid]# test       // to run tests
