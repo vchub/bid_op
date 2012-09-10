@@ -18,7 +18,8 @@ Help:
 * Getting from Repository: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository
 
 
-Basically:
+Basic workflow:
+
 1. install git
 1. clone dev branch to your computer
 1. add, change files
