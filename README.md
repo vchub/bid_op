@@ -80,8 +80,11 @@ It looks ugly though. many jars stay on root level. I don't know how change it r
 * The project is built by sbt (simple built tool). To run the project and complete stack of Tests "play" command can be used, like
 
       $> cd bid_op
+
       $> play
+
       [bid]# ~compile   //to compile on every change in source files
+
       [bid]# test       // to run tests
 
 
