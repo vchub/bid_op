@@ -32,17 +32,18 @@ public class SampleTest{
   //@Test
   @Test
   public void findCampaignById() {
-    running(fakeApplication(inMemoryDatabase()), new TestDBHelper(
-          new Runnable() {
+    running(fakeApplication(inMemoryDatabase()), new Runnable() {
             public void run() {
-              Campaign camp = new Campaign(0,0,0,"Google","");
+              Campaign camp = new Campaign("Coda", "Yandex", "y4400");
               assertThat(camp.id()).isEqualTo(0);
+              //save in DB
               Campaign c2 = camp.put();
               assertThat(c2.id()).isNotEqualTo(0);
+              //get from DB
               Campaign res = camp.get_by_id(c2.id());
-              assertThat(res.network()).isEqualTo("Google");
+              assertThat(res.id()).isNotEqualTo(0);
             }
-          }));
+          });
   }
 
 }

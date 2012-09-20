@@ -1,0 +1,19 @@
+{
+  "networks":[ {"id":1,"name":"Google"}, {"id":2,"name":"Yandex"} ],
+
+  "users":[
+    {"id":1,"name":"Coda"},
+    {"id":2,"name":"Some"}
+  ],
+
+  "campaigns":[
+    {"id":1, "user_name":"Coda", "network_name":"Yandex", "network_campaign_id":"y2349"},
+    {"id":2, "user_name":"Coda", "network_name":"Yandex", "network_campaign_id":"y4340"},
+    {"id":3, "user_name":"Coda", "network_name":"Google", "network_campaign_id":"g44w22"},
+    {"id":4, "user_name":"Coda", "network_name":"Google", "network_campaign_id":"g04w22"}
+  ],
+
+
+
+  "uid" : 1111
+}

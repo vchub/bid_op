@@ -14,7 +14,7 @@ case class TestDBHelper(val f: Runnable) extends Runnable {
   def run = {
     inTransaction {
       //create in memory test DB
-      AppDB.create
+      AppSchema.create
       //run the "callback"
       f.run()
     }

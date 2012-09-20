@@ -9,6 +9,12 @@ object Dependencies {
   val postgresDriver = "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
   val squeryl_orm = "org.squeryl" %% "squeryl" % "0.9.5-2"
   val scalatest = "org.scalatest" %% "scalatest" % "1.8" % "test"
+  val codahale = "com.codahale" %% "jerkson" % "0.5.0"
+  val fasterxml = "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
+}
+
+object Resolvers {
+  val codahale = "codahale" at "http://repo.codahale.com"
 }
 
 object ApplicationBuild extends Build {
@@ -19,12 +25,13 @@ object ApplicationBuild extends Build {
     import Dependencies._
     val appDependencies = Seq(
       // Add your project dependencies here,
-      squeryl_orm, postgresDriver, scalatest
+      squeryl_orm, postgresDriver, codahale, fasterxml
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
       // Add your own project settings here
-      testOptions in Test := Nil
+      testOptions in Test := Nil,
+      resolvers += Resolvers.codahale
     )
 
 }
