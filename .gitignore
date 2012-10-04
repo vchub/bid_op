@@ -13,6 +13,9 @@ bin
 .cache
 .classpath
 
+# Scala IDE WorkSheet
+.worksheet
+
 *.py[co]
 
 # Packages
