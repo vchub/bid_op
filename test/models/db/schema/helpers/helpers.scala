@@ -1,36 +1,84 @@
 package models.db.schema
+package helpers
 
 import org.squeryl._
 import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.adapters.{H2Adapter, PostgreSqlAdapter}
+import org.squeryl.adapters.{H2Adapter, PostgreSqlAdapter, MySQLInnoDBAdapter}
 import org.squeryl.{Session, SessionFactory}
 
 import play.api.test._
 import play.api.test.Helpers._
+import play.api.Play
 
+import com.mysql.jdbc.Driver
 import org.h2.Driver
 
 import com.codahale.jerkson.Json
 import scala.io.Source
 
+
 trait AppHelpers {
   /**
   * creates in memory DB and schema
-  * runs block of code in squeryl transaction
+  * runs block of code
   * @param block of code
   * @return T
   */
-  def running_in_memory_test_db [T]()(block: ⇒ T): T = {
+  def running_FakeApplication[T]()(block: ⇒ T): T = {
     running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
       inTransaction {
         AppSchema.create
+        fill_DB
       }
       block
     }
   }
 
+  /**
+  * fills DB
+  **/
+  def fill_DB(): Unit
+
+  /**
+  * creates schema in mysql db.
+  * which means creates relations in db/schema
+  * used for prototype development phase
+  **/
+  def create_mysql_test_db_from_squeryl_schema() {
+    running(FakeApplication()) {
+
+      val config = Play.current.configuration
+      val user = config.getString("vlad.mysql.user").get
+      val psw = config.getString("vlad.mysql.psw").get
+      val url = config.getString("vlad.mysql.url").get
+
+      Class.forName("com.mysql.jdbc.Driver")
+      SessionFactory.concreteFactory = Some(() => Session.create(
+        java.sql.DriverManager.getConnection(url, user, psw), new MySQLInnoDBAdapter)
+      )
+      inTransaction {
+        AppSchema.create
+        AppSchema.printDdl
+      }
+    }
+  }
+
+  /**
+  * creates schema in default DB and fill it w/ helpers object data
+  **/
+  def create_schema_and_fill_default_db() {
+    running(FakeApplication()) {
+      inTransaction {
+        AppSchema.create
+        AppSchema.printDdl
+        fill_DB
+      }
+    }
+  }
+
+
   def print_AppSchema_DLL(){
-    running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+    running(FakeApplication()) {
       inTransaction {
         AppSchema.printDdl
       }
@@ -38,15 +86,6 @@ trait AppHelpers {
   }
 
 
-  def running_loaded_JsonSchema [T]() (block: => T): T = {
-    running_in_memory_test_db() {
-      val schema = JsonSchema read_file "test/models/db/schema/json/schema.json"
-      // put to db
-      JsonSchema put schema
-      // run block
-      block
-    }
-  }
 
 
 
@@ -88,39 +127,3 @@ trait AppHelpers {
     true
   }
 }
-
-
-case class JsonSchema(
-  val networks :List[Network],
-  val users :List[User],
-  val campaigns :List[Campaign]
-)
-  {
-  }
-
-object JsonSchema extends AppHelpers {
-  def read_file(file_name: String) = {
-    val js = Source.fromFile(file_name, "utf-8").getLines.mkString
-    Json.parse[JsonSchema](js)
-  }
-
-  def put(js_schema: JsonSchema) {
-    import AppSchema._
-    inTransaction {
-      for(n <- js_schema.networks) n.save
-      for(u <- js_schema.users) u.save
-      for(c <- js_schema.campaigns) c.save
-    }
-  }
-
-  def populate_test_postgres_db(json_file_name: String = "test/models/db/schema/json/schema.json") {
-    prepare_postgresql_test_db()
-    inTransaction {
-      AppSchema.create
-      val schema = JsonSchema read_file json_file_name
-      put( schema )
-    }
-  }
-
-}
-

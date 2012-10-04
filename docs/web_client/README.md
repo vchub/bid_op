@@ -14,12 +14,12 @@
 ## WebService API
 
 
-Base_URI = https://api.ws.com/v1/users/:id/networks/:id/campaigns/:id
+Base_URI = https://api.ws.com/v1/user/:id/net/:id/camp/:id
 
 URI details:
-* users/:id - id пользователя, получаемый при регистрации
-* networks/:id - {yandex, begun, google, ...} - площадка размещения кампании
-* campaigns/:id - id кампании в на рекламной площадке (Яндекс, Google, т.д.)
+* user/:id - id пользователя, получаемый при регистрации
+* net/:id - {yandex, begun, google, ...} - площадка размещения кампании
+* camp/:id - id кампании в на рекламной площадке (Яндекс, Google, т.д.)
 
 ### Поля сообщений
 
@@ -118,20 +118,18 @@ URI: Base_URI/reports
     Request: POST Base_URI/reports
       message body:
         {
-            "CampaignID": (int),
             "StartDate": (date),     //YYYY-MM-DD
-            "EndDate":  (date),     //YYYY-MM-DD-hh-mm-ss
+            "EndDate":  (date),      //YYYY-MM-DD
             "SumSearch": (float),
             "SumContext": (float),
             "ShowsSearch": (int),
             "ShowsContext": (int),
             "ClicksSearch": (int),
             "ClicksContext": (int),
-            "regionID": (int),
             "BannerPhrase": [
-                {"phraseID": (int), "phrase": (String), "bannerID": (int), "bid": (float)},
+                {"phraseID": (int), "phrase": (String), "bannerID": (int), "regionID": (int), "bid": (float)},
                 ....
-                {"phraseID": (int), "phrase": (String), "bannerID": (int), "bid": (float)},
+                {"phraseID": (int), "phrase": (String), "bannerID": (int), "regionID": (int), "bid": (float)}
             ]
         }
 

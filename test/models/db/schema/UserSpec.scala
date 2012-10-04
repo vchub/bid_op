@@ -3,14 +3,53 @@ package models.db.schema
 import org.specs2.mutable._
 import org.specs2.specification._
 
+import org.squeryl.PrimitiveTypeMode.{inTransaction}
+
 import play.api.test._
 import play.api.test.Helpers._
 
 import com.codahale.jerkson.Json
 import scala.io.Source
 
-class UserSpec extends Specification with AppHelpers{
+import models.db.schema.helpers._
 
+class UserSpec extends Specification with AllExpectations{
+
+
+  "User Entity" should {
+    sequential
+
+    "select all Networks" in {
+      TestDB_0.running_FakeApplication() {
+        val user = User.select("Coda").head
+        val networks = user.select_networks
+        networks(0).name must_==("Yandex")
+        networks(1).name must_==("Google")
+        networks.length must_==(2)
+    }}
+
+  }
+
+
+  "select(name: String)" should {
+    sequential
+
+    "select existing user" in {
+      TestDB_0.running_FakeApplication() {
+        val user = User.select(name = "Coda").head
+        user.name must be_==("Coda")
+    }}
+
+    "return Nil for not existing user" in {
+      //running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {}
+      TestDB_0.running_FakeApplication() {
+        val user = User.select(name = "coda")
+        user.isEmpty must_==(true)
+    }}
+  }
+
+
+  /* edit json files if you want to use these tests
   "User from json" should {
     "be simply loaded from json" in {
       val user = Json.parse[User]("""{"id":1,"name":"Coda"}""")
@@ -58,34 +97,8 @@ class UserSpec extends Specification with AppHelpers{
       users(1).name must be_==("Some")
     }
   }
+  */
 
-
-  "User Entity" should {
-    args(sequential=true)
-
-    "get all campaigns" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        val user = User.get_by_name("Coda")
-        user.name must be_==("Coda")
-        val caps = user.get_all_campaigns(network_name = "Google")
-        caps.length must be_==(1)
-
-    }}
-
-    "get particular Campaign for network_name  campaign_network_id" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        val user = User.get_by_name("Coda")
-        user.name must be_==("Coda")
-        val c = user.get_campaign_for_net_and_net_id("Google", "go00")(0)
-        c.network_campaign_id must be_==("go00")
-    }}
-
-    "be got by name" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        val user = User.get_by_name("Coda")
-        user.name must be_==("Coda")
-    }}
-  }
 
 }
 

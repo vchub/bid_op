@@ -1,4 +1,0 @@
-{
-  "users":[ {"id":1,"name":"Coda"}, {"id":2,"name":"Some"} ],
-  "networks":[ {"id":1,"name":"Google"}, {"id":2,"name":"Yandex"} ]
-}

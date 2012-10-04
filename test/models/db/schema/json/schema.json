@@ -1,17 +1,17 @@
 {
 
   "users":[
-    {"name":"Coda"},
-    {"name":"Some"}
+    {"id":1, "name":"Coda"},
+    {"id":2, "name":"Some"}
   ],
 
   "networks":[ {"name":"Google"}, {"name":"Yandex"} ],
 
   "campaigns":[
-    {"id":1, "user_name":"Coda", "network_name":"Yandex", "network_campaign_id":"y2349"},
-    {"id":2, "user_name":"Coda", "network_name":"Yandex", "network_campaign_id":"y4340"},
-    {"id":3, "user_name":"Coda", "network_name":"Google", "network_campaign_id":"g44w22"},
-    {"id":4, "user_name":"Coda", "network_name":"Google", "network_campaign_id":"g04w22"}
+    {"id":1, "user_name":"Coda", "network_name":"Yandex", "network_campaign_id":"y2349", "start_date": "2012-09-19", "end_date": "2012-09-30", "budget": 100},
+    {"id":2, "user_name":"Coda", "network_name":"Yandex", "network_campaign_id":"y4340", "start_date": "2012-09-19", "end_date": "2012-09-30", "budget": 100},
+    {"id":3, "user_name":"Coda", "network_name":"Google", "network_campaign_id":"g44w22", "start_date": "2012-09-19", "end_date": "2012-09-30", "budget": 100},
+    {"id":4, "user_name":"Coda", "network_name":"Google", "network_campaign_id":"g04w22", "start_date": "2012-09-19", "end_date": "2012-09-30", "budget": 100}
   ],
 
   "bannerphrase":[
