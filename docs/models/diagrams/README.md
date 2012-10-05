@@ -5,23 +5,14 @@
 
 #### 1. Общий вид для Рекламодателя
 
-![Advertiser's General User Case](https://github.com/vchub/bid_op/blob/dev/docs/models/diagrams/Advertiser.png)
+![Json AST](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/Advertiser.png)
+
+Summary of the features:
+
+![Json AST](Advertiser.png)
 
 
 
-
-
-<script type="text/javascript" language="javascript" src="https://creately.com/player/createlyplayerstart.js"></script>
-<div id="creately-container-h7x14ybh1-e53f6jWO75hbtOsKsm4aY984o3Y="></div>
-<script type="text/javascript">
-createlyPlayerStart( {
-container: "creately-container-h7x14ybh1-e53f6jWO75hbtOsKsm4aY984o3Y=",
-docid :"h7x14ybh1-e53f6jWO75hbtOsKsm4aY984o3Y=",
-title :"Advertiser",
-width :600,height :400,bgcolor :"#eeeeee"
-} );</script>
-
-link: http://creately.com/diagram/example/h7x14ybh1
 
 
 
