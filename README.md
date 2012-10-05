@@ -8,6 +8,12 @@ You're there. Register.
 
 
 ### git
+* Installing on Windows http://code.google.com/p/msysgit
+* Basics: http://git-scm.com/book/en/Getting-Started-Git-Basics
+* Getting from Repository: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository
+
+Basically:
+
 * Installing on Windows http://git-scm.com/downloads
 
 * Windows git has graphical interface
@@ -21,10 +27,12 @@ Help:
 Basic workflow:
 
 1. install git
-1. clone dev branch to your computer
+1. clone dev branch to your computer: git clone https://github.com/vchub/bid_op.git
 1. add, change files
 1. pull current state of the branch from repository (git pull origin dev)
-1. push changes to the repository
+1. resolve conflicts if branch wasn't auto-merged
+1. pull current state from repository again to check conflicts (git pull origin dev)
+1. push changes to the repository: git push origin master
 1. continue adding and changing files
 
 
@@ -33,8 +41,17 @@ Basic workflow:
 Eclipse 3.7: http://www.eclipse.org/downloads/packages/release/indigo/sr2
 
 ### Scala IDE for Eclipse
-* http://scala-ide.org/download/current.html
-* update site link: http://download.scala-ide.org/releases-29/stable/site
+
+http://scala-ide.org/download/current.html
+
+update site link: http://download.scala-ide.org/releases-29/stable/site
+
+Requirements
+
+* JDK 5 or JDK 6 (JDK 7 can be used with some caveats).
+* Eclipse, including the JDT. “Eclipse Classic” is sufficient, but any Eclipse package can be used.
+* Both Eclipse 3.6 (Helios) and Eclipse 3.7 (Indigo) are supported.
+
 
 Requirements
 * JDK 5 or JDK 6 (JDK 7 can be used with some caveats)
@@ -73,6 +90,12 @@ I tried it wiht Eclipse 4 (Juno). It wasn't a very good experience. On the other
 * open eclipse and import the project.
 
 It looks ugly though. many jars stay on root level. I don't know how change it right now
+
+### Project
+After cloning the repository, you can import the Project to Eclipse. (File->Import->General->Project)
+
+Analytical module source dir - app/models/optimizer/
+
 
 ### Project structure
 * Most of the source code is in bid_op/app
