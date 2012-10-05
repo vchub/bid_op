@@ -1,6 +1,7 @@
 #!/bin/bash
 
-BASE_URL="http://localhost:9000/user/Coda/net/Yandex/camp"
+HEROKU_URL="http://evening-depths-5210.herokuapp.com"
+BASE_URL=$HEROKU_URL"/user/Coda/net/Yandex/camp"
 
 echo curl $BASE_URL
 curl $BASE_URL

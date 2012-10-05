@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<report> 
+   <reportID>1234</reportID>
+   <campaignID>1234567</campaignID>
+   <startDate>2012-09-19</startDate>
+   <endDate>2012-09-20</endDate>
+   <phrasesDict>
+      <phrase type="phrase" phraseID="1" value="холодильная камера" />
+      <phrase type="phrase" phraseID="2" value="морозильное оборудование" />
+   </phrasesDict>
+   <stat>
+      <row bannerID="123456"
+           phraseID="2"
+           phrase_id="538205157"
+           statDate="2012-09-19"
+           sum_search="10"
+           sum_context="2"
+           shows_search="1000"
+           shows_context="123"
+           clicks_search="100"
+           clicks_context="23"
+           sum="12"
+           shows="1234"
+           clicks="123"
+           regionID="1"
+           placeName="Яндекс"
+           placeType="search"
+           goal_id="18565"
+           goal_conversion="25.91"
+           goal_cost="1.54"
+           session_depth="9.35"
+           position_type="premium"/>
+      <row bannerID="223456"
+           phraseID="2"
+           phrase_id="538205158"
+           statDate="2012-09-19"
+           sum_search="10"
+           sum_context="2"
+           shows_search="1000"
+           shows_context="123"
+           clicks_search="100"
+           clicks_context="23"
+           sum="12"
+           shows="1234"
+           clicks="123"
+           regionID="2"
+           placeName="Яндекс"
+           placeType="search"
+           goal_id="18565"
+           goal_conversion="25.91"
+           goal_cost="1.54"
+           session_depth="9.35"
+           position_type="premium"/>
+      <row bannerID="323456"
+           phraseID="2"
+           phrase_id="538205158"
+           statDate="2012-09-19"
+           sum_search="10"
+           sum_context="2"
+           shows_search="1000"
+           shows_context="123"
+           clicks_search="100"
+           clicks_context="23"
+           sum="12"
+           shows="1234"
+           clicks="123"
+           regionID="3"
+           placeName="Яндекс"
+           placeType="search"
+           goal_id="18565"
+           goal_conversion="25.91"
+           goal_cost="1.54"
+           session_depth="9.35"
+           position_type="premium"/>
+   </stat>
+</report>
