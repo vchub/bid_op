@@ -5,7 +5,7 @@ import play.api.mvc._
 
 import com.codahale.jerkson.Json
 
-import models.db.schema
+import domain._
 
 
 
@@ -16,7 +16,7 @@ object UserController extends Controller {
   **/
   // GET /user/:id
   def user(user_name: String) = Action {
-    val user = schema.User.select(user_name)
+    val user = domain.User.select(user_name)
     (user) match {
       case(Nil) => NotFound
       case _ => {

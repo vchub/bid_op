@@ -1,21 +1,19 @@
-package test.controllers
+package controllers
 
 import org.specs2.mutable._
 import org.specs2.specification._
-
 import play.api.mvc._
 import play.api._
 import play.api.libs.json.{JsValue, Json, JsObject}
-
 import play.api.test._
 import play.api.test.Helpers._
-
 import java.util.Date
 import org.joda.time._
 import scala.xml._
-
-import models.db.schema.helpers._
-import models.db.schema._
+import domain._
+import domain.dao.AppSchema
+import domain.dao.helpers._
+import domain.dao.helpers.TestDB_0
 
 
 class CampaignControllerSpec extends Specification with AllExpectations {
@@ -269,7 +267,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
       TestDB_0.running_FakeApplication() {
         val campaign = Campaign.select("Coda", "Yandex", "y1").head
         // get test data
-        val file_name = "test/models/db/schema/xml/report1.xml"
+        val file_name = "test/domain/serializing/helpers/report1.xml"
         val node = scala.xml.XML.loadFile(file_name)
         // create a copy w/o end_date
         val bad_node = <report> {(node\"stat")}</report>
@@ -292,7 +290,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
       TestDB_0.running_FakeApplication() {
         val campaign = Campaign.select("Coda", "Yandex", "y1").head
         // get test data
-        val file_name = "test/models/db/schema/xml/report1.xml"
+        val file_name = "test/domain/serializing/helpers/report1.xml"
         val node = scala.xml.XML.loadFile(file_name)
         val Some(res) = routeAndCall(get_FakeRequest_POST_xml("/user/Coda/net/Yandex/camp/y1/reports",
             node))

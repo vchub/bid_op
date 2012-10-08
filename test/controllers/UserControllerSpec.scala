@@ -1,15 +1,13 @@
-package test.controllers
+package controllers
 
 import org.specs2.mutable._
 import org.specs2.specification._
-
 import play.api.mvc._
 import play.api._
-
 import play.api.test._
 import play.api.test.Helpers._
-
-import models.db.schema.helpers._
+import domain.dao.helpers._
+import domain.dao.helpers.TestDB_0
 
 
 class UserControllerSpec extends Specification with AllExpectations {
