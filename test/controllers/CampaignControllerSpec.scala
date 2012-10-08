@@ -257,7 +257,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     def change_in_node(node: NodeSeq, pattern: String, new_content: String): NodeSeq = {
       val buf = node.toString
       val res = buf.replaceFirst(pattern, new_content)
-      xml.XML.loadString(res)
+      scala.xml.XML.loadString(res)
     }
 
     def get_FakeRequest_POST_xml(uri: String, node: NodeSeq) = {

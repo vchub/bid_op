@@ -28,5 +28,14 @@
 ![User Case](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/Architecture.png)
 
 
+yandex API
+ daily data
+- 1 position in spe. placement (sure)
+- 1 right block (prob)
+- 1 right block (sure)
+- position in spec placement (prob)
+
+Timeslot add 4 abovementioned params.
+
 
 
