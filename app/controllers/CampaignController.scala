@@ -8,7 +8,9 @@ import org.joda.time
 
 import com.codahale.jerkson.Json
 
-import models.db.schema
+import dao.squschema._
+import serializers.YandexXmlReportHelper
+
 
 object CampaignController extends Controller {
 
@@ -18,13 +20,13 @@ object CampaignController extends Controller {
   // TODO: add links for campaigns and post new Campaign
   // GET /user/:user/net/:net/camp
   def campaigns(user_name: String, net_name: String) = Action {
-    val user = schema.User.select(user_name)
-    val network = schema.Network.select(net_name)
+    val user = User.select(user_name)
+    val network = Network.select(net_name)
     (user, network) match {
       case(Nil, _) => NotFound
       case(_, Nil) => NotFound
       case _ => {
-        val campaigns = schema.Campaign.select(user.head, network.head)
+        val campaigns = Campaign.select(user.head, network.head)
         Ok(Json generate campaigns).as(JSON)
       }
     }
@@ -36,13 +38,13 @@ object CampaignController extends Controller {
   */
   // GET /user/:user/net/:net/camp/:id
   def campaign(user_name: String, net_name: String, network_campaign_id: String) = Action {
-    val user = schema.User.select(user_name)
-    val network = schema.Network.select(net_name)
+    val user = User.select(user_name)
+    val network = Network.select(net_name)
     (user, network) match {
       case(Nil, _) => NotFound
       case(_, Nil) => NotFound
       case _ => {
-        val campaigns = schema.Campaign.select(user.head, network.head, network_campaign_id)
+        val campaigns = Campaign.select(user.head, network.head, network_campaign_id)
         campaigns match {
           case Nil => NotFound
           case _ => Ok(Json generate campaigns).as(JSON)
@@ -62,8 +64,8 @@ object CampaignController extends Controller {
   def create_Campaign(user_name: String, net_name: String) =
     Action { request =>
     //TODO: optimize for one DB select
-    val user = schema.User.select(user_name)
-    val network = schema.Network.select(net_name)
+    val user = User.select(user_name)
+    val network = Network.select(net_name)
     (user, network) match {
       case(Nil, _) => NotFound
       case(_, Nil) => NotFound
@@ -72,14 +74,14 @@ object CampaignController extends Controller {
         request.body.asJson.map {jbody =>
           val js = jbody.toString
           try {
-            val camp = Json.parse[schema.Campaign](js)
+            val camp = Json.parse[Campaign](js)
             // TODO: validate data
             // relations
             camp.user_id = user.head.id
             camp.network_id = network.head.id
             // insert
             val campaign = camp.put
-            // respond wiht created header and campaignstats body
+            // respond with created header and campaignstats body
             Created(Json generate campaign)as(JSON)
           } catch {
             case e =>
@@ -102,7 +104,7 @@ object CampaignController extends Controller {
   // POST /user/:user/net/:net/camp
   def create_Report(user_name: String, net_name: String, network_campaign_id: String) = Action { request =>
     //select Campaign
-    val campaigns = schema.Campaign.select(user_name, net_name, network_campaign_id)
+    val campaigns = Campaign.select(user_name, net_name, network_campaign_id)
     if( campaigns.isEmpty ) NotFound("""Can't find Campaign for given User: %s, Network: %s,
         network_campaign_id: %s""".format(user_name, net_name, network_campaign_id))
     else {
@@ -111,7 +113,7 @@ object CampaignController extends Controller {
       request.body.asXml.map {body_node =>
         try {
           // TODO: ReportHelper has to be chosen dynamically
-          campaign.process_report(body_node, schema.helpers.YandexXmlReportHelper) match {
+          campaign.process_report(body_node, YandexXmlReportHelper) match {
             case true => Created("Report has been created")
             case false => BadRequest("Report has NOT been created. Post it agaign if you sure that Report content is OK")
           }
@@ -134,16 +136,16 @@ object CampaignController extends Controller {
   // POST /user/:user/net/:net/camp/:id/stats
   def create_TimeSlot(user_name: String, net_name: String, network_campaign_id: String) = Action { request =>
     //select Campaign
-    val campaigns = schema.Campaign.select(user_name, net_name, network_campaign_id)
+    val campaigns = Campaign.select(user_name, net_name, network_campaign_id)
     campaigns.headOption.map { campaign =>
       // expecting valid json
       request.body.asJson.map {jbody =>
         val js = jbody.toString
         try {
-          val ts = schema.TimeSlot.parse(js)
+          val ts = TimeSlot.parse(js)
           // insert TimeSlot
           val res_ts = campaign.insert(ts)
-          // respond wiht CREATED header and CampaignStats body
+          // respond with CREATED header and CampaignStats body
           Created(Json generate res_ts)as(JSON)
         } catch {
           case e =>
@@ -173,7 +175,7 @@ object CampaignController extends Controller {
       val date: time.DateTime = fmt.parseDateTime(date_str)
 
       // get and check Campaign
-      val campaigns = schema.Campaign.select(user_name, net_name, network_campaign_id)
+      val campaigns = Campaign.select(user_name, net_name, network_campaign_id)
       campaigns.headOption.map { campaign =>
         //check if recommendations has been modified since
         campaign.recommendations_changed_since(date.toDate) match {
