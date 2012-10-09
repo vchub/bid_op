@@ -8,8 +8,9 @@ import org.joda.time
 
 import com.codahale.jerkson.Json
 
-import domain._
-import domain.serializing.helpers
+import dao.squschema._
+import serializers.YandexXmlReportHelper
+
 
 object CampaignController extends Controller {
 
@@ -112,7 +113,7 @@ object CampaignController extends Controller {
       request.body.asXml.map {body_node =>
         try {
           // TODO: ReportHelper has to be chosen dynamically
-          campaign.process_report(body_node, helpers.YandexXmlReportHelper) match {
+          campaign.process_report(body_node, YandexXmlReportHelper) match {
             case true => Created("Report has been created")
             case false => BadRequest("Report has NOT been created. Post it agaign if you sure that Report content is OK")
           }

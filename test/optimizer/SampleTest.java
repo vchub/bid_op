@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.junit.*;
 
-import domain.*;
+import dao.squschema.*;
 
 import play.mvc.*;
 import play.test.*;

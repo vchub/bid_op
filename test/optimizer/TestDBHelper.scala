@@ -1,7 +1,7 @@
 package optimizer
 
 // application db
-import domain.dao.AppSchema
+import dao.squschema.AppSchema
 
 import org.squeryl._
 import org.squeryl.PrimitiveTypeMode.inTransaction

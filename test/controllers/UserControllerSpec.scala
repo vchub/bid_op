@@ -6,9 +6,9 @@ import play.api.mvc._
 import play.api._
 import play.api.test._
 import play.api.test.Helpers._
-import domain.dao.helpers._
-import domain.dao.helpers.TestDB_0
 
+import dao.squschema._
+import dao.squschema.test.helpers._
 
 class UserControllerSpec extends Specification with AllExpectations {
 
