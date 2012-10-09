@@ -1,8 +1,16 @@
 
 
 
-## Варианты использования и детали архитектуры Сервисa Оптимизации Ставок.
+## Детали архитектуры и Варианты использования Сервисa Оптимизации Ставок.
 
+
+#### 1.  Package Diagram
+
+![Packages](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/Packages.png)
+
+#### 1.  Alternative Domain Diagram
+
+![Packages](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter.png)
 
 
 #### 1. Взаимодействие Рекламодателя с Рекламной Сетью и с Сервисом Оптимизации
@@ -13,14 +21,6 @@
 #### 1.  Детали взаимодействия с Сервисом Оптимизации.
 
 ![User Case](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/case1.png)
-
-#### 1.  Package Diagram
-
-![Packages](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/Packages.png)
-
-#### 1.  Domain Alternative Diagram
-
-![Packages](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter.png)
 
 #### 1.  Create Timeslot Activity Diagram
 
