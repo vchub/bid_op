@@ -13,7 +13,7 @@ case class Campaign(
 
   val curves: Seq[Curve] = Seq(),
   val banners: Seq[Banner] = Seq(),
-  val budgetHistory: Seq[TimeSeries] = Seq(),
+  val budgetHistory: Option[TimeSeries] = None,
   val performanceHistory: Option[PerformanceHistory] = None
 ){}
 
