@@ -24,7 +24,8 @@ case class CampaignHistory(
   val optimalPermutationHistory: PermutationHistory,
 
 
-  //TODO: PerformanceHistory.startDate and endDate have to comply to CampaignHistory.startDate and endDate
+  //TODO: PerformanceHistory.startDate and endDate have to comply to 
+  // CampaignHistory.startDate and CampaignHistory.endDate
   val bannerPhrasePerformanceHistory: Seq[(DateTime, Map[BannerPhrase, PerformanceHistory])],
   val bannerPhraseActualBidHistory: Seq[(DateTime, Map[BannerPhrase, TimeSeries])],
   val bannerPhraseRecommendedBidHistory: Seq[(DateTime, Map[BannerPhrase, TimeSeries])]
