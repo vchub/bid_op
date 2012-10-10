@@ -10,8 +10,9 @@
 
 #### 1.  Alternative Domain Diagram
 
-![Packages](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter.png)
+![domain_alter](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter.png)
 
+##### well... [thought](http://dl.dropbox.com/u/3130196/dilbert1.png )
 
 #### 1. Взаимодействие Рекламодателя с Рекламной Сетью и с Сервисом Оптимизации
 
