@@ -9,6 +9,6 @@ import org.joda.time._
 */
 @BeanInfo
 class PermutationHistory (
-  val seq: Seq[(DateTime, Curve, Map[BannerPhrase, Permutation])] = Seq()
+  val seq: Seq[Permutation]
 ) {}
 

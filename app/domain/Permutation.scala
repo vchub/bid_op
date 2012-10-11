@@ -3,16 +3,13 @@ package domain
 import scala.reflect._
 import org.joda.time._
 
-import common._
 
-
+/** Permutation happens at DateTime and associated w/ Curve
+*/
 @BeanInfo
-case class Permutation(
-  val id: Long = 0,
-  val position: Some[Int],
-  val bannerPhrase: Option[BannerPhrase] = None
-)
-{
-  //TODO
-  def bid(curve: Curve) = ???
-}
+class Permutation(
+  val date: DateTime,
+  val curve: Curve,
+  val pemutation: Map[BannerPhrase, Position]
+) {}
+
