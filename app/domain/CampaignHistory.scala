@@ -19,8 +19,8 @@ case class CampaignHistory(
   val curves: Seq[Curve],
   val campaignPerformanceHistory: PerformanceHistory,
 
-  // bannerPhrases realized aggregations include performanceHistory, actualBidHistory
-  // and recommendedBidHistory
+  // bannerPhrases realized aggregations include PerformanceHistory, ActualBidHistory
+  // and NetAdvisedBidsHistory
   val bannerPhrases: Seq[BannerPhrase],
 
   val permutationHistory: PermutationHistory,

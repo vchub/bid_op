@@ -4,13 +4,11 @@ import scala.reflect._
 import org.joda.time._
 
 
-/** PermutationHistory is history (DateTime, Seq[Permutation]).
-* But it also contains a mapper from Permutation to BannerPhrase.
-* So it's possible to get BannerPhrase.PerformanceHistory and etc.
+/** History of Permutations associated w/ Curve
 * TODO: make an example
 */
 @BeanInfo
 class PermutationHistory (
-  val seq: Seq[(DateTime, Map[BannerPhrase, Permutation])] = Seq()
+  val seq: Seq[(DateTime, Curve, Map[BannerPhrase, Permutation])] = Seq()
 ) {}
 
