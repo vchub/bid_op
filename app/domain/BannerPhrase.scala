@@ -5,13 +5,13 @@ import scala.reflect._
 
 @BeanInfo
 case class BannerPhrase(
-  val id: Long = 0,
-  val banner: Option[Banner] = None,
-  val phrase: Option[Phrase] = None,
-  val region: Option[Region] = None,
-  val actualBidHistory: Seq[TimeSeries] = Seq(),
-  val recommendedBidHistory: Seq[TimeSeries] = Seq(),
+  val id: Long,
+  val banner: Banner,
+  val phrase: Phrase,
+  val region: Region,
+  val actualBidHistory: RecommendationHistory,
+  val recommendationHistory: ActualBidHistory,
 
-  val performanceHistory: Option[PerformanceHistory] = None
+  val performanceHistory: PerformanceHistory
 ) {}
 

@@ -13,7 +13,7 @@ case class Curve(
   val d: Double = 0,
 
   val startDate: DateTime,
-  val optimalPermutation: Option[ Permutation ],
+  val optimalPermutation: Option[ Permutation ]
 
 ){}
 

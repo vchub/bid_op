@@ -16,7 +16,7 @@ case class CampaignHistory(
   val startDate: DateTime,
   val endDate: DateTime,
 
-  val curves: Seq[Curve],
+  val curves: CurveHistory,
   val campaignPerformanceHistory: PerformanceHistory,
 
   // bannerPhrases realized aggregations include PerformanceHistory, ActualBidHistory
@@ -24,7 +24,7 @@ case class CampaignHistory(
   val bannerPhrases: Seq[BannerPhrase],
 
   val permutationHistory: PermutationHistory,
-  val optimalPermutationHistory: PermutationHistory,
+  val optimalPermutationHistory: PermutationHistory
 ){}
 
 
