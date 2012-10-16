@@ -6,7 +6,7 @@ import org.joda.time._
 
 @BeanInfo
 case class Network(
-  val id: Long = 0,
-  val name: String = ""
+  val id: Long,
+  val name: String
 ){}
 

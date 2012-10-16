@@ -5,6 +5,6 @@ import scala.reflect._
 
 @BeanInfo
 case class Banner(
-  val id: Long = 0,
-  val bannerPhrases: Seq[BannerPhrase] = Seq()
+  val id: Long,
+  val network_banner_id: String
 ) {}

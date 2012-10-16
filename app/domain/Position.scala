@@ -10,8 +10,8 @@ import common._
 
 @BeanInfo
 case class Position(
-  val position: Int,
-  val bannerPhrase: BannerPhrase
+  val position: Int
+  //val bannerPhrase: BannerPhrase
 )
 {
   //TODO

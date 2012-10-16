@@ -7,9 +7,9 @@ import org.joda.time._
 /** Permutation happens at DateTime and associated w/ Curve
 */
 @BeanInfo
-class Permutation(
+case class Permutation(
   val date: DateTime,
-  val curve: Curve,
-  val pemutation: Map[BannerPhrase, Position]
+  //val curve: Curve,
+  val permutation: Map[BannerPhrase, Position]
 ) {}
 

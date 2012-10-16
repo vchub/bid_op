@@ -378,5 +378,7 @@ object Campaign {
     from(AppSchema.campaigns)((c) => where(c.user_id === user.id ) select(c)).toList
   }
 
+
+
 }
 

@@ -24,7 +24,7 @@ case class Curve(
   // Campaign -* Curve relation
   lazy val campaign: ManyToOne[Campaign] = AppSchema.campaignCurves.right(this)
 
-  // Curve -* TimeSlot relation
+  // Curve -* TimeSlots relation
   lazy val timeSlots: OneToMany[TimeSlot] = AppSchema.curveTimeSlots.left(this)
 
 
