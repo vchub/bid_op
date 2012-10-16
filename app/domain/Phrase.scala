@@ -5,7 +5,8 @@ import scala.reflect._
 
 @BeanInfo
 case class Phrase(
-  val id: Long = 0,
-  val phrase: String = ""
+  val id: Long,
+  val network_phrase_id: String,
+  val phrase: String
 ){}
 

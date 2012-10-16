@@ -6,5 +6,6 @@ import org.joda.time._
 
 @BeanInfo
 case class Region(
-  val id: Long = 0
+  val id: Long,
+  parentRegion: Region
 ){}

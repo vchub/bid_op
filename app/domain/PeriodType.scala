@@ -5,7 +5,7 @@ import scala.reflect._
 
 @BeanInfo
 case class PeriodType(
-  val id: Long = 0,
-  val factor: Double = 1
+  val id: Long,
+  val factor: Double
 ) {}
 
