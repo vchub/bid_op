@@ -132,14 +132,18 @@ object Campaign {
     val campaignPerformance = c.performances.toList map(_.domainPerformance)
     //select BudgetHistory
     val budgetHistory = c.budgetHistory.toList map(_.domainTSValue)
+    val budget = budgetHistory.lastOption map(_.elem)
+    //select EndDateHistory and current endDate
+    val endDateHistory = c.endDateHistory.toList map(_.domainTSValue)
+    val endDate_from_endDayHistory = endDateHistory.lastOption map(_.elem)
 
     //create domain.Campaign
     val campaign = domain.Campaign(
       id = c.id,
       network_campaign_id = c.network_campaign_id,
       startDate = new DateTime(c.startDate),
-      endDate = None, //c.endDateHistory.toList.last.elem, //TODO: Optimize
-      budget = None,
+      endDate = endDate_from_endDayHistory,
+      budget = budget,
 
       user = None,
       network = None,
@@ -150,7 +154,7 @@ object Campaign {
       permutationHistory = permutationHistory,
 
       budgetHistory = budgetHistory,
-      endDateHistory = Nil, //List[TSValue[DateTime]],
+      endDateHistory = endDateHistory,
 
       // Data access object
       dao = Some(daos)

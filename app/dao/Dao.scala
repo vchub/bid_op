@@ -16,26 +16,34 @@ trait Dao {
 
 
   /** creates CampaignPerformance in DB
-  * TODO: Optimize. It has 2 DB trips now
   */
   def createCampaignPerformanceReport(campaign: Campaign, performance: Performance):  Performance 
 
   /** creates BannerPhrasePerformance records in DB
-  * TODO: Optimize. It has 2 DB trips for every record now
+  * @throw java.util.RunTimeException
+  * TODO: add Exception checking in Controllers
   */
-  def createBannerPhrasesPerformanceReport(campaign: Campaign,
-    report: Map[BannerPhrase,Performance]): Boolean
+  def createBannerPhrasesPerformanceReport(report: Map[BannerPhrase,Performance]): Unit
 
 
 
+  /** creates new Campaign record
+  */
   def createCampaign(campaign: Campaign): Campaign
 
-  // creates new records in EndDateHistory or BudgetHistory
+  /** creates new records in EndDateHistory or BudgetHistory
+  */
   def updateCampaign(campaign: Campaign, date: DateTime): Campaign
 
 
-  def createPermutation(campaign: Campaign, permutation: Permutation): Boolean
+  /** creates Permutation record
+  * @throw java.util.RunTimeException
+  * TODO: add Exception checking in Controllers
+  */
+  def createPermutation(curve: domain.Curve, permutation: domain.Permutation): Unit
 
-  def createRecommendation(campaign: Campaign, recommendation: Recommendation): Boolean
+  /** creates Recommendation records
+  */
+  def createRecommendation(campaign: domain.Campaign, recommendation: Recommendation): Boolean
 
 }

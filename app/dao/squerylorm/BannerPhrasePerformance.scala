@@ -64,17 +64,27 @@ object BannerPhrasePerformance {
     AppSchema.bannerphraseperformance.where(a => a.id === id).single }
 
 
-  def apply(b: domain.BannerPhrase, p: domain.Performance): BannerPhrasePerformance = BannerPhrasePerformance(
-    bannerphrase_id = b.id,
-    periodtype_id = p.periodType.id,
-    cost_search = p.cost_search,
-    cost_context = p.cost_context,
-    impress_search = p.impress_search,
-    impress_context = p.impress_context,
-    clicks_search = p.clicks_search,
-    clicks_context = p.clicks_context,
-    date = p.date.toDate
-  )
+  def apply(t: ( domain.BannerPhrase, domain.Performance)): BannerPhrasePerformance =
+    BannerPhrasePerformance(
+      bannerphrase_id = t._1.id,
+      periodtype_id = t._2.periodType.id,
+      cost_search = t._2.cost_search,
+      cost_context = t._2.cost_context,
+      impress_search = t._2.impress_search,
+      impress_context = t._2.impress_context,
+      clicks_search = t._2.clicks_search,
+      clicks_context = t._2.clicks_context,
+      date = t._2.date.toDate
+    )
+
+  /** creates BannerPhrasePerformance records
+  */
+  def create(report: Map[domain.BannerPhrase, domain.Performance]): Unit = inTransaction{
+    // toList
+    val records = report.toList map (apply(_))
+    AppSchema.bannerphraseperformance.insert(records)
+  }
+
 
 }
 

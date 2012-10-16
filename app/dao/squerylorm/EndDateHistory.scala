@@ -4,6 +4,7 @@ import org.squeryl.KeyedEntity
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
 import java.util.Date
+import org.joda.time._
 import scala.reflect._
 import common._
 
@@ -22,6 +23,13 @@ case class EndDateHistory(
   * default put - save to db
   **/
   def put(): EndDateHistory = inTransaction { AppSchema.enddatehistory insert this }
+
+  /** creates domain.TSValue
+  **/
+  def domainTSValue(): domain.TSValue[DateTime] = domain.TSValue(
+      date = new DateTime(date),
+      elem = new DateTime(endDate)
+    )
 
 }
 

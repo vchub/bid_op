@@ -57,6 +57,32 @@ object Permutation{
   /** get Permutation from DB
   */
   def get_by_id(id: Long) = inTransaction{ AppSchema.permutations.where(a => a.id === id)}
+
+  def apply(curve: domain.Curve, p: domain.Permutation): Permutation =
+    Permutation(
+      curve_id = curve.id,
+      date = p.date.toDate
+    )
+
+
+  /** creates Permutation and its Positions
+  */
+  def create(curve: domain.Curve, permutation: domain.Permutation): Unit = inTransaction{
+    //create Permutation
+    val p = Permutation(curve, permutation).put
+    // create Positions
+    val positions = permutation.permutation map(
+      //(bp , pos) =>
+      (x: (domain.BannerPhrase, domain.Position)) =>
+        Position(
+          bannerphrase_id = x._1.id,
+          permutation_id = p.id,
+          position = x._2.position
+        )
+    )
+    AppSchema.positions.insert(positions)
+  }
+
 }
 
 

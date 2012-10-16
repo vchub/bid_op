@@ -34,7 +34,8 @@ case class Campaign(
 
   // stores new Permutation in DB
   // TODO
-  def save(permutation: Permutation): Option[Boolean] = dao map {_.createPermutation(campaign = this, permutation = permutation) }
+  def save(curve: Curve, permutation: Permutation): Unit =
+    dao map {_.createPermutation(curve = curve, permutation = permutation) }
 
   // stores new Recommendation in DB
   // TODO

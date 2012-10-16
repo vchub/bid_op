@@ -80,7 +80,73 @@ class SquerylDaoSpec extends Specification with AllExpectations {
   }
 
 
+  "createBannerPhrasesPerformanceReport" should {
+    sequential
+    "create 4 BannerPhrasePerformance in TestDB_0" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val dao = new SquerylDao
+        val c = dao.getShallowCampaigns("Coda", "Yandex", "y1")(0)
 
+        val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
+          campaign
+        val bp = campaign.bannerPhrases
+        val periodType = domain.PeriodType(id = 1, factor = 1)
+        // I hope there's no reports on these dates
+        val (startDate, endDate) = (campaign.startDate.plusDays(5), campaign.startDate.plusDays(6))
+        // it should be 4 BannerPhrases
+        campaign.bannerPhrases.length must_==(4)
+        // List[(BannerPhrases, Performance)]
+        val report_l = bp map ((_, createPerformance(startDate, periodType)))
+        // Map
+        val report = report_l.toMap
+        // create reports
+        dao.createBannerPhrasesPerformanceReport(report)
+
+        // check if saved
+        val c_res = dao.getCampaignHistory(c.id, startDate, endDate).campaign
+        val report_res = c_res.bannerPhrases map(_.performanceHistory)
+        // should be 4 List[Performance]
+        report_res.length must_==(4)
+        // should be 1 Performance in every List
+        report_res.flatten.length must_==(4)
+
+    }}
+  }
+
+  "createPermutation" should {
+    sequential
+    "create 1 Permutation and 4 Positions in TestDB_0" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val dao = new SquerylDao
+        val c = dao.getShallowCampaigns("Coda", "Yandex", "y1")(0)
+
+        // get Campaign
+        val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
+          campaign
+        // get BannerPhrases
+        val bp = campaign.bannerPhrases
+        // fix date
+        val date = c.startDate.plusDays(5)
+        // create Permutation
+        val gen = (0 to 3).toIterable
+        val bp_p_list = for(b <- bp; i <- 0 to bp.size) yield (b, domain.Position(i))
+        val bp_p_map = bp_p_list.toMap
+        val permutation = domain.Permutation(date = date, permutation = bp_p_map)
+
+        // get curve
+        val curve = campaign.curves(1)
+        // create Permutation record
+        dao.createPermutation(curve = curve, permutation = permutation)
+
+        // check in DB
+        val c_res = dao.getCampaignHistory(c.id, c.startDate, date.plusDays(1)).campaign
+        // it should be 1 Permutation
+        c_res.permutationHistory.length must_==(2)
+        // Permutations should has 4 elems
+        c_res.permutationHistory(1).permutation.size must_==(4)
+
+    }}
+  }
 
 }
 
