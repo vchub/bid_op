@@ -11,6 +11,10 @@
 
 ![domain_alter](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter.png)
 
+#### 1.  New ER Diagram
+
+![domain_new_er](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/er_alter.png)
+
 
 #### 1. Взаимодействие Рекламодателя с Рекламной Сетью и с Сервисом Оптимизации
 
