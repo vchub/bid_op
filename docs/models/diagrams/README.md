@@ -11,6 +11,10 @@
 
 ![domain_alter](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter.png)
 
+#### 1.  Alternative Domain with "Histories" Diagram
+
+![domain_alter](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter_w_histories.png)
+
 #### 1.  New ER Diagram
 
 ![domain_new_er](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/er_alter.png)
