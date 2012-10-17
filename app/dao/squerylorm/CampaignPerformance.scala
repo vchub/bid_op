@@ -20,12 +20,15 @@ case class CampaignPerformance(
   val clicks_search: Int = 0,
   val clicks_context: Int = 0,
   val date: Date = new Date()
-) extends KeyedEntity[Long]
+) extends domain.Performance with KeyedEntity[Long]
 {
   val id: Long = 0
 
+  def dateTime: DateTime = new DateTime(date)
+  def periodType: domain.PeriodType = periodTypeRel.head
+
   // PeriodType -* CampaignPerformance relation
-  lazy val periodType: ManyToOne[PeriodType] = AppSchema.periodTypeCampaignPerformance.right(this)
+  lazy val periodTypeRel: ManyToOne[PeriodType] = AppSchema.periodTypeCampaignPerformance.right(this)
 
 
   /**
@@ -37,6 +40,7 @@ case class CampaignPerformance(
   /** creates domain.Performance
   **/
   // TODO: Optimize
+  /*
   def domainPerformance(): domain.Performance = inTransaction {
     val pt = periodType.headOption.get.domainPeriodType
     domain.Performance(
@@ -51,6 +55,7 @@ case class CampaignPerformance(
       date = new DateTime(date)
     )
   }
+  */
 
 }
 
@@ -73,7 +78,7 @@ object CampaignPerformance {
     impress_context = p.impress_context,
     clicks_search = p.clicks_search,
     clicks_context = p.clicks_context,
-    date = p.date.toDate
+    date = p.dateTime.toDate
   )
 
 }

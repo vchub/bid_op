@@ -20,15 +20,18 @@ case class BannerPhrasePerformance(
   val clicks_search: Int = 0,
   val clicks_context: Int = 0,
   val date: Date = new Date()
-) extends KeyedEntity[Long]
+) extends domain.Performance with KeyedEntity[Long]
 {
   val id: Long = 0
+
+  def dateTime: DateTime = new DateTime(date)
+  def periodType: domain.PeriodType = periodTypeRel.head
 
   // BannerPhrase -* BannerPhrasePerformance relation
   lazy val bannerPhrase: ManyToOne[BannerPhrase] = AppSchema.bannerPhrasePerformance.right(this)
 
   // PeriodType -* BannerPhrasePerformance relation
-  lazy val periodType: ManyToOne[PeriodType] = AppSchema.periodTypeBannerPhrasePerformance.right(this)
+  lazy val periodTypeRel: ManyToOne[PeriodType] = AppSchema.periodTypeBannerPhrasePerformance.right(this)
 
   /** put - save to db
   */
@@ -37,9 +40,10 @@ case class BannerPhrasePerformance(
   /** creates domain.Performance
   **/
   // TODO: Optimize
+  /*
   def domainPerformance(): domain.Performance = inTransaction {
-    val pt = periodType.headOption.get.domainPeriodType
-    domain.Performance(
+    val pt = periodType.headOption.get
+    domain.pojo.Performance(
       id = id,
       periodType = pt,
       cost_search = cost_search,
@@ -48,9 +52,10 @@ case class BannerPhrasePerformance(
       impress_context = impress_context,
       clicks_search = clicks_search,
       clicks_context = clicks_context,
-      date = new DateTime(date)
+      dateTime = new DateTime(date)
     )
   }
+  */
 
 
 }
@@ -74,7 +79,7 @@ object BannerPhrasePerformance {
       impress_context = t._2.impress_context,
       clicks_search = t._2.clicks_search,
       clicks_context = t._2.clicks_context,
-      date = t._2.date.toDate
+      date = t._2.dateTime.toDate
     )
 
   /** creates BannerPhrasePerformance records

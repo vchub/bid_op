@@ -1,11 +1,8 @@
 package domain
 
-import scala.reflect._
 
-
-@BeanInfo
-case class PeriodType(
-  val id: Long,
-  val factor: Double
-) {}
-
+trait PeriodType{
+  def id: Long
+  def factor: Double
+  def description: String
+}

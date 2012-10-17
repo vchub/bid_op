@@ -27,7 +27,7 @@ class SquerylDao extends dao.Dao
   * TODO: Optimize. It has 2 DB trips now
   */
   def createCampaignPerformanceReport(campaign: dCam, performance: dPerf) =
-    CampaignPerformance(campaign, performance).put.domainPerformance
+    CampaignPerformance(campaign, performance).put
 
 
   /** creates BannerPhrasePerformance records in DB

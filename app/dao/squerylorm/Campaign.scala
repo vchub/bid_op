@@ -177,7 +177,7 @@ object Campaign {
     //select BannerPhrases
     val bp = c.get_bannerphrases map(_.domainBannerPhrase)
     //select CampaignPerformance
-    val campaignPerformance = c.performances.toList map(_.domainPerformance)
+    val campaignPerformance = c.performances.toList
     //select BudgetHistory
     val budgetHistory = c.budgetHistory.toList map(_.domainTSValue)
     val budget = budgetHistory.lastOption map(_.elem)

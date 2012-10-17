@@ -67,7 +67,7 @@ case class BannerPhrase(
           domain.TSValue(new DateTime(x.date), x.bid)),
       netAdvisedBidsHistory = bannerPhraseNetAdvisedBidsHistory.toList map((x: NetAdvisedBidHistory) =>
           domain.TSValue(new DateTime(x.date), domain.NetAdvisedBids(x.a, x.b, x.c, x.d))),
-      performanceHistory = bannerPhrasePerformance.toList map(_.domainPerformance)
+      performanceHistory = bannerPhrasePerformance.toList
     )
   }
 

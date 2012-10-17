@@ -31,17 +31,18 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     }}
   }
 
-  def createPerformance(date: DateTime, periodType: domain.PeriodType): domain.Performance = domain.Performance(
-    id = 0,
-    cost_search = 1,
-    cost_context = 1,
-    impress_search = 1,
-    impress_context = 1,
-    clicks_search = 1,
-    clicks_context = 1,
-    periodType = periodType,
-    date = date
-  )
+  def createPerformance(date: DateTime, periodType: domain.pojo.PeriodType): domain.Performance =
+    domain.pojo.Performance(
+      id = 0,
+      cost_search = 1,
+      cost_context = 1,
+      impress_search = 1,
+      impress_context = 1,
+      clicks_search = 1,
+      clicks_context = 1,
+      periodType = periodType,
+      dateTime = date
+    )
 
   "createCampaignPerformanceReport" should {
     sequential
@@ -49,7 +50,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
         val campaigns = dao.getShallowCampaigns("Coda", "Yandex", "y1")
-        val periodType = domain.PeriodType(id = 1, factor = 1)
+        val periodType = domain.pojo.PeriodType(id = 1, factor = 1, description = "")
         val performance = createPerformance(campaigns(0).startDate, periodType)
         val perf_res = dao.createCampaignPerformanceReport(campaigns(0), performance)
         perf_res.id must_!=(0)
@@ -90,7 +91,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
           campaign
         val bp = campaign.bannerPhrases
-        val periodType = domain.PeriodType(id = 1, factor = 1)
+        val periodType = domain.pojo.PeriodType(id = 1, factor = 1, description = "")
         // I hope there's no reports on these dates
         val (startDate, endDate) = (campaign.startDate.plusDays(5), campaign.startDate.plusDays(6))
         // it should be 4 BannerPhrases
