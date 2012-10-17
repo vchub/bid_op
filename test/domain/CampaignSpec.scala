@@ -5,6 +5,8 @@ import org.specs2.specification._
 
 import org.joda.time._
 
+import domain.pojo._
+
 
 class CampaignSpec extends Specification with AllExpectations{
 
@@ -27,7 +29,10 @@ class CampaignSpec extends Specification with AllExpectations{
     val fmt = format.ISODateTimeFormat.date()
     val startDate: DateTime = fmt.parseDateTime("2012-09-19")
     val endDate = startDate.plusDays(30)
-    val budgetHistory = List(TSValue(startDate.plusDays(10), 50.0),TSValue(startDate, 100.0)).sorted
+    val budgetHistory = List(
+      TSValue[Double](dateTime = startDate.plusDays(10), elem = 50.0),
+      TSValue[Double](dateTime = startDate, elem = 100.0)
+    ).sorted
 
     Campaign(
       id = 0,

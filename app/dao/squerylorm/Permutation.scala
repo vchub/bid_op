@@ -14,41 +14,33 @@ import common._
 case class Permutation(
   val curve_id: Long = 0, //fk
   val date: Date = new Date()
-)extends KeyedEntity[Long]
+)extends domain.Permutation with KeyedEntity[Long]
 {
   val id: Long = 0
+  def dateTime = new DateTime(date)
 
   // Curve -* Permutation relation
-  lazy val curve: ManyToOne[Curve] = AppSchema.curvePermutations.right(this)
+  lazy val curveRel: ManyToOne[Curve] = AppSchema.curvePermutations.right(this)
 
   // Permutation -* Position relation
-  lazy val positions: OneToMany[Position] = AppSchema.permutationPositions.left(this)
+  lazy val positionsRel: OneToMany[Position] = AppSchema.permutationPositions.left(this)
 
   /** default put - save to db
   */
   def put(): Permutation = inTransaction { AppSchema.permutations insert this }
 
 
-  /** creates domain.Permutation
+  /** creates permutation: Map[BannerPhrase, Position]
   */
   // TODO: Optimize
-  def domainPermutation(): domain.Permutation = inTransaction {
+  def permutation: Map[domain.BannerPhrase, domain.Position] = inTransaction {
     // get positions
-    val positions = this.positions.toList map ((x: Position ) =>
-      //TODO: if(! x.bannerPhrase.isEmpty)
-      (
-        x.bannerPhrase.head.domainBannerPhrase,
-        x.domainPosition
-      )
+    val bp_p_seq = positionsRel map ((x: Position ) =>
+      (x.bannerPhraseRel.head, x)
     )
-
-    val permutation = positions.toMap
-
-    domain.Permutation(
-      date = new DateTime(date),
-      permutation = permutation
-    )
+    bp_p_seq.toList.toMap
   }
+
 
 }
 
@@ -56,12 +48,12 @@ object Permutation{
 
   /** get Permutation from DB
   */
-  def get_by_id(id: Long) = inTransaction{ AppSchema.permutations.where(a => a.id === id)}
+  def get_by_id(id: Long) = inTransaction{ AppSchema.permutations.where(a => a.id === id).headOption}
 
   def apply(curve: domain.Curve, p: domain.Permutation): Permutation =
     Permutation(
       curve_id = curve.id,
-      date = p.date.toDate
+      date = p.dateTime.toDate
     )
 
 

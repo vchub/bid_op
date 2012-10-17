@@ -10,12 +10,12 @@ import scala.reflect._
 case class Phrase(
   val network_phrase_id: String = "", //fk phrase_id in Network's or client's DB
   val phrase: String = ""
-)extends KeyedEntity[Long]
+)extends domain.Phrase with KeyedEntity[Long]
 {
   val id: Long = 0
 
   // Phrase -* BannerPhrase relation
-  lazy val bannerPhrases: OneToMany[BannerPhrase] = AppSchema.phraseBannerPhrases.left(this)
+  lazy val bannerPhrasesRel: OneToMany[BannerPhrase] = AppSchema.phraseBannerPhrases.left(this)
 
 
 
@@ -23,15 +23,6 @@ case class Phrase(
   * default put - save to db
   **/
   def put(): Phrase = inTransaction { AppSchema.phrases insert this }
-
-
-  /** creates domain.Phrase
-  **/
-  def domainPhrase(): domain.Phrase= domain.Phrase(
-      id = id,
-      network_phrase_id = network_phrase_id,
-      phrase = phrase
-    )
 
 }
 

@@ -37,26 +37,6 @@ case class CampaignPerformance(
   def put(): CampaignPerformance = inTransaction { AppSchema.campaignperformance insert this }
 
 
-  /** creates domain.Performance
-  **/
-  // TODO: Optimize
-  /*
-  def domainPerformance(): domain.Performance = inTransaction {
-    val pt = periodType.headOption.get.domainPeriodType
-    domain.Performance(
-      id = id,
-      periodType = pt,
-      cost_search = cost_search,
-      cost_context = cost_context,
-      impress_search = impress_search,
-      impress_context = impress_context,
-      clicks_search = clicks_search,
-      clicks_context = clicks_context,
-      date = new DateTime(date)
-    )
-  }
-  */
-
 }
 
 object CampaignPerformance {

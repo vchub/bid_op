@@ -16,11 +16,11 @@ class SquerylDao extends dao.Dao
 
 
 
-  override def getShallowCampaigns(userName: String, networkName: String, networkCampaignId: String) =
-    Campaign.select(userName: String, networkName: String, networkCampaignId: String) map (Campaign.shallow_mapper(_, this))
+  override def getCampaign(userName: String, networkName: String, networkCampaignId: String) =
+    Campaign.select(userName: String, networkName: String, networkCampaignId: String).headOption
 
-  override def getShallowCampaigns(userName: String, networkName: String) =
-    Campaign.select(userName: String, networkName: String) map (Campaign.shallow_mapper(_, this))
+  override def getCampaigns(userName: String, networkName: String) =
+    Campaign.select(userName: String, networkName: String)
 
 
   /** creates CampaignPerformance in DB
@@ -48,7 +48,7 @@ class SquerylDao extends dao.Dao
 
   /** creates Campaign record
   */
-  def create(campaign:dCam) = Campaign.create(cc = campaign, daos = this)
+  def create(campaign:dCam) = Campaign.create(cc = campaign)
 
   /** creates new records in EndDateHistory or BudgetHistory
   * TODO: change definition. funct. should take {new_budget: date, new_endDate: date} ...

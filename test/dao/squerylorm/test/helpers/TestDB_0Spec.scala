@@ -34,7 +34,7 @@ class TestDB_0Spec extends Specification with AllExpectations {
           val user = User.select(name = "Coda").head
           val network = Network.select("Yandex").head
           val campaign = Campaign.select(user.name, network.name)(0)
-          campaign.banners.toList.length must_==(2)
+          campaign.bannersRel.toList.length must_==(2)
         }
     }}
 
@@ -54,10 +54,10 @@ class TestDB_0Spec extends Specification with AllExpectations {
           AppSchema.bannerphrases.toList.length must_==(4)
 
           val banner = AppSchema.banners.toList(0)
-          val bannerPhrases = banner.bannerPhrases.toList
+          val bannerPhrases = banner.bannerPhrasesRel.toList
           bannerPhrases.length must_==(4)
           val phrase = bannerPhrases(0).phrase.head
-          phrase.bannerPhrases.toList.length must_==(2)
+          phrase.bannerPhrasesRel.toList.length must_==(2)
         }
     }}
 
@@ -80,7 +80,7 @@ class TestDB_0Spec extends Specification with AllExpectations {
           AppSchema.periodtypes.toList.length must_==(2)
 
           //Check 2 CampaignPerformance belong to campaigns(0)
-          val timeSlots = campaigns(0).performances.toList
+          val timeSlots = campaigns(0).performancesRel.toList
           timeSlots.length must_==(2)
 
         }
@@ -99,17 +99,17 @@ class TestDB_0Spec extends Specification with AllExpectations {
           val curves = campaigns(0).curves.toList
 
           // Check out that tere are 4 BannerPhrases total
-          val banners = campaigns(0).banners.toList
-          val bannerPhrases = banners(0).bannerPhrases.toList
+          val banners = campaigns(0).bannersRel.toList
+          val bannerPhrases = banners(0).bannerPhrasesRel.toList
           bannerPhrases.length must_==(4)
 
           // select Permutations for the Curve
-          val permutations = curves(0).permutations.toList
+          val permutations = curves(0).permutationsRel.toList
           permutations.length must_==(1)
 
           // find bannerPhrases for the Permutation
-          permutations(0).positions.toList.length must_==(4)
-          permutations(0).positions.head.bannerphrase_id must_==(bannerPhrases(0).id)
+          permutations(0).positionsRel.toList.length must_==(4)
+          permutations(0).positionsRel.head.bannerphrase_id must_==(bannerPhrases(0).id)
         }
     }}
   }

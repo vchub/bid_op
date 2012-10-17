@@ -19,35 +19,24 @@ case class Curve(
   val c: Double = 0,
   val d: Double = 0,
   val date: Date = new Date()
-)extends KeyedEntity[Long]
+)extends domain.Curve with KeyedEntity[Long]
 {
   val id: Long = 0
+  def dateTime = new DateTime(date)
 
   // Campaign -* Curve relation
-  lazy val campaign: ManyToOne[Campaign] = AppSchema.campaignCurves.right(this)
+  lazy val campaignRel: ManyToOne[Campaign] = AppSchema.campaignCurves.right(this)
 
   // Curve -* Permutations relation
-  lazy val permutations: OneToMany[Permutation] = AppSchema.curvePermutations.left(this)
+  lazy val permutationsRel: OneToMany[Permutation] = AppSchema.curvePermutations.left(this)
+
+  /** select Permutation by id
+  */
+  def optimalPermutation = Permutation.get_by_id(optimalPermutation_id)
 
 
   def put(): Curve = inTransaction { AppSchema.curves insert this }
 
-
-  /** creates domain.Curve
-  */
-  // TODO: Optimize
-  def domainCurve(): domain.Curve = inTransaction {
-    val optimalPermutation = Permutation.get_by_id(optimalPermutation_id).headOption map(_.domainPermutation)
-    domain.Curve(
-      id = id,
-      a = a,
-      b = b,
-      c = c,
-      d = d,
-      date = new DateTime(date),
-      optimalPermutation = optimalPermutation
-    )
-  }
 
 
 }

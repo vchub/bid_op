@@ -15,7 +15,7 @@ case class User(
   val id: Long = 0
 
   @transient
-  lazy val networks = AppSchema.campaigns.left(this)
+  lazy val networksRel = AppSchema.campaigns.left(this)
 
   /**
   * default put - save to db

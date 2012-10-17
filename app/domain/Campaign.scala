@@ -1,33 +1,24 @@
 package domain
 
-import scala.reflect._
 import org.joda.time._
 
-import _root_.dao.Dao
+trait Campaign{
+  def id: Long
+  def network_campaign_id: String
+  def startDate: DateTime
+  def endDate: Option[DateTime]
+  def budget: Option[Double]
 
+  def user: Option[User]
+  def network: Option[Network]
 
-@BeanInfo
-case class Campaign(
-  val id: Long,
-  val network_campaign_id: String,
-  val startDate: DateTime,
-  val endDate: Option[DateTime],
-  val budget: Option[Double],
+  def bannerPhrases: List[BannerPhrase]
 
-  val user: Option[User],
-  val network: Option[Network],
+  def curves: CurveHistory
+  def performanceHistory: PerformanceHistory
+  def permutationHistory: PermutationHistory
 
-  val bannerPhrases: List[BannerPhrase],
-
-  val curves: List[Curve],
-  val performanceHistory: List[Performance],
-  val permutationHistory: List[Permutation],
-
-  val budgetHistory: List[TSValue[Double]],
-  val endDateHistory: List[TSValue[DateTime]]
-)
-{
-
-
+  def budgetHistory: BudgetHistory
+  def endDateHistory: EndDateHistory
 }
 

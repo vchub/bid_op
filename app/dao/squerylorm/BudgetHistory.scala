@@ -15,21 +15,17 @@ case class BudgetHistory(
   val campaign_id: Long = 0, //fk
   val date: Date = new Date,
   val budget: Double = 0
-)extends KeyedEntity[Long]
+)extends domain.TSValue[Double] with KeyedEntity[Long]
 {
   val id: Long = 0
+  def elem = budget
+  def dateTime = new DateTime(date)
 
   /**
   * default put - save to db
   **/
   def put(): BudgetHistory = inTransaction { AppSchema.budgethistory insert this }
 
-  /** creates domain.TSValue
-  **/
-  def domainTSValue(): domain.TSValue[Double] = domain.TSValue(
-      date = new DateTime(date),
-      elem = budget
-    )
 
 
 }

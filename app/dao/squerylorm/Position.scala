@@ -13,15 +13,15 @@ case class Position(
   val bannerphrase_id: Long = 0, //fk
   val permutation_id: Long = 0, //fk
   val position: Int = 0
-)extends KeyedEntity[Long]
+)extends domain.Position with KeyedEntity[Long]
 {
   val id: Long = 0
 
   // BannerPhrase -* Position relation
-  lazy val bannerPhrase: ManyToOne[BannerPhrase] = AppSchema.bannerPhrasePositions.right(this)
+  lazy val bannerPhraseRel: ManyToOne[BannerPhrase] = AppSchema.bannerPhrasePositions.right(this)
 
   // Permutation -* Position relation
-  lazy val permutation: ManyToOne[Permutation] = AppSchema.permutationPositions.right(this)
+  lazy val permutationRel: ManyToOne[Permutation] = AppSchema.permutationPositions.right(this)
 
 
   /**
@@ -29,9 +29,6 @@ case class Position(
   **/
   def put(): Position = inTransaction { AppSchema.positions insert this }
 
-  /** creates domain.Position
-  */
-  def domainPosition(): domain.Position = domain.Position( position = position )
 
 }
 

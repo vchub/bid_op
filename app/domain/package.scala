@@ -2,26 +2,15 @@ package object domain {
 
   import org.joda.time._
 
-  //TimeSeries Value
-  case class TSValue[T](val date: DateTime, val elem: T) extends Ordered[TSValue[T]]{
-    def compare(that: TSValue[T]) = this.date compareTo that.date
-  }
+  type ActualBidHistory = Seq[TSValue[Double]]
+  type RecommendationHistory = Seq[TSValue[Double]]
+  type NetAdvisedBidsHistory = Seq[NetAdvisedBids]
+  type PermutationHistory = Seq[Permutation]
+  type PerformanceHistory = Seq[Performance]
+  type BudgetHistory =  Seq[TSValue[Double]]
+  type EndDateHistory =  Seq[TSValue[DateTime]]
+  type CurveHistory =  Seq[Curve]
 
-  case class NetAdvisedBids(val a:Double, val b:Double, val c:Double, val d:Double){}
-
-
-  /*
-  // histories
-  type TimeSeries[T] = List[TSValue[T]]
-
-  type PerformanceHistory = List[Performance]
-  type PermutationHistory = List[Permutation]
-  type CurveHistory = List[Curve]
-  type NetAdvisedBidsHistory = TimeSeries[NetAdvisedBids]
-  type RecommendationHistory = TimeSeries[Double]
-  type ActualBidHistory = TimeSeries[Double]
-  type BudgetHistory =  List[TSValue[Double]]
-  */
 
 
 }

@@ -31,16 +31,16 @@ object TestDB_0 extends AppHelpers {
 
     // add Campaigns to User Network
     val campaigns = List(
-      users(0).networks.associate(networks(0), Campaign(0,0, "y1", date.toDate)),
-      users(0).networks.associate(networks(0), Campaign(0,0, "y2", plusDays(1).toDate)),
-      users(0).networks.associate(networks(1), Campaign(0,0, "g2", date.toDate)),
-      users(1).networks.associate(networks(1), Campaign(0,0, "g1", date.toDate))
+      users(0).networksRel.associate(networks(0), Campaign(0,0, "y1", date.toDate)),
+      users(0).networksRel.associate(networks(0), Campaign(0,0, "y2", plusDays(1).toDate)),
+      users(0).networksRel.associate(networks(1), Campaign(0,0, "g2", date.toDate)),
+      users(1).networksRel.associate(networks(1), Campaign(0,0, "g1", date.toDate))
     )
 
     // add Banners to Campaigns(0)
     val banners = List(
-        campaigns(0).banners.associate(Banner(0, "y_banner_1")),
-        campaigns(0).banners.associate(Banner(0, "y_banner_2"))
+        campaigns(0).bannersRel.associate(Banner(0, "y_banner_1")),
+        campaigns(0).bannersRel.associate(Banner(0, "y_banner_2"))
     )
     //Phrases
     val phrases = List(Phrase("1", "Hi").put, Phrase("2", "Bon Jour").put)
@@ -58,9 +58,9 @@ object TestDB_0 extends AppHelpers {
 
     //Curves
     val curves = List(
-      campaigns(0).curves.associate(Curve(campaign_id = 0, date = date.toDate, a=1,b=1,c=1,d=1)),
-      campaigns(0).curves.associate(Curve(campaign_id = 0, date = plusDays(1).toDate, a=2,b=2,c=2,d=2)),
-      campaigns(1).curves.associate(Curve(campaign_id = 0, date = plusDays(2).toDate, a=0,b=0,c=0,d=0))
+      campaigns(0).curvesRel.associate(Curve(campaign_id = 0, date = date.toDate, a=1,b=1,c=1,d=1)),
+      campaigns(0).curvesRel.associate(Curve(campaign_id = 0, date = plusDays(1).toDate, a=2,b=2,c=2,d=2)),
+      campaigns(1).curvesRel.associate(Curve(campaign_id = 0, date = plusDays(2).toDate, a=0,b=0,c=0,d=0))
     )
 
     //PeriodType
@@ -68,8 +68,8 @@ object TestDB_0 extends AppHelpers {
 
     //BudgetHistory
     val budgetHistory = List(
-      campaigns(0).budgetHistory.associate(BudgetHistory(campaign_id = 0, date = date.toDate, budget = 100)),
-      campaigns(0).budgetHistory.associate(BudgetHistory(campaign_id = 0, date = date.plusDays(10).toDate, budget = 50))
+      campaigns(0).budgetHistoryRel.associate(BudgetHistory(campaign_id = 0, date = date.toDate, budget = 100)),
+      campaigns(0).budgetHistoryRel.associate(BudgetHistory(campaign_id = 0, date = date.plusDays(10).toDate, budget = 50))
     )
 
     //CampaignPerformance

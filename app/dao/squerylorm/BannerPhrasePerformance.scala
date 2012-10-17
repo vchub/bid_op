@@ -28,7 +28,7 @@ case class BannerPhrasePerformance(
   def periodType: domain.PeriodType = periodTypeRel.head
 
   // BannerPhrase -* BannerPhrasePerformance relation
-  lazy val bannerPhrase: ManyToOne[BannerPhrase] = AppSchema.bannerPhrasePerformance.right(this)
+  lazy val bannerPhraseRel: ManyToOne[BannerPhrase] = AppSchema.bannerPhrasePerformance.right(this)
 
   // PeriodType -* BannerPhrasePerformance relation
   lazy val periodTypeRel: ManyToOne[PeriodType] = AppSchema.periodTypeBannerPhrasePerformance.right(this)
@@ -36,26 +36,6 @@ case class BannerPhrasePerformance(
   /** put - save to db
   */
   def put(): BannerPhrasePerformance = inTransaction { AppSchema.bannerphraseperformance insert this }
-
-  /** creates domain.Performance
-  **/
-  // TODO: Optimize
-  /*
-  def domainPerformance(): domain.Performance = inTransaction {
-    val pt = periodType.headOption.get
-    domain.pojo.Performance(
-      id = id,
-      periodType = pt,
-      cost_search = cost_search,
-      cost_context = cost_context,
-      impress_search = impress_search,
-      impress_context = impress_context,
-      clicks_search = clicks_search,
-      clicks_context = clicks_context,
-      dateTime = new DateTime(date)
-    )
-  }
-  */
 
 
 }

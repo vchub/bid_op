@@ -1,10 +1,6 @@
 package domain
 
-import scala.reflect._
-
-
-@BeanInfo
-case class Banner(
-  val id: Long,
-  val network_banner_id: String
-) {}
+trait Banner {
+  def id: Long
+  def network_banner_id: String
+}

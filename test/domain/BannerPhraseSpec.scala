@@ -10,7 +10,7 @@ class BannerPhraseSpec extends Specification with AllExpectations{
 
   "equals" should {
     "differ w/ different ids" in {
-      val bp1 = BannerPhrase(
+      val bp1 = pojo.BannerPhrase(
         id = 1,
         banner = None, phrase = None, region = None,
         actualBidHistory = Nil,
@@ -18,7 +18,7 @@ class BannerPhraseSpec extends Specification with AllExpectations{
         netAdvisedBidsHistory = Nil,
         performanceHistory = Nil
       )
-      val bp2 = BannerPhrase(
+      val bp2 = pojo.BannerPhrase(
         id = 2,
         banner = None, phrase = None, region = None,
         actualBidHistory = Nil,
@@ -27,7 +27,7 @@ class BannerPhraseSpec extends Specification with AllExpectations{
         performanceHistory = Nil
       )
       val perm = Map(bp1 -> 1, bp2 -> 2)
-      val bp3 = BannerPhrase(
+      val bp3 = pojo.BannerPhrase(
         id = 1,
         banner = None, phrase = None, region = None,
         actualBidHistory = Nil,

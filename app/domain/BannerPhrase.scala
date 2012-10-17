@@ -1,20 +1,17 @@
 package domain
 
-import scala.reflect._
 
 
-@BeanInfo
-case class BannerPhrase(
-  val id: Long,
-  val banner: Option[Banner],
-  val phrase: Option[Phrase],
-  val region: Option[Region],
-  val actualBidHistory: List[TSValue[Double]],
-  val recommendationHistory: List[TSValue[Double]],
-  val netAdvisedBidsHistory: List[TSValue[NetAdvisedBids]],
-  val performanceHistory: List[Performance]
-)
-{
+trait BannerPhrase{
+  def id: Long
+  def banner: Option[Banner]
+  def phrase: Option[Phrase]
+  def region: Option[Region]
+  def actualBidHistory: ActualBidHistory // List[TSValue[Double]]
+  def recommendationHistory: RecommendationHistory
+  def netAdvisedBidsHistory: NetAdvisedBidsHistory // List[TSValue[NetAdvisedBids]]
+  def performanceHistory: PerformanceHistory
+
   /** Override equality
   * well it's kind of tough. on the one hand BP are equal when Banner, Phrase and Region are equal.
   * on the other I am not sure we always have those 3 object created and associated w/ BP at the

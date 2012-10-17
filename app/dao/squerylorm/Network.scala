@@ -13,7 +13,7 @@ case class Network(     //Google, Yandex, etc
 {
   val id: Long = 0
 
-  lazy val users = AppSchema.campaigns.right(this)
+  lazy val usersRel = AppSchema.campaigns.right(this)
 
   /**
   * default put - save to db

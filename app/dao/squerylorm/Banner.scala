@@ -10,15 +10,15 @@ import scala.reflect._
 case class Banner(
   val campaign_id: Long = 0, //fk
   val network_banner_id: String = "" // banner_id in Network's or client's DB
-)extends KeyedEntity[Long]
+)extends domain.Banner with KeyedEntity[Long]
 {
   val id: Long = 0
 
   // Campaign -* Banner relation
-  lazy val campaign: ManyToOne[Campaign] = AppSchema.campaignBanners.right(this)
+  lazy val campaignRel: ManyToOne[Campaign] = AppSchema.campaignBanners.right(this)
 
   // Banner -* BannerPhrase relation
-  lazy val bannerPhrases: OneToMany[BannerPhrase] = AppSchema.bannerBannerPhrases.left(this)
+  lazy val bannerPhrasesRel: OneToMany[BannerPhrase] = AppSchema.bannerBannerPhrases.left(this)
 
   /**
   * default put - save to db
@@ -26,14 +26,6 @@ case class Banner(
   * @return Banner
   **/
   def put(): Banner = inTransaction { AppSchema.banners insert this }
-
-
-  /** creates domain.Banner
-  **/
-  def domainBanner(): domain.Banner= domain.Banner(
-      id = id,
-      network_banner_id = network_banner_id
-    )
 
 
 

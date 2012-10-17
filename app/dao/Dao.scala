@@ -7,8 +7,8 @@ import _root_.domain._
 */
 trait Dao {
   // Shallow copies of Campaigns. Fast DB retrieval
-  def getShallowCampaigns(userName: String, networkName: String, networkCampaignId: String): List[ Campaign ]
-  def getShallowCampaigns(userName: String, networkName: String): List[Campaign]
+  def getCampaign(userName: String, networkName: String, networkCampaignId: String): Option[ Campaign ]
+  def getCampaigns(userName: String, networkName: String): List[Campaign]
 
   /** retrieves full domain model (Campaign and its Histories) for given Dates from DB
   */

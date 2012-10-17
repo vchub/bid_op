@@ -15,7 +15,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     "get 2 Campaigns from TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
-        val campaigns = dao.getShallowCampaigns("Coda", "Yandex")
+        val campaigns = dao.getCampaigns("Coda", "Yandex")
         campaigns.length must be_==(2)
     }}
   }
@@ -25,9 +25,9 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     "get 1 Campaign from TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
-        val campaigns = dao.getShallowCampaigns("Coda", "Yandex", "y1")
-        campaigns.length must be_==(1)
-        campaigns(0).network_campaign_id must be_==("y1")
+        val campaign = dao.getCampaign("Coda", "Yandex", "y1")
+        campaign.nonEmpty must be_==(true)
+        campaign.get.network_campaign_id must be_==("y1")
     }}
   }
 
@@ -49,10 +49,10 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     "create 1 CampaignPerformance in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
-        val campaigns = dao.getShallowCampaigns("Coda", "Yandex", "y1")
+        val campaign = dao.getCampaign("Coda", "Yandex", "y1").get
         val periodType = domain.pojo.PeriodType(id = 1, factor = 1, description = "")
-        val performance = createPerformance(campaigns(0).startDate, periodType)
-        val perf_res = dao.createCampaignPerformanceReport(campaigns(0), performance)
+        val performance = createPerformance(campaign.startDate, periodType)
+        val perf_res = dao.createCampaignPerformanceReport(campaign, performance)
         perf_res.id must_!=(0)
     }}
   }
@@ -62,7 +62,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     "retrieve CampaignHistory from DB" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
-        val c = dao.getShallowCampaigns("Coda", "Yandex", "y1")(0)
+        val c = dao.getCampaign("Coda", "Yandex", "y1").get
 
         val c_history = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime))
         val campaign = c_history.campaign
@@ -86,7 +86,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     "create 4 BannerPhrasePerformance in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
-        val c = dao.getShallowCampaigns("Coda", "Yandex", "y1")(0)
+        val c = dao.getCampaign("Coda", "Yandex", "y1").get
 
         val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
           campaign
@@ -119,7 +119,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     "create 1 Permutation and 4 Positions in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
-        val c = dao.getShallowCampaigns("Coda", "Yandex", "y1")(0)
+        val c = dao.getCampaign("Coda", "Yandex", "y1").get
 
         // get Campaign
         val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
@@ -130,9 +130,9 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         val date = c.startDate.plusDays(5)
         // create Permutation
         val gen = (0 to 3).toIterable
-        val bp_p_list = for(b <- bp; i <- 0 to bp.size) yield (b, domain.Position(i))
+        val bp_p_list = for(b <- bp; i <- 0 to bp.size) yield (b, domain.pojo.Position(i))
         val bp_p_map = bp_p_list.toMap
-        val permutation = domain.Permutation(date = date, permutation = bp_p_map)
+        val permutation = domain.pojo.Permutation(dateTime = date, permutation = bp_p_map)
 
         // get curve
         val curve = campaign.curves(1)
@@ -157,7 +157,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         val fmt = format.ISODateTimeFormat.date()
         val startDate: DateTime = fmt.parseDateTime("2012-09-19")
         val endDate = startDate.plusDays(30)
-        val cc = domain.Campaign(
+        val cc = domain.pojo.Campaign(
           id = 0,
           network_campaign_id = "y100",
           startDate = startDate, endDate = Some(endDate),
@@ -177,9 +177,9 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         // checking id (db primary key) is created
         c.id must_!=(0)
         // the c by names
-        val c_res = dao.getShallowCampaigns("Coda", "Yandex", "y100")
+        val c_res = dao.getCampaign("Coda", "Yandex", "y100").get
         // check that we have some
-        c_res.length must_==(1)
+        c_res.id must_==(c.id)
     }}
   }
 

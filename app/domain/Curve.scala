@@ -1,19 +1,16 @@
 package domain
 
-import scala.reflect._
 import org.joda.time._
 
 
-@BeanInfo
-case class Curve(
-  val id: Long,
-  val a: Double,
-  val b: Double,
-  val c: Double,
-  val d: Double,
+trait Curve extends OrderedByDateTime[Curve]{
+  def id: Long
+  def a: Double
+  def b: Double
+  def c: Double
+  def d: Double
 
-  val date: DateTime,
-  val optimalPermutation: Option[Permutation]
-
-){}
+  def dateTime: DateTime
+  def optimalPermutation: Option[Permutation]
+}
 

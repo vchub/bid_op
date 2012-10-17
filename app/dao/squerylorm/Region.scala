@@ -14,29 +14,27 @@ case class Region(
   var parent_id: Long = 0, //fk to super Region
   val network_region_id: String = "", // Region ID in a Network's or client's DB
   val description: String = ""
-)extends KeyedEntity[Long]
+)extends domain.Region with KeyedEntity[Long]
 {
   val id: Long = 0
 
+  /** select Parent Region
+  */
+  def parentRegion: Option[Region] = inTransaction{
+    from(AppSchema.regions)(( r ) =>
+      where(r.id === parent_id)
+      select(r) ).headOption
+  }
+
 
   // Region -* BannerPhrase relation
-  lazy val bannerPhrases: OneToMany[BannerPhrase] = AppSchema.regionBannerPhrases.left(this)
+  lazy val bannerPhrasesRel: OneToMany[BannerPhrase] = AppSchema.regionBannerPhrases.left(this)
 
 
   /**
   * default put - save to db
   **/
   def put(): Region = inTransaction { AppSchema.regions insert this }
-
-  /** creates domain.Region
-  * TODO: it's null here !
-  **/
-  def domainRegion(): domain.Region= domain.Region(
-      id = id,
-      parentRegion = null
-    )
-
-
 
 
 }
