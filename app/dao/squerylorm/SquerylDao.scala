@@ -63,11 +63,17 @@ class SquerylDao extends dao.Dao
   /** updates user.name
   */
   def update(user: domain.User): domain.User = ???
+  /** select User by name
+  */
+  def getUser(name: String): Option[domain.User] = User.select(name)
 
 
   /** creates new Network record
   */
   def create(network: domain.Network): domain.Network = ???
+  /** select Network by name
+  */
+  def getNetwork(name: String): Option[Network] = Network.select(name)
 
 
 

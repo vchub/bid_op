@@ -152,16 +152,17 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     sequential
     "create 1 Campaign in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
+        val dao = new SquerylDao
         val fmt = format.ISODateTimeFormat.date()
         val startDate: DateTime = fmt.parseDateTime("2012-09-19")
         val endDate = startDate.plusDays(30)
         val cc = domain.Campaign(
           id = 0,
-          network_campaign_id = "",
+          network_campaign_id = "y100",
           startDate = startDate, endDate = Some(endDate),
           budget = Some(100.0),
-          user = None,
-          network = None,
+          user = dao.getUser("Coda"),
+          network = dao.getNetwork("Yandex"),
           bannerPhrases = Nil,
 
           curves = List(),
@@ -171,12 +172,11 @@ class SquerylDaoSpec extends Specification with AllExpectations {
           budgetHistory = Nil,
           endDateHistory = List()
         )
-        val dao = new SquerylDao
         val c = dao.create(cc)
         // checking id (db primary key) is created
         c.id must_!=(0)
         // the c by names
-        val c_res = dao.getShallowCampaigns("Coda", "Yandex", "y1")
+        val c_res = dao.getShallowCampaigns("Coda", "Yandex", "y100")
         // check that we have some
         c_res.length must_==(1)
     }}

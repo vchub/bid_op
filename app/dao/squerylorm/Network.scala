@@ -9,20 +9,20 @@ import scala.reflect._
 @BeanInfo
 case class Network(     //Google, Yandex, etc
   val name: String = ""
-  ) extends KeyedEntity[Long]
-  {
-    val id: Long = 0
+) extends domain.Network with KeyedEntity[Long]
+{
+  val id: Long = 0
 
-    lazy val users = AppSchema.campaigns.right(this)
+  lazy val users = AppSchema.campaigns.right(this)
 
-    /**
-    * default put - save to db
-    */
-    def put(): Network = inTransaction { AppSchema.networks insert this }
-  }
+  /**
+  * default put - save to db
+  */
+  def put(): Network = inTransaction { AppSchema.networks insert this }
+}
 
 object Network {
-  def select(name: String): List[Network] = inTransaction{ AppSchema.networks.where(a => a.name === name).toList} //.single }
+  def select(name: String): Option[Network] = inTransaction{ AppSchema.networks.where(a => a.name === name).headOption} //.single }
 }
 
 

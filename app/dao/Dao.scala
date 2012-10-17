@@ -43,11 +43,17 @@ trait Dao {
   /** updates user.name
   */
   def update(user: User): User
+  /** select User by name
+  */
+  def getUser(name: String): Option[User]
 
 
   /** creates new Network record
   */
   def create(network: Network): Network
+  /** select Network by name
+  */
+  def getNetwork(name: String): Option[Network]
 
 
 
