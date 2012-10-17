@@ -136,7 +136,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         // get curve
         val curve = campaign.curves(1)
         // create Permutation record
-        dao.createPermutation(curve = curve, permutation = permutation)
+        dao.create(curve = curve, permutation = permutation)
 
         // check in DB
         val c_res = dao.getCampaignHistory(c.id, c.startDate, date.plusDays(1)).campaign
@@ -145,6 +145,40 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         // Permutations should has 4 elems
         c_res.permutationHistory(1).permutation.size must_==(4)
 
+    }}
+  }
+
+  "create(Campaign)" should {
+    sequential
+    "create 1 Campaign in TestDB_0" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val fmt = format.ISODateTimeFormat.date()
+        val startDate: DateTime = fmt.parseDateTime("2012-09-19")
+        val endDate = startDate.plusDays(30)
+        val cc = domain.Campaign(
+          id = 0,
+          network_campaign_id = "",
+          startDate = startDate, endDate = Some(endDate),
+          budget = Some(100.0),
+          user = None,
+          network = None,
+          bannerPhrases = Nil,
+
+          curves = List(),
+          performanceHistory = List(),
+          permutationHistory = List(),
+
+          budgetHistory = Nil,
+          endDateHistory = List()
+        )
+        val dao = new SquerylDao
+        val c = dao.create(cc)
+        // checking id (db primary key) is created
+        c.id must_!=(0)
+        // the c by names
+        val c_res = dao.getShallowCampaigns("Coda", "Yandex", "y1")
+        // check that we have some
+        c_res.length must_==(1)
     }}
   }
 

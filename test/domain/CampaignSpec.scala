@@ -43,9 +43,7 @@ class CampaignSpec extends Specification with AllExpectations{
       permutationHistory = List(),
 
       budgetHistory = budgetHistory,
-      endDateHistory = List(),
-
-      dao = null
+      endDateHistory = List()
     )
 
   }

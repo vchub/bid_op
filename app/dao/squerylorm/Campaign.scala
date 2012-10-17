@@ -111,6 +111,54 @@ object Campaign {
     from(AppSchema.campaigns)((c) => where(c.user_id === user.id ) select(c)).toList
   }
 
+  /** creates Campaign record
+  */
+  def create(cc: domain.Campaign, daos: dao.Dao): domain.Campaign = inTransaction{
+    // create DB Campaign
+    val c = Campaign(
+      user_id = cc.user.get.id,
+      network_id = cc.network.get.id,
+      network_campaign_id = cc.network_campaign_id,
+      startDate = cc.startDate.toDate
+    ).put
+    // create BudgetHistory
+    val budgetHistory = BudgetHistory(
+      campaign_id = c.id,
+      date = c.startDate,
+      budget = cc.budget.get
+    ).put
+    // create EndDateHistory
+    val endDateHistory = EndDateHistory(
+      campaign_id = c.id,
+      date = c.startDate,
+      endDate = cc.endDate.get.toDate
+    )
+
+    //create domain.Campaign
+    domain.Campaign(
+      id = c.id,
+      network_campaign_id = cc.network_campaign_id,
+      startDate = cc.startDate,
+      endDate = cc.endDate,
+      budget = cc.budget,
+
+      user = cc.user,
+      network = cc.network,
+      bannerPhrases = Nil,
+
+      curves = Nil,
+      performanceHistory = Nil,
+      permutationHistory = Nil,
+
+      // ? may be convert squerylorm.BudgetHistory to domain.BudgetHistory and fill ?
+      budgetHistory = Nil,
+      endDateHistory = Nil
+    )
+
+  }
+
+
+
   /** retrieves full domain model (Campaign and its Histories) for given Dates from DB
   * TODO: add Date filter!
   */
@@ -154,10 +202,7 @@ object Campaign {
       permutationHistory = permutationHistory,
 
       budgetHistory = budgetHistory,
-      endDateHistory = endDateHistory,
-
-      // Data access object
-      dao = Some(daos)
+      endDateHistory = endDateHistory
     )
 
     // create CampaignHistory
@@ -185,10 +230,7 @@ object Campaign {
     permutationHistory = Nil, //List[Permutation],
 
     budgetHistory = Nil, //List[TSValue[Double]],
-    endDateHistory = Nil, //List[TSValue[DateTime]],
-
-    // Data access object
-    dao = Some(daos)
+    endDateHistory = Nil //List[TSValue[DateTime]],
   )
 
 

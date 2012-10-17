@@ -24,23 +24,10 @@ case class Campaign(
   val permutationHistory: List[Permutation],
 
   val budgetHistory: List[TSValue[Double]],
-  val endDateHistory: List[TSValue[DateTime]],
-
-  // Data access object
-  val dao: Option[Dao]
+  val endDateHistory: List[TSValue[DateTime]]
 )
 {
 
-
-  // stores new Permutation in DB
-  // TODO
-  def save(curve: Curve, permutation: Permutation): Unit =
-    dao map {_.createPermutation(curve = curve, permutation = permutation) }
-
-  // stores new Recommendation in DB
-  // TODO
-  def saveRecommendation(recommendation: Recommendation): Option[Boolean] =
-    dao map {_.createRecommendation(campaign = this, recommendation = recommendation) }
 
 }
 

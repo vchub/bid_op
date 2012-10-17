@@ -31,6 +31,7 @@ class SquerylDao extends dao.Dao
 
 
   /** creates BannerPhrasePerformance records in DB
+  * TODO: fix. it should create new BannerPhrase in case it's not present in DB.
   */
   def createBannerPhrasesPerformanceReport(report: Map[domain.BannerPhrase, dPerf]) =
     BannerPhrasePerformance.create(report)
@@ -45,18 +46,35 @@ class SquerylDao extends dao.Dao
 
 
 
-  def createCampaign(campaign:dCam) = ???
+  /** creates Campaign record
+  */
+  def create(campaign:dCam) = Campaign.create(cc = campaign, daos = this)
 
   /** creates new records in EndDateHistory or BudgetHistory
+  * TODO: change definition. funct. should take {new_budget: date, new_endDate: date} ...
   */
-  def updateCampaign(campaign:dCam, date: DateTime) = ???
+  def update(campaign:dCam, date: DateTime) = ???
 
 
 
-  def createPermutation(curve: domain.Curve, permutation: domain.Permutation): Unit =
+  /** creates new User record
+  */
+  def create(user: domain.User): domain.User = ???
+  /** updates user.name
+  */
+  def update(user: domain.User): domain.User = ???
+
+
+  /** creates new Network record
+  */
+  def create(network: domain.Network): domain.Network = ???
+
+
+
+  def create(curve: domain.Curve, permutation: domain.Permutation): Unit =
     Permutation.create(curve, permutation)
 
-  def createRecommendation(campaign: domain.Campaign, recommendation:domain.Recommendation) = ???
+  def create(campaign: domain.Campaign, recommendation:domain.Recommendation) = ???
 
 
 

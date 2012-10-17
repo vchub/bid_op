@@ -22,6 +22,7 @@ trait Dao {
   /** creates BannerPhrasePerformance records in DB
   * @throw java.util.RunTimeException
   * TODO: add Exception checking in Controllers
+  * TODO: fix. it should create new BannerPhrase in case it's not present in DB.
   */
   def createBannerPhrasesPerformanceReport(report: Map[BannerPhrase,Performance]): Unit
 
@@ -29,21 +30,36 @@ trait Dao {
 
   /** creates new Campaign record
   */
-  def createCampaign(campaign: Campaign): Campaign
-
+  def create(campaign: Campaign): Campaign
   /** creates new records in EndDateHistory or BudgetHistory
+  * TODO: change definition. funct. should take {new_budget: date, new_endDate: date} ...
   */
-  def updateCampaign(campaign: Campaign, date: DateTime): Campaign
+  def update(campaign: Campaign, date: DateTime): Campaign
+
+
+  /** creates new User record
+  */
+  def create(user: User): User
+  /** updates user.name
+  */
+  def update(user: User): User
+
+
+  /** creates new Network record
+  */
+  def create(network: Network): Network
+
 
 
   /** creates Permutation record
   * @throw java.util.RunTimeException
   * TODO: add Exception checking in Controllers
+  * probably add back curve to Permutation and don't use curve in def.
   */
-  def createPermutation(curve: domain.Curve, permutation: domain.Permutation): Unit
+  def create(curve: domain.Curve, permutation: domain.Permutation): Unit
 
   /** creates Recommendation records
   */
-  def createRecommendation(campaign: domain.Campaign, recommendation: Recommendation): Boolean
+  def create(campaign: domain.Campaign, recommendation: Recommendation): Boolean
 
 }
