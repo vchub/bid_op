@@ -28,11 +28,25 @@ case class Phrase(
 
 object Phrase {
 
-  /**
-  * select by network_phrase_id
-  * @param String
-  * @return List[Phrase]
+  /** construct Phrase from domain.Phrase
   */
-  def select(network_phrase_id: String): List[Phrase] = inTransaction{ AppSchema.phrases.where(a => a.network_phrase_id === network_phrase_id).toList}//.single }
+  def apply(p: domain.Phrase): Phrase =
+    Phrase(
+      network_phrase_id = p.network_phrase_id,
+      phrase = p.phrase
+    )
+
+
+  /**
+  * select by Campaing and domain.Phrase (basically network_phrase_id)
+  * TODO: now it's simply wrong. it has to check BP-B-Campaing association
+  */
+  def select(campaign: Campaign, p: domain.Phrase): Option[Phrase] = inTransaction{
+    AppSchema.phrases.where(a =>
+      a.network_phrase_id === p.network_phrase_id
+    ).headOption
+  }
+
+
 }
 

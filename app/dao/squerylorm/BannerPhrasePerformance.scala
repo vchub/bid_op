@@ -64,12 +64,13 @@ object BannerPhrasePerformance {
 
   /** creates BannerPhrasePerformance records
   */
+  /*
   def create(report: Map[domain.BannerPhrase, domain.Performance]): Unit = inTransaction{
     // toList
     val records = report.toList map (apply(_))
     AppSchema.bannerphraseperformance.insert(records)
   }
-
+  */
 
 }
 

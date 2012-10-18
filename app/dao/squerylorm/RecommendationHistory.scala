@@ -27,5 +27,16 @@ case class RecommendationHistory(
   def put(): RecommendationHistory = inTransaction { AppSchema.recommendationhistory insert this }
 
 }
+object RecommendationHistory {
+
+  /** creates RecommendationHistory record
+  */
+  def create(recommendation: domain.Recommendation): Unit = inTransaction{
+    val rec_l = recommendation.bannerPhraseBid map {case (bp, bid) =>
+      RecommendationHistory(bannerphrase_id = bp.id, date = recommendation.dateTime.toDate, bid = bid) }
+    AppSchema.recommendationhistory.insert(rec_l)
+  }
+
+}
 
 

@@ -22,9 +22,7 @@ case class Banner(
 
   /**
   * default put - save to db
-  * @param
-  * @return Banner
-  **/
+  */
   def put(): Banner = inTransaction { AppSchema.banners insert this }
 
 
@@ -33,10 +31,24 @@ case class Banner(
 
 object Banner {
 
-  /**
-  * select by network_banner_id
-  * @param String
-  * @return List[Banner]
+  /** construct Banner from domain.Banner
   */
-  def select(network_banner_id: String): List[Banner] = inTransaction{ AppSchema.banners.where(a => a.network_banner_id === network_banner_id).toList}//.single }
+  def apply(b: domain.Banner): Banner =
+    Banner(
+      network_banner_id = b.network_banner_id
+    )
+
+
+  /**
+  * select by Campaing and domain.Banner (basically network_banner_id)
+  * TODO: now it's simply wrong. it has to check BP-B-Campaing association
+  */
+  def select(campaign: Campaign, b: domain.Banner): Option[Banner] = inTransaction{
+    AppSchema.banners.where(a =>
+      a.network_banner_id === b.network_banner_id and
+      a.campaign_id === campaign.id
+    ).headOption
+  }
+
+
 }

@@ -1,5 +1,7 @@
 package dao
 
+import scala.collection.JavaConversions._
+import java.util.{Map => JMap, List => JList}
 import org.joda.time._
 import _root_.domain._
 
@@ -17,14 +19,24 @@ trait Dao {
 
   /** creates CampaignPerformance in DB
   */
-  def createCampaignPerformanceReport(campaign: Campaign, performance: Performance):  Performance 
+  def createCampaignPerformanceReport(campaign: Campaign, performance: Performance):  Performance
 
   /** creates BannerPhrasePerformance records in DB
   * @throw java.util.RunTimeException
   * TODO: add Exception checking in Controllers
   * TODO: fix. it should create new BannerPhrase in case it's not present in DB.
   */
-  def createBannerPhrasesPerformanceReport(report: Map[BannerPhrase,Performance]): Unit
+  def createBannerPhrasesPerformanceReport(campaign: Campaign, report: Map[BannerPhrase, Performance]): Boolean
+
+  /** mutable counterpart
+  */
+  def createBannerPhrasesPerformanceReport(campaign: Campaign,
+    report: collection.mutable.Map[BannerPhrase, Performance]): Boolean =
+    createBannerPhrasesPerformanceReport( campaign, report.toMap)
+
+  def createBannerPhrasesPerformanceReport(campaign: Campaign,
+    report: JMap[BannerPhrase, Performance]): Boolean =
+    createBannerPhrasesPerformanceReport( campaign, report.toMap)
 
 
 
@@ -66,6 +78,6 @@ trait Dao {
 
   /** creates Recommendation records
   */
-  def create(campaign: domain.Campaign, recommendation: Recommendation): Boolean
+  def create(recommendation: Recommendation): Unit
 
 }

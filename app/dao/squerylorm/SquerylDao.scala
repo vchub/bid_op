@@ -33,8 +33,9 @@ class SquerylDao extends dao.Dao
   /** creates BannerPhrasePerformance records in DB
   * TODO: fix. it should create new BannerPhrase in case it's not present in DB.
   */
-  def createBannerPhrasesPerformanceReport(report: Map[domain.BannerPhrase, dPerf]) =
-    BannerPhrasePerformance.create(report)
+  def createBannerPhrasesPerformanceReport(campaign: domain.Campaign, report: Map[domain.BannerPhrase, dPerf]) =
+    //BannerPhrasePerformance.create(report)
+    Campaign.get_by_id(campaign.id).create(report)
 
 
   /** retrieves full domain model (Campaign and its Histories) for given Dates from DB
@@ -77,10 +78,14 @@ class SquerylDao extends dao.Dao
 
 
 
+  /** creates Permutation record (associated with given Curve)
+  */
   def create(curve: domain.Curve, permutation: domain.Permutation): Unit =
     Permutation.create(curve, permutation)
 
-  def create(campaign: domain.Campaign, recommendation:domain.Recommendation) = ???
+  /** creates Recommendation record
+  */
+  def create(recommendation:domain.Recommendation) = RecommendationHistory.create(recommendation)
 
 
 

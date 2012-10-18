@@ -20,7 +20,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
     }}
   }
 
-  "getCampaigns(userName, networkName, networkCampaignId)" should {
+  "getCampaign(userName, networkName, networkCampaignId)" should {
     sequential
     "get 1 Campaign from TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
@@ -101,7 +101,9 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         // Map
         val report = report_l.toMap
         // create reports
-        dao.createBannerPhrasesPerformanceReport(report)
+        dao.createBannerPhrasesPerformanceReport(campaign, report)
+        // one more time create reports
+        dao.createBannerPhrasesPerformanceReport(campaign, report)
 
         // check if saved
         val c_res = dao.getCampaignHistory(c.id, startDate, endDate).campaign
@@ -109,7 +111,66 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         // should be 4 List[Performance]
         report_res.length must_==(4)
         // should be 1 Performance in every List
-        report_res.flatten.length must_==(4)
+        report_res.flatten.length must_==(8)
+    }}
+
+    "create 1 new BannerPhrases and BannerPhrasePerformance in TestDB_0" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val dao = new SquerylDao
+        val c = dao.getCampaign("Coda", "Yandex", "y1").get
+
+        //check initial configuration
+        // should be 4 BannerPhrases
+        val bp1 = c.bannerPhrases
+        bp1.length must_==(4)
+        val bp1perf = bp1 map(_.performanceHistory)
+        // should be 0 Performance in every List
+        bp1perf.flatten.length must_==(0)
+
+        // create bannerPhrase
+        val bp = List[domain.BannerPhrase](domain.pojo.BannerPhrase(
+            banner= Some(domain.pojo.Banner(network_banner_id = "bb00")),
+            phrase= Some(domain.pojo.Phrase(network_phrase_id = "pp00")),
+            region= Some(domain.pojo.Region(network_region_id = "rr00"))
+          )
+        )
+        val periodType = domain.pojo.PeriodType(id = 1, factor = 1, description = "")
+        // I hope there's no reports on these dates
+        val (startDate, endDate) = (c.startDate.plusDays(5), c.startDate.plusDays(6))
+        // List[(BannerPhrases, Performance)]
+        // and then Map
+        val report = (bp map ((_, createPerformance(startDate, periodType)))).toMap
+        // create reports
+        dao.createBannerPhrasesPerformanceReport(c, report) must_==(true)
+        dao.createBannerPhrasesPerformanceReport(c, report) must_==(true)
+
+        /*
+        // check if saved
+        val c_res = dao.getCampaignHistory(c.id, startDate, endDate).campaign
+        // should be 5 BannerPhrases
+        val bp_res = c_res.bannerPhrases
+        bp_res.length must_==(5)
+        val report_res = c_res.bannerPhrases map(_.performanceHistory)
+        // should be 5 List[Performance]
+        report_res.length must_==(5)
+        // should be 2 Performances
+        report_res.flatten.length must_==(2)
+        */
+
+        // check if saved (using Schema relations instead of CampaignHistory)
+        // Notice: dao.getCampaignHistory() doesn't retrieve new added changes to DB
+        import org.squeryl.PrimitiveTypeMode._
+        inTransaction{
+          val b_res = c.bannersRel.toList
+          val bp_res = (b_res map (_.bannerPhrasesRel.toList)).flatten
+          // should be 5 BannerPhrases
+          bp_res.length must_==(5)
+          // should be 2 Performances
+          val report_res = bp_res map (_.performanceHistory)
+          report_res.length must_==(5)
+          report_res.flatten.length must_==(2)
+        }
+
 
     }}
   }
@@ -180,6 +241,42 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         val c_res = dao.getCampaign("Coda", "Yandex", "y100").get
         // check that we have some
         c_res.id must_==(c.id)
+    }}
+  }
+
+  "create(Recommendation)" should {
+    sequential
+    "create 4 Recommendations (for 4 BannerPhrases) in TestDB_0" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val dao = new SquerylDao
+        val c = dao.getCampaign("Coda", "Yandex", "y1").get
+
+        // get Campaign
+        val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
+          campaign
+        // get BannerPhrases
+        val bp = campaign.bannerPhrases
+        // fix date
+        val date = c.startDate.plusDays(5).plusMinutes(30)
+        // create Recommendation
+        val bp_list = for(b <- bp; i <- 1 to bp.size + 1) yield (b, i.toDouble)
+        val bp_map = bp_list.toMap
+        val recommendation = domain.pojo.Recommendation(dateTime = date, bannerPhraseBid = bp_map)
+
+        // create Recommendation record
+        dao.create(recommendation)
+
+        // check in DB
+        val c_res = dao.getCampaignHistory(c.id, c.startDate, date.plusDays(1)).campaign
+        // collect recommendation from 4 BannerPhrases
+        val rec_res = c_res.bannerPhrases map(_.recommendationHistory)
+        rec_res.length must_==(4)
+
+        // just checking, try to add more than 4 (from 4) BannerPhrases to Map
+        // create Recommendation
+        val bp_4_l = for(b <- bp++bp; i <- 0 to bp.size * 2) yield (b, i.toDouble)
+        bp_4_l.toMap.size must_==(4)
+
     }}
   }
 

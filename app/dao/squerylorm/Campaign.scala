@@ -91,6 +91,63 @@ case class Campaign(
 
 
 
+  /** creates BannerPhrasePerformance records
+  * creates new Banners, Phrases, Regions and BannerPhrase if needed
+  * @throw java.lang.RuntimeException - if Report is malformed - nothing created
+  */
+  def create(report: Map[domain.BannerPhrase, domain.Performance]): Boolean = inTransaction{
+    val res = report map {case (bp, performance) =>
+      // find if BannerPhrase already exists
+      for (b <- bp.banner; p <- bp.phrase; r <- bp.region) yield {
+        BannerPhrase.select(this, b.network_banner_id, p.network_phrase_id, r.network_region_id) match {
+
+        case bannerphrase::Nil => { // put Performance into DB
+            // associate (and put) BannerPhraseStats
+            bannerphrase.bannerPhrasePerformanceRel.associate(BannerPhrasePerformance((bp, performance)))
+          }
+
+        case Nil => { // check out what's absent (Banner, Phrase, Region), create it
+                        // and put created and stats into DB
+            val banner = Banner.select(this, b).headOption.getOrElse {
+              // create new Banner in DB
+              this.bannersRel.associate(Banner(b))
+            }
+            val phrase = Phrase.select(this, p).headOption.getOrElse {
+              //TODO: add phrase - have to be done in ReportHelper (dictionary)
+              // create new Phrase in DB
+              (Phrase(p)).put
+            }
+            val region = Region.select(this, r).headOption.getOrElse {
+              // create new Region in DB
+              (Region(r)).put
+            }
+            require(phrase.id != 0)
+            require(region.id != 0)
+            require(banner.id != 0)
+            // create and put BannerPhrase
+            val bannerphrase = BannerPhrase(banner_id = banner.id,
+              phrase_id = phrase.id, region_id = region.id).put
+            //check bp
+            require(bannerphrase.id != 0)
+            // associate (and put) BannerPhrasePerformance
+            //bannerphrase.bannerPhrasePerformanceRel.associate(BannerPhrasePerformance((bp, performance)))
+            val bp_perf = BannerPhrasePerformance((bannerphrase, performance)).put
+            require(bp_perf.id != 0)
+            require(bp_perf.bannerphrase_id == bannerphrase.id)
+          }
+
+        case _ => { // what the heck? we can't have more than one BannerPhrase
+              throw new RuntimeException("""DB conatains more than one BannerPhrase with
+                identical network_banner_id: %s, network_phrase_id: %s and network_region_id: %s""".
+                format(b.network_banner_id, p.network_phrase_id, r.network_region_id))
+          }
+      }
+    }
+    }
+    res.nonEmpty
+  }
+
+
 }
 
 object Campaign {

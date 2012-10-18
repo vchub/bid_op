@@ -41,10 +41,23 @@ case class Region(
 
 object Region {
 
-  /**
-  * select by network_region_id
-  * @param String
-  * @return List[Region]
+  /** construct Region from domain.Region
   */
-  def select(network_region_id: String): List[Region] = inTransaction{ AppSchema.regions.where(a => a.network_region_id === network_region_id).toList}//.single }
+  def apply(region: domain.Region): Region =
+    Region(
+      network_region_id = region.network_region_id,
+      parent_id = region.parentRegion map(_.id) getOrElse(0)
+    )
+
+
+  /**
+  * select by Campaing and domain.Region (basically network_region_id)
+  * TODO: now it's simply wrong. it has to check BP-B-Campaing association
+  */
+  def select(campaign: Campaign, region: domain.Region): Option[Region] = inTransaction{
+    AppSchema.regions.where(a =>
+      a.network_region_id === region.network_region_id
+    ).headOption
+  }
+
 }

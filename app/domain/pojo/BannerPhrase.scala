@@ -6,14 +6,14 @@ import domain._
 
 @BeanInfo
 case class BannerPhrase(
-  val id: Long,
+  val id: Long = 0,
   val banner: Option[domain.Banner],
   val phrase: Option[domain.Phrase],
   val region: Option[domain.Region],
-  val actualBidHistory: domain.ActualBidHistory, // List[TSValue[Double]],
-  val recommendationHistory: domain.RecommendationHistory,
-  val netAdvisedBidsHistory: domain.NetAdvisedBidsHistory,
-  val performanceHistory: domain.PerformanceHistory
+  val actualBidHistory: domain.ActualBidHistory = Nil,
+  val recommendationHistory: domain.RecommendationHistory = Nil,
+  val netAdvisedBidsHistory: domain.NetAdvisedBidsHistory = Nil,
+  val performanceHistory: domain.PerformanceHistory = Nil
 ) extends domain.BannerPhrase
 {
 }

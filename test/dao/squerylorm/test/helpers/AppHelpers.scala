@@ -11,6 +11,7 @@ import play.api.Play
 import dao.squerylorm._
 
 trait AppHelpers {
+
   /**
   * creates in memory DB and schema
   * runs block of code
@@ -70,5 +71,14 @@ trait AppHelpers {
   }
 
 
+  /**
+  * creates and and fills schema in default DB
+  * doesn't use running(FakeApplication()){T}
+  * Used for Java and Junit testing.
+  */
+  def create_schema_fill_default_DB = inTransaction {
+        AppSchema.create
+        fill_DB
+  }
 
 }

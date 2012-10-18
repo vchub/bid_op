@@ -77,5 +77,26 @@ case class BannerPhrase(
 }
 
 object BannerPhrase {
+
+  /**
+  * select BannerPhrase for given Campaign, network_banner_id, network_phrase_id and network_region_id
+  * it should be 1 BannerPhrase
+  * @param Campaign, String, String, String
+  * @return BannerPhrase
+  **/
+  def select(campaign: Campaign, network_banner_id: String, network_phrase_id: String,
+    network_region_id: String ): List[BannerPhrase] = inTransaction {
+      from(AppSchema.bannerphrases, AppSchema.banners, AppSchema.phrases, AppSchema.regions)((bp, b, ph, r) =>
+        where(
+          b.campaign_id === campaign.id and
+          bp.banner_id === b.id and
+          bp.phrase_id === ph.id and
+          bp.region_id === r.id and
+          b.network_banner_id === network_banner_id and
+          ph.network_phrase_id === network_phrase_id and
+          r.network_region_id === network_region_id
+        ) select(bp)).toList
+  }
+
 }
 
