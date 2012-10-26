@@ -2,6 +2,7 @@ package domain
 
 import org.joda.time._
 import scala.collection.JavaConversions._
+import java.util.{Map => JMap, List => JList}
 
 trait Campaign{
   def id: Long
@@ -14,14 +15,19 @@ trait Campaign{
   def network: Option[Network]
 
   def bannerPhrases: List[BannerPhrase]
-  def bannerPhrasesJ: java.util.List[BannerPhrase] = bannerPhrases
+  def bannerPhrasesJList: JList[BannerPhrase] = bannerPhrases
 
 
-  def curves: CurveHistory
-  def performanceHistory: PerformanceHistory
-  def permutationHistory: List[Permutation] //PermutationHistory
+  def curves: List[Curve]
+  def curvesJList: JList[Curve] = curves
+  def performanceHistory: List[Performance]
+  def performanceHistoryJList: JList[Performance] = performanceHistory
+  def permutationHistory: List[Permutation]
+  def permutationHistoryJList: JList[Permutation] = permutationHistory
 
-  def budgetHistory: BudgetHistory
-  def endDateHistory: EndDateHistory
+  def budgetHistory: List[TSValue[Double]]
+  def budgetHistoryJList: JList[TSValue[Double]] = budgetHistory
+  def endDateHistory: List[TSValue[DateTime]]
+  def endDateHistoryJList: JList[TSValue[DateTime]] = endDateHistory
 }
 

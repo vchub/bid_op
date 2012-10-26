@@ -1,4 +1,4 @@
-package domain.pojo
+package domain.po
 
 import scala.reflect._
 import org.joda.time._

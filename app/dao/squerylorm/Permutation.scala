@@ -12,15 +12,15 @@ import common._
 
 @BeanInfo
 case class Permutation(
-  val curve_id: Long = 0, //fk
+  val campaign_id: Long = 0, //fk
   val date: Date = new Date()
 )extends domain.Permutation with KeyedEntity[Long]
 {
   val id: Long = 0
   def dateTime = new DateTime(date)
 
-  // Curve -* Permutation relation
-  lazy val curveRel: ManyToOne[Curve] = AppSchema.curvePermutations.right(this)
+  // Campaign -* Permutation relation
+  lazy val campaignRel: ManyToOne[Campaign] = AppSchema.campaignPermutations.right(this)
 
   // Permutation -* Position relation
   lazy val positionsRel: OneToMany[Position] = AppSchema.permutationPositions.left(this)
@@ -50,18 +50,18 @@ object Permutation{
   */
   def get_by_id(id: Long) = inTransaction{ AppSchema.permutations.where(a => a.id === id).headOption}
 
-  def apply(curve: domain.Curve, p: domain.Permutation): Permutation =
+  def apply(campaign: domain.Campaign, p: domain.Permutation): Permutation =
     Permutation(
-      curve_id = curve.id,
+      campaign_id = campaign.id,
       date = p.dateTime.toDate
     )
 
 
   /** creates Permutation and its Positions
   */
-  def create(curve: domain.Curve, permutation: domain.Permutation): Unit = inTransaction{
+  def create(campaign: domain.Campaign, permutation: domain.Permutation): Unit = inTransaction{
     //create Permutation
-    val p = Permutation(curve, permutation).put
+    val p = Permutation(campaign, permutation).put
     // create Positions
     val positions = permutation.permutation map(
       //(bp , pos) =>

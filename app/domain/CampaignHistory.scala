@@ -9,11 +9,10 @@ import org.joda.time._
 * CampaignHistory generally is created by DAO and passed to Optimizer by Controller
 */
 
-@BeanInfo
 case class CampaignHistory(
   val campaign: Campaign,
   val startDate: DateTime,
   val endDate: DateTime
-){}
+)
 
 

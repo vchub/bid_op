@@ -27,11 +27,11 @@ public class SampleTest{
 
   /**
    * creates Campaign (POJO). Any other object of domain can be created in the same way
-   * domain.Campaign is an Interface. domain.pojo.Campaign - is plain realization (plain, old, java, object)
+   * domain.Campaign is an Interface. domain.po.Campaign - is plain realization (plain, old, java, object)
    */
   @Test
   public void createCampaign() {
-    Campaign c = new domain.pojo.Campaign(0, null, null, null, null, null, null, null, null, null, null, null, null);
+    Campaign c = new domain.po.Campaign(0, null, null, null, null, null, null, null, null, null, null, null, null);
     assertThat(c.id()).isEqualTo(0);
   }
 
@@ -68,7 +68,7 @@ public class SampleTest{
 
 
   public Performance createPerformance(DateTime date, PeriodType periodType){
-    return new domain.pojo.Performance(
+    return new domain.po.Performance(
       0,
       1,
       1,
@@ -90,7 +90,7 @@ public class SampleTest{
       public void run() {
         Dao dao = new SquerylDao();
         Campaign c = dao.getCampaign("Coda", "Yandex","y1").get();
-        PeriodType periodType = new domain.pojo.PeriodType(1, 1, "");
+        PeriodType periodType = new domain.po.PeriodType(1, 1, "");
         Performance performance = createPerformance(c.startDate(), periodType);
         Performance perf_res = dao.createCampaignPerformanceReport(c, performance);
 
@@ -145,21 +145,23 @@ public class SampleTest{
         // should be 4 BannerPhrases
         assertThat(campaign.bannerPhrases().size()).isEqualTo(4);
         // should be 0 Performance in any List
-        java.util.List<BannerPhrase> bp_list = campaign.bannerPhrasesJ();
+        java.util.List<BannerPhrase> bp_list = campaign.bannerPhrasesJList();
         //for(int i = 0; i < bp_list.size(); i++) {
         for(BannerPhrase b: bp_list) {
           assertThat(b.performanceHistory().size()).isEqualTo(0);
         }
 
         // create Performance
-        PeriodType periodType = new domain.pojo.PeriodType(1, 1, "");
+        PeriodType periodType = new domain.po.PeriodType(1, 1, "");
         // create bannerPhrase
-        BannerPhrase bp = new domain.pojo.BannerPhrase(
+        BannerPhrase bp = new domain.po.BannerPhrase(
             0,
-            new Some(new domain.pojo.Banner(10, "bb00")),
-            new Some(new domain.pojo.Phrase(10, "pp00", "s")),
-            //new Some(new domain.pojo.Region(10, "rr00", ScalaLang.<Region>none())),
-            new Some(new domain.pojo.Region("rr00")),
+            //new Some(new domain.po.Banner(10, "bb00")),
+            Option.<Banner>apply(new domain.po.Banner(10, "bb00")),
+            new Some<Phrase>(new domain.po.Phrase(10, "pp00", "s")),
+            new Some<Region>(new domain.po.Region("rr00")),
+            //new Some<Region>(new domain.po.Region(10, "rr00", ScalaGoodies.<Region>none())),
+            //new Some(new domain.po.Region(10, "rr00", ScalaLang.<Region>none())),
             null,
             null,
             null,

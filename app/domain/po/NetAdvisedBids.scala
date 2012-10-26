@@ -1,4 +1,4 @@
-package domain.pojo
+package domain.po
 
 import org.joda.time._
 

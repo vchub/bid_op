@@ -5,7 +5,7 @@ import org.specs2.specification._
 
 import org.joda.time._
 
-import domain.pojo._
+import domain.po._
 
 
 class CampaignSpec extends Specification with AllExpectations{

@@ -54,7 +54,7 @@ object Region {
   * select by Campaing and domain.Region (basically network_region_id)
   * TODO: now it's simply wrong. it has to check BP-B-Campaing association
   */
-  def select(campaign: Campaign, region: domain.Region): Option[Region] = inTransaction{
+  def select(region: domain.Region): Option[Region] = inTransaction{
     AppSchema.regions.where(a =>
       a.network_region_id === region.network_region_id
     ).headOption

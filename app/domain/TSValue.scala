@@ -4,8 +4,7 @@ import org.joda.time._
 
 /**TimeSeries Value
 */
-trait TSValue[T]
-{
+trait TSValue[T] {
   def dateTime: DateTime
   def elem: T
 }

@@ -1,5 +1,7 @@
 package domain
 
+import scala.collection.JavaConversions._
+import java.util.{Map => JMap, List => JList}
 
 
 trait BannerPhrase{
@@ -7,10 +9,14 @@ trait BannerPhrase{
   def banner: Option[Banner]
   def phrase: Option[Phrase]
   def region: Option[Region]
-  def actualBidHistory: ActualBidHistory // List[TSValue[Double]]
-  def recommendationHistory: RecommendationHistory
-  def netAdvisedBidsHistory: NetAdvisedBidsHistory // List[TSValue[NetAdvisedBids]]
-  def performanceHistory: PerformanceHistory
+  def actualBidHistory: List[TSValue[Double]]
+  def actualBidHistoryJList: JList[TSValue[Double]] = actualBidHistory
+  def recommendationHistory: List[TSValue[Double]]
+  def recommendationHistoryJList: JList[TSValue[Double]] = recommendationHistory
+  def netAdvisedBidsHistory: List[NetAdvisedBids]
+  def netAdvisedBidsHistoryJList: JList[NetAdvisedBids] = netAdvisedBidsHistory
+  def performanceHistory: List[Performance]
+  def performanceHistoryJList: JList[Performance] = performanceHistory
 
   /** Override equality
   * well it's kind of tough. on the one hand BP are equal when Banner, Phrase and Region are equal.

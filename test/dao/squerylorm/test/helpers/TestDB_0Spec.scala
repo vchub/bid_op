@@ -34,7 +34,7 @@ class TestDB_0Spec extends Specification with AllExpectations {
           val user = User.select(name = "Coda").head
           val network = Network.select("Yandex").head
           val campaign = Campaign.select(user.name, network.name)(0)
-          campaign.bannersRel.toList.length must_==(2)
+          campaign.bannerPhrasesRel.toList.groupBy(_.banner.get.network_banner_id).size must_==(1)
         }
     }}
 
@@ -99,12 +99,11 @@ class TestDB_0Spec extends Specification with AllExpectations {
           val curves = campaigns(0).curves.toList
 
           // Check out that tere are 4 BannerPhrases total
-          val banners = campaigns(0).bannersRel.toList
-          val bannerPhrases = banners(0).bannerPhrasesRel.toList
+          val bannerPhrases = campaigns(0).bannerPhrasesRel.toList
           bannerPhrases.length must_==(4)
 
           // select Permutations for the Curve
-          val permutations = curves(0).permutationsRel.toList
+          val permutations = campaigns(0).permutationsRel.toList
           permutations.length must_==(1)
 
           // find bannerPhrases for the Permutation
@@ -112,7 +111,9 @@ class TestDB_0Spec extends Specification with AllExpectations {
           permutations(0).positionsRel.head.bannerphrase_id must_==(bannerPhrases(0).id)
         }
     }}
-  }
+
+
+    }
 
 
 }

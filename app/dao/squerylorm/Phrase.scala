@@ -41,7 +41,7 @@ object Phrase {
   * select by Campaing and domain.Phrase (basically network_phrase_id)
   * TODO: now it's simply wrong. it has to check BP-B-Campaing association
   */
-  def select(campaign: Campaign, p: domain.Phrase): Option[Phrase] = inTransaction{
+  def select(p: domain.Phrase): Option[Phrase] = inTransaction{
     AppSchema.phrases.where(a =>
       a.network_phrase_id === p.network_phrase_id
     ).headOption

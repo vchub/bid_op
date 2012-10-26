@@ -39,8 +39,8 @@ object TestDB_0 extends AppHelpers {
 
     // add Banners to Campaigns(0)
     val banners = List(
-        campaigns(0).bannersRel.associate(Banner(0, "y_banner_1")),
-        campaigns(0).bannersRel.associate(Banner(0, "y_banner_2"))
+        Banner("y_banner_1").put,
+        Banner("y_banner_2").put
     )
     //Phrases
     val phrases = List(Phrase("1", "Hi").put, Phrase("2", "Bon Jour").put)
@@ -50,10 +50,10 @@ object TestDB_0 extends AppHelpers {
 
     //BannerPhrase
     val bannerPhrases = List(
-      BannerPhrase(banner_id = banners(0).id, phrase_id = phrases(0).id, region_id = regions(0).id),
-      BannerPhrase(banner_id = banners(0).id, phrase_id = phrases(1).id, region_id = regions(0).id),
-      BannerPhrase(banner_id = banners(0).id, phrase_id = phrases(0).id, region_id = regions(1).id),
-      BannerPhrase(banner_id = banners(0).id, phrase_id = phrases(1).id, region_id = regions(1).id)
+      BannerPhrase(campaigns(0).id, banner_id = banners(0).id, phrase_id = phrases(0).id, region_id = regions(0).id),
+      BannerPhrase(campaigns(0).id, banner_id = banners(0).id, phrase_id = phrases(1).id, region_id = regions(0).id),
+      BannerPhrase(campaigns(0).id, banner_id = banners(0).id, phrase_id = phrases(0).id, region_id = regions(1).id),
+      BannerPhrase(campaigns(0).id, banner_id = banners(0).id, phrase_id = phrases(1).id, region_id = regions(1).id)
     ).map(_.put)
 
     //Curves
@@ -93,7 +93,7 @@ object TestDB_0 extends AppHelpers {
     //Permutations
     val permutations = List(
       Permutation(
-        curve_id = curves(0).id,
+        campaign_id = campaigns(0).id,
         date = date.toDate
       ).put
     )

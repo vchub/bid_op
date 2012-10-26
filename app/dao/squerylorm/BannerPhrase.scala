@@ -10,6 +10,7 @@ import common._
 
 @BeanInfo
 case class BannerPhrase(
+  val campaign_id: Long = 0, //fk
   val banner_id: Long = 0, //fk
   val phrase_id: Long = 0, //fk
   val region_id: Long = 0 //fk
@@ -17,6 +18,7 @@ case class BannerPhrase(
 {
   val id: Long = 0
 
+  def campaign = campaignRel.headOption
   def banner = bannerRel.headOption
   def phrase = phraseRel.headOption
   def region = regionRel.headOption
@@ -41,6 +43,9 @@ case class BannerPhrase(
   */
 
   def performanceHistory = inTransaction{ bannerPhrasePerformanceRel.toList }
+
+  // Campaign -* BannerPhrase relation
+  lazy val campaignRel: ManyToOne[Campaign] = AppSchema.campaignBannerPhrases.right(this)
 
   // Banner -* BannerPhrase relation
   lazy val bannerRel: ManyToOne[Banner] = AppSchema.bannerBannerPhrases.right(this)
@@ -88,7 +93,7 @@ object BannerPhrase {
     network_region_id: String ): List[BannerPhrase] = inTransaction {
       from(AppSchema.bannerphrases, AppSchema.banners, AppSchema.phrases, AppSchema.regions)((bp, b, ph, r) =>
         where(
-          b.campaign_id === campaign.id and
+          bp.campaign_id === campaign.id and
           bp.banner_id === b.id and
           bp.phrase_id === ph.id and
           bp.region_id === r.id and

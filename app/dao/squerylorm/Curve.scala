@@ -27,8 +27,6 @@ case class Curve(
   // Campaign -* Curve relation
   lazy val campaignRel: ManyToOne[Campaign] = AppSchema.campaignCurves.right(this)
 
-  // Curve -* Permutations relation
-  lazy val permutationsRel: OneToMany[Permutation] = AppSchema.curvePermutations.left(this)
 
   /** select Permutation by id
   */

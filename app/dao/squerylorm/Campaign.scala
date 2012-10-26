@@ -21,11 +21,19 @@ case class Campaign(
   val id: Long = 0
   def startDate = new DateTime(start)
 
+  /*
   // Campaign -* Banner relation
   lazy val bannersRel: OneToMany[Banner] = AppSchema.campaignBanners.left(this)
+  */
+
+  // Campaign -* BannerPhrase relation
+  lazy val bannerPhrasesRel: OneToMany[BannerPhrase] = AppSchema.campaignBannerPhrases.left(this)
 
   // Campaign -* Curve relation
   lazy val curvesRel: OneToMany[Curve] = AppSchema.campaignCurves.left(this)
+
+  // Campaign -* Permutation relation
+  lazy val permutationsRel: OneToMany[Permutation] = AppSchema.campaignPermutations.left(this)
 
   // Campaign -* CampaignPerformance relation
   lazy val performancesRel: OneToMany[CampaignPerformance] = AppSchema.campaignPerformance.left(this)
@@ -46,11 +54,11 @@ case class Campaign(
   def user = None
   def network = None
 
-  def bannerPhrases = get_bannerphrases
+  //def bannerPhrases = get_bannerphrases
+  def bannerPhrases = inTransaction{ bannerPhrasesRel.toList }
   def curves = inTransaction{ curvesRel.toList }
   def performanceHistory = inTransaction{ performancesRel.toList }
-  def permutationHistory = inTransaction{ (for(c <- curvesRel;
-    p <- c.permutationsRel) yield p).toList }
+  def permutationHistory = inTransaction{ permutationsRel.toList }
 
 
 
@@ -63,18 +71,16 @@ case class Campaign(
 
   /**
   * get list of all Banner for the Campaign
-  */
   def get_banners(): List[Banner] = inTransaction {
     from(bannersRel)(( b ) => where(b.campaign_id === id) select(b)).toList
   }
 
-  /**
   * get list of BannerPhrase for the Campaign for all Regions
-  */
   def get_bannerphrases(): List[BannerPhrase] = inTransaction {
     from(bannersRel, AppSchema.bannerphrases)(( b, bp ) => where(b.id === id and
       b.id === bp.banner_id ) select(bp) ).toList
   }
+  */
 
 
   /**
@@ -98,7 +104,7 @@ case class Campaign(
   def create(report: Map[domain.BannerPhrase, domain.Performance]): Boolean = inTransaction{
     val res = report map {case (bp, performance) =>
       // find if BannerPhrase already exists
-      for (b <- bp.banner; p <- bp.phrase; r <- bp.region) yield {
+      for ( b <- bp.banner; p <- bp.phrase; r <- bp.region) yield {
         BannerPhrase.select(this, b.network_banner_id, p.network_phrase_id, r.network_region_id) match {
 
         case bannerphrase::Nil => { // put Performance into DB
@@ -108,16 +114,16 @@ case class Campaign(
 
         case Nil => { // check out what's absent (Banner, Phrase, Region), create it
                         // and put created and stats into DB
-            val banner = Banner.select(this, b).headOption.getOrElse {
+            val banner = Banner.select(b).headOption.getOrElse {
               // create new Banner in DB
-              this.bannersRel.associate(Banner(b))
+              (Banner(b)).put
             }
-            val phrase = Phrase.select(this, p).headOption.getOrElse {
+            val phrase = Phrase.select(p).headOption.getOrElse {
               //TODO: add phrase - have to be done in ReportHelper (dictionary)
               // create new Phrase in DB
               (Phrase(p)).put
             }
-            val region = Region.select(this, r).headOption.getOrElse {
+            val region = Region.select(r).headOption.getOrElse {
               // create new Region in DB
               (Region(r)).put
             }
@@ -125,7 +131,7 @@ case class Campaign(
             require(region.id != 0)
             require(banner.id != 0)
             // create and put BannerPhrase
-            val bannerphrase = BannerPhrase(banner_id = banner.id,
+            val bannerphrase = BannerPhrase(campaign_id = this.id, banner_id = banner.id,
               phrase_id = phrase.id, region_id = region.id).put
             //check bp
             require(bannerphrase.id != 0)

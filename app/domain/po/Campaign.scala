@@ -1,4 +1,4 @@
-package domain.pojo
+package domain.po
 
 import scala.reflect._
 import org.joda.time._
@@ -17,12 +17,13 @@ case class Campaign(
 
   val bannerPhrases: List[domain.BannerPhrase] = Nil,
 
-  val curves: domain.CurveHistory = Nil,
-  val performanceHistory: domain.PerformanceHistory = Nil,
-  val permutationHistory: domain.PermutationHistory = Nil,
+  val curves: List[domain.Curve] = Nil,
+  val performanceHistory: List[domain.Performance] = Nil,
+  val permutationHistory: List[domain.Permutation] = Nil,
 
-  val budgetHistory: domain.BudgetHistory = Nil,
-  val endDateHistory: domain.EndDateHistory = Nil
+  val budgetHistory: List[TSValue[Double]] = Nil,
+  val endDateHistory: List[TSValue[DateTime]] = Nil
+
 ) extends domain.Campaign
 { }
 

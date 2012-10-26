@@ -77,11 +77,15 @@ class SquerylDao extends dao.Dao
   def getNetwork(name: String): Option[Network] = Network.select(name)
 
 
-
-  /** creates Permutation record (associated with given Curve)
+  /** creates Permutation record
+  * @throw java.util.RunTimeException
+  * TODO: add Exception checking in Controllers
+  * probably add back curve to Permutation and don't use curve in def.
   */
-  def create(curve: domain.Curve, permutation: domain.Permutation): Unit =
-    Permutation.create(curve, permutation)
+  def create(campaign: domain.Campaign, permutation: domain.Permutation) =
+    Permutation.create(campaign, permutation)
+
+
 
   /** creates Recommendation record
   */
