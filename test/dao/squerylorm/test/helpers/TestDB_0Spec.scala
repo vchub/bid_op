@@ -73,7 +73,7 @@ class TestDB_0Spec extends Specification with AllExpectations {
           campaigns.length must_==(1)
 
           //Check that 2 curves belong to campaigns(0)
-          val curves = campaigns(0).curves.toList
+          val curves = campaigns(0).curvesRel.toList
           curves.length must_==(2)
 
           //Check that PeriodType are put

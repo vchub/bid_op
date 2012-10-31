@@ -19,6 +19,7 @@ object AppSchema extends Schema {
     s.name is (unique)
   ))
 
+
   val banners = table[Banner]
   val regions = table[Region]
   val phrases = table[Phrase]
@@ -26,6 +27,12 @@ object AppSchema extends Schema {
   val positions = table[Position]
   val periodtypes = table[PeriodType]
 
+  //for test purpose
+  val checktimes = table[CheckTime]
+  on(checktimes)(c => declare(
+    c.dateDate is(dbType("timestamp"))  //Note: timestamp is valid type for Postgres and H2
+                                          // while for Mysql it's datetime
+  ))
   // TODO: change to timestamp w/ TimeZone
   val curves = table[Curve]
   on(curves)(c => declare(
@@ -49,9 +56,6 @@ object AppSchema extends Schema {
   ))
 
   val actualbidhistory = table[ActualBidHistory]
-  on(actualbidhistory)(c => declare(
-    c.date is(dbType("timestamp"))
-  ))
 
   val recommendationhistory = table[RecommendationHistory]
   on(recommendationhistory)(c => declare(

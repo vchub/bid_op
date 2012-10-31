@@ -4,7 +4,7 @@ import org.squeryl.{Schema, KeyedEntity}
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
 import org.joda.time._
-import java.util.Date
+import java.sql.Timestamp
 import scala.reflect._
 import common._
 
@@ -19,8 +19,8 @@ case class BannerPhrasePerformance(
   val impress_context: Int = 0,
   val clicks_search: Int = 0,
   val clicks_context: Int = 0,
-  val date: Date = new Date()
-) extends domain.Performance with KeyedEntity[Long]
+  val date: Timestamp = new Timestamp(0)
+) extends domain.Performance with KeyedEntity[Long] with History
 {
   val id: Long = 0
 
@@ -43,7 +43,7 @@ case class BannerPhrasePerformance(
 object BannerPhrasePerformance {
 
   /**
-  * get BannerPhraseStats from DB
+  * get BannerPhrasePerformance from DB
   */
   def get_by_id(id: Long): BannerPhrasePerformance = inTransaction{
     AppSchema.bannerphraseperformance.where(a => a.id === id).single }
@@ -59,7 +59,7 @@ object BannerPhrasePerformance {
       impress_context = t._2.impress_context,
       clicks_search = t._2.clicks_search,
       clicks_context = t._2.clicks_context,
-      date = t._2.dateTime.toDate
+      date = t._2.dateTime
     )
 
   /** creates BannerPhrasePerformance records

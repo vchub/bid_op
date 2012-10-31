@@ -30,8 +30,8 @@ class CampaignSpec extends Specification with AllExpectations{
     val startDate: DateTime = fmt.parseDateTime("2012-09-19")
     val endDate = startDate.plusDays(30)
     val budgetHistory = List(
-      TSValue[Double](dateTime = startDate.plusDays(10), elem = 50.0),
-      TSValue[Double](dateTime = startDate, elem = 100.0)
+      BudgetHistoryElem(dateTime = startDate.plusDays(10), elem = 50.0),
+      BudgetHistoryElem(dateTime = startDate, elem = 100.0)
     ).sorted
 
     Campaign(

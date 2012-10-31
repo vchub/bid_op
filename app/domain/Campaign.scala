@@ -1,9 +1,11 @@
 package domain
 
+import scala.reflect._
 import org.joda.time._
 import scala.collection.JavaConversions._
 import java.util.{Map => JMap, List => JList}
 
+@BeanInfo
 trait Campaign{
   def id: Long
   def network_campaign_id: String
@@ -17,6 +19,11 @@ trait Campaign{
   def bannerPhrases: List[BannerPhrase]
   def bannerPhrasesJList: JList[BannerPhrase] = bannerPhrases
 
+  // start and end Dates of retrieved Campaign Histories
+  @BeanProperty
+  var historyStartDate: DateTime = new DateTime
+  @BeanProperty
+  var historyEndDate: DateTime = new DateTime
 
   def curves: List[Curve]
   def curvesJList: JList[Curve] = curves
@@ -25,9 +32,9 @@ trait Campaign{
   def permutationHistory: List[Permutation]
   def permutationHistoryJList: JList[Permutation] = permutationHistory
 
-  def budgetHistory: List[TSValue[Double]]
-  def budgetHistoryJList: JList[TSValue[Double]] = budgetHistory
-  def endDateHistory: List[TSValue[DateTime]]
-  def endDateHistoryJList: JList[TSValue[DateTime]] = endDateHistory
+  def budgetHistory: List[BudgetHistoryElem]
+  def budgetHistoryJList: JList[BudgetHistoryElem] = budgetHistory
+  def endDateHistory: List[EndDateHistoryElem]
+  def endDateHistoryJList: JList[EndDateHistoryElem] = endDateHistory
 }
 

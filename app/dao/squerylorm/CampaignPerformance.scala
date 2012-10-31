@@ -3,8 +3,8 @@ package dao.squerylorm
 import org.squeryl.{Schema, KeyedEntity}
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
-import java.util.Date
 import org.joda.time._
+import java.sql.Timestamp
 import scala.reflect._
 import common._
 
@@ -19,12 +19,12 @@ case class CampaignPerformance(
   val impress_context: Int = 0,
   val clicks_search: Int = 0,
   val clicks_context: Int = 0,
-  val date: Date = new Date()
-) extends domain.Performance with KeyedEntity[Long]
+  val date: Timestamp = new Timestamp(0)
+) extends domain.Performance with KeyedEntity[Long] with History
 {
   val id: Long = 0
 
-  def dateTime: DateTime = new DateTime(date)
+  def dateTime = date
   def periodType: domain.PeriodType = periodTypeRel.head
 
   // PeriodType -* CampaignPerformance relation
@@ -58,7 +58,7 @@ object CampaignPerformance {
     impress_context = p.impress_context,
     clicks_search = p.clicks_search,
     clicks_context = p.clicks_context,
-    date = p.dateTime.toDate
+    date = p.dateTime
   )
 
 }

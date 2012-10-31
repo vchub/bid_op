@@ -20,8 +20,8 @@ trait Dao {
   def getCampaigns(userName: String, networkName: String): List[Campaign]
 
   /** retrieves full domain model (Campaign and its Histories) for given Dates from DB
+  def getCampaignWithHistory(campaign_id: Long, historyStartDate: DateTime, historyEndDate: DateTime): Campaign
   */
-  def getCampaignHistory(campaign_id: Long, startDate: DateTime, endDate: DateTime): CampaignHistory
 
 
 
@@ -80,14 +80,19 @@ trait Dao {
   /** creates Permutation record
   * @throw java.util.RunTimeException
   * TODO: add Exception checking in Controllers
+  * TODO: change return to Permutation
   * probably add back curve to Permutation and don't use curve in def.
   */
-  def create(campaign: Campaign, permutation: Permutation): Unit
+  def create(permutation: Permutation, campaign: Campaign): Permutation
 
 
   /** creates Recommendation records
   */
   def create(recommendation: Recommendation): Unit
 
+
+  /** creates Curve record
+  */
+  def create(curve: Curve, campaign: Campaign): Curve
 
 }

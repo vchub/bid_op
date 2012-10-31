@@ -4,8 +4,8 @@ import org.squeryl.{Schema, KeyedEntity, Query}
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
 import java.lang.RuntimeException
-import java.util.Date
 import org.joda.time._
+import java.sql.Timestamp
 import scala.reflect._
 import common._
 
@@ -15,11 +15,11 @@ case class Campaign(
   var user_id: Long = 0, //fk
   var network_id: Long = 0, //fk
   val network_campaign_id: String = "", //campaign_id in the Network {Google, Yanddex, etc.) or User's DB
-  val start: Date = new Date
+  val start: Timestamp = new Timestamp(1)
 ) extends domain.Campaign with KeyedEntity[Long]
 {
   val id: Long = 0
-  def startDate = new DateTime(start)
+  def startDate = start
 
   /*
   // Campaign -* Banner relation
@@ -44,21 +44,33 @@ case class Campaign(
   // Campaign -* EndDateHistory relation
   lazy val endDateHistoryRel: OneToMany[EndDateHistory] = AppSchema.campaignEndDateHistory.left(this)
 
-  def endDateHistory = inTransaction{ endDateHistoryRel.toList }
-  def endDate: Option[DateTime] = inTransaction{ endDateHistoryRel.lastOption map( (x:EndDateHistory) =>
-    new DateTime(x.endDate)
-  )}
-  def budgetHistory = inTransaction{ budgetHistoryRel.toList }
-  def budget = inTransaction{ budgetHistoryRel.lastOption map (_.budget) }
+  // Campaign History in ascending order and in conformance to campaign.historyStartDate, historyEndDate
+  def getHistory[T<:History](qRel: Query[T]): List[T] = if(historyStartDate != historyEndDate) inTransaction {
+      from(qRel)((b) =>
+        where(b.date >= convertToJdbc(historyStartDate)
+          and b.date <= convertToJdbc(historyEndDate))
+        select(b) orderBy(b.date asc)).toList
+    }
+    else Nil
+
+
+  lazy val endDateHistory = getHistory[EndDateHistory](endDateHistoryRel)
+  def endDate: Option[DateTime] = endDateHistory.lastOption map( (x:EndDateHistory) => x.endDate)
+
+  lazy val budgetHistory = getHistory[BudgetHistory](budgetHistoryRel)
+  def budget = budgetHistory.lastOption map (_.budget)
 
   def user = None
   def network = None
 
-  //def bannerPhrases = get_bannerphrases
-  def bannerPhrases = inTransaction{ bannerPhrasesRel.toList }
-  def curves = inTransaction{ curvesRel.toList }
-  def performanceHistory = inTransaction{ performancesRel.toList }
-  def permutationHistory = inTransaction{ permutationsRel.toList }
+  //get_bannerphrases and assign Campaign (with historyStartDate, historyEndDate)
+  lazy val bannerPhrases: List[domain.BannerPhrase] = inTransaction{ bannerPhrasesRel.toList map (
+    (x:domain.BannerPhrase) => {x.campaign = Some(this); x})
+  }
+
+  lazy val curves = getHistory[Curve](curvesRel)
+  lazy val performanceHistory = getHistory[CampaignPerformance](performancesRel)
+  lazy val permutationHistory = getHistory[Permutation](permutationsRel)
 
 
 
@@ -86,7 +98,6 @@ case class Campaign(
   /**
   * get the latest Curve where Curve.start_date <= date
   * @throw Exception if param:Date is out of range i.e. too early
-  */
   // TODO: Optimize for a view - 'limit = 1'
   def select_latest_curve(date: Date): List[Curve] = inTransaction {
     from(curvesRel)((c) =>
@@ -94,6 +105,7 @@ case class Campaign(
       and c.date <= date) select(c)
       orderBy(c.date desc) ).page(0, 1).toList
   }
+  */
 
 
 
@@ -201,7 +213,7 @@ object Campaign {
       user_id = cc.user.get.id,
       network_id = cc.network.get.id,
       network_campaign_id = cc.network_campaign_id,
-      start = cc.startDate.toDate
+      start = cc.startDate
     ).put
     // create BudgetHistory
     val budgetHistory = BudgetHistory(
@@ -213,8 +225,8 @@ object Campaign {
     val endDateHistory = EndDateHistory(
       campaign_id = c.id,
       date = c.start,
-      endDate = cc.endDate.get.toDate
-    )
+      endDate = cc.endDate.get
+    ).put
     // return DB Campaign
     c
   }
@@ -223,13 +235,15 @@ object Campaign {
 
   /** retrieves full domain model (Campaign and its Histories) for given Dates from DB
   * TODO: add Date filter!
-  */
-  def selectCampaignHistory(campaign_id: Long, startDate: DateTime, endDate: DateTime, daos: dao.Dao) = inTransaction{
+  def selectCampaignWithHistory(campaign_id: Long, historyStartDate: DateTime, historyEndDate: DateTime) = inTransaction{ //, daos: dao.Dao) = inTransaction{
     //select Campaign
-    val c = get_by_id(campaign_id)
-    // create CampaignHistory
-    domain.CampaignHistory(campaign = c, startDate = startDate, endDate = endDate)
+    val campaign = get_by_id(campaign_id)
+    // set Histories Dates
+    campaaign.historyStartDate = historyStartDate
+    campaaign.historyEndDate = historyEndDate
+    campaaign
   }
+  */
 
 
 

@@ -3,8 +3,8 @@ package dao.squerylorm
 import org.squeryl.KeyedEntity
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
-import java.util.Date
 import org.joda.time._
+import java.sql.Timestamp
 import scala.reflect._
 import common._
 
@@ -13,11 +13,11 @@ import common._
 @BeanInfo
 case class Permutation(
   val campaign_id: Long = 0, //fk
-  val date: Date = new Date()
-)extends domain.Permutation with KeyedEntity[Long]
+  val date: Timestamp = new Timestamp(0)
+)extends domain.Permutation with KeyedEntity[Long] with History
 {
   val id: Long = 0
-  def dateTime = new DateTime(date)
+  def dateTime = date
 
   // Campaign -* Permutation relation
   lazy val campaignRel: ManyToOne[Campaign] = AppSchema.campaignPermutations.right(this)
@@ -33,7 +33,7 @@ case class Permutation(
   /** creates permutation: Map[BannerPhrase, Position]
   */
   // TODO: Optimize
-  def permutation: Map[domain.BannerPhrase, domain.Position] = inTransaction {
+  lazy val permutation: Map[domain.BannerPhrase, domain.Position] = inTransaction {
     // get positions
     val bp_p_seq = positionsRel map ((x: Position ) =>
       (x.bannerPhraseRel.head, x)
@@ -53,13 +53,13 @@ object Permutation{
   def apply(campaign: domain.Campaign, p: domain.Permutation): Permutation =
     Permutation(
       campaign_id = campaign.id,
-      date = p.dateTime.toDate
+      date = p.dateTime
     )
 
 
   /** creates Permutation and its Positions
   */
-  def create(campaign: domain.Campaign, permutation: domain.Permutation): Unit = inTransaction{
+  def create(permutation: domain.Permutation, campaign: domain.Campaign): Permutation = inTransaction{
     //create Permutation
     val p = Permutation(campaign, permutation).put
     // create Positions
@@ -73,6 +73,8 @@ object Permutation{
         )
     )
     AppSchema.positions.insert(positions)
+    //return Permutation
+    p
   }
 
 }

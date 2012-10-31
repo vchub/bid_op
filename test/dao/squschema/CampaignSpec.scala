@@ -114,6 +114,8 @@ class CampaignSpec extends Specification with AllExpectations {
 
         val curve1 = campaign.select_latest_curve(date.plusDays(1).toDate).head
         curve1.id must_!=(curve.id)
+        curve1.start_date must_==(date.toDate)
+        new DateTime(curve1.start_date) must_==(date)
 
     }}
   }

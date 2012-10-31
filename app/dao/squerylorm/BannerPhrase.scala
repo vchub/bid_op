@@ -1,9 +1,11 @@
 package dao.squerylorm
 
-import org.squeryl.{Schema, KeyedEntity}
+import org.squeryl.{Schema, KeyedEntity, Query}
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
+import org.squeryl.annotations.Transient
 import org.joda.time._
+import java.sql.Timestamp
 import scala.reflect._
 import common._
 
@@ -18,31 +20,39 @@ case class BannerPhrase(
 {
   val id: Long = 0
 
-  def campaign = campaignRel.headOption
-  def banner = bannerRel.headOption
-  def phrase = phraseRel.headOption
-  def region = regionRel.headOption
+  @Transient
+  var campaign: Option[domain.Campaign] = None
 
-  //TODO: add Date filter
-  def actualBidHistory = inTransaction{ bannerPhraseActualBidHistoryRel.toList }
-  /*
-  map((x: ActualBidHistory) =>
-      domain.TSValue(dateTime = new DateTime(x.date), elem = x.bid))
-  */
+  def banner = inTransaction { bannerRel.headOption }
+  def phrase = inTransaction { phraseRel.headOption }
+  def region = inTransaction { regionRel.headOption }
 
-  def recommendationHistory = inTransaction{ bannerPhraseRecommendationHistoryRel.toList }
-  /*
-  map((x: RecommendationHistory) =>
-      domain.TSValue(new DateTime(x.date), x.bid))
-  */
+  // BannerPhrase History in ascending order and in conformance to campaign.historyStartDate, historyEndDate
+  def getBannerPhraseHistory[T<:History](qRel: Query[T]): List[T] = campaign match {
+    case None => Nil
+    case Some(campaign) if(campaign.historyStartDate != campaign.historyEndDate) =>  inTransaction{
+      from(qRel)((b) =>
+        where(b.date >= convertToJdbc(campaign.historyStartDate)
+          and b.date <= convertToJdbc(campaign.historyEndDate))
+        select(b) orderBy(b.date asc)).toList
+    }
+    case _ => Nil
+  }
 
-  def netAdvisedBidsHistory = inTransaction{ bannerPhraseNetAdvisedBidsHistoryRel.toList }
+
+  //get History using Campaign.historyStartDate and historyEndDate
+  lazy val actualBidHistory = getBannerPhraseHistory[ActualBidHistory](bannerPhraseActualBidHistoryRel)
+
+  lazy val recommendationHistory = getBannerPhraseHistory[RecommendationHistory](bannerPhraseRecommendationHistoryRel)
+
+  lazy val netAdvisedBidsHistory = getBannerPhraseHistory[NetAdvisedBidHistory](bannerPhraseNetAdvisedBidsHistoryRel)
   /*
   def netAdvisedBidsHistory = bannerPhraseNetAdvisedBidsHistoryRel.toList map((x: NetAdvisedBidHistory) =>
       domain.TSValue(new DateTime(x.date), domain.NetAdvisedBids(x.a, x.b, x.c, x.d)))
   */
 
-  def performanceHistory = inTransaction{ bannerPhrasePerformanceRel.toList }
+  //get History using Campaign.historyStartDate and historyEndDate
+  lazy val performanceHistory = getBannerPhraseHistory[BannerPhrasePerformance](bannerPhrasePerformanceRel)
 
   // Campaign -* BannerPhrase relation
   lazy val campaignRel: ManyToOne[Campaign] = AppSchema.campaignBannerPhrases.right(this)

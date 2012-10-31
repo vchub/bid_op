@@ -1,18 +1,20 @@
 package domain
 
+import org.joda.time.DateTime
 import scala.collection.JavaConversions._
 import java.util.{Map => JMap, List => JList}
 
 
 trait BannerPhrase{
   def id: Long
+  var campaign: Option[Campaign]
   def banner: Option[Banner]
   def phrase: Option[Phrase]
   def region: Option[Region]
-  def actualBidHistory: List[TSValue[Double]]
-  def actualBidHistoryJList: JList[TSValue[Double]] = actualBidHistory
-  def recommendationHistory: List[TSValue[Double]]
-  def recommendationHistoryJList: JList[TSValue[Double]] = recommendationHistory
+  def actualBidHistory: List[ActualBidHistoryElem]
+  def actualBidHistoryJList: JList[ActualBidHistoryElem] = actualBidHistory
+  def recommendationHistory: List[RecommendationHistoryElem]
+  def recommendationHistoryJList: JList[RecommendationHistoryElem] = recommendationHistory
   def netAdvisedBidsHistory: List[NetAdvisedBids]
   def netAdvisedBidsHistoryJList: JList[NetAdvisedBids] = netAdvisedBidsHistory
   def performanceHistory: List[Performance]

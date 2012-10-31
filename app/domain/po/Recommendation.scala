@@ -13,7 +13,8 @@ case class Recommendation(
   val bannerPhraseBid: Map[domain.BannerPhrase, Double]
 )extends domain.Recommendation
 {
-  def this(dateTime: DateTime, bPhraseBid: JMap[domain.BannerPhrase, Double]) =
-    this(0, dateTime = dateTime, bannerPhraseBid = bPhraseBid.toMap)
+  def this(dateTime: DateTime, bPhraseBid: JMap[domain.BannerPhrase, java.lang.Double]) =
+  this(0, dateTime = dateTime, bannerPhraseBid = bPhraseBid.toMap.map(
+    (t:(domain.BannerPhrase, java.lang.Double)) => (t._1, t._2.doubleValue)) )
 }
 

@@ -3,7 +3,6 @@ package dao.squerylorm
 import org.squeryl.{Schema, KeyedEntity, Query}
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
-import java.util.Date
 import org.joda.time._
 import scala.reflect._
 import common._
@@ -31,7 +30,7 @@ class SquerylDao extends dao.Dao
 
 
   /** creates BannerPhrasePerformance records in DB
-  * TODO: fix. it should create new BannerPhrase in case it's not present in DB.
+  * TODO: Optimize of course
   */
   def createBannerPhrasesPerformanceReport(campaign: domain.Campaign, report: Map[domain.BannerPhrase, dPerf]) =
     //BannerPhrasePerformance.create(report)
@@ -40,9 +39,9 @@ class SquerylDao extends dao.Dao
 
   /** retrieves full domain model (Campaign and its Histories) for given Dates from DB
   * TODO: Optimize. CampaignHistory is not complete. It's done partially only
+  def getCampaignWithHistory(campaign_id: Long, historyStartDate: DateTime, historyEndDate: DateTime): domain.Campaign =
+    Campaign.selectCampaignWithHistory(campaign_id, historyStartDate, historyEndDate)
   */
-  def getCampaignHistory(campaign_id: Long, startDate: DateTime, endDate: DateTime): domain.CampaignHistory =
-    Campaign.selectCampaignHistory(campaign_id: Long, startDate: DateTime, endDate: DateTime, daos = this)
 
 
 
@@ -82,9 +81,8 @@ class SquerylDao extends dao.Dao
   * TODO: add Exception checking in Controllers
   * probably add back curve to Permutation and don't use curve in def.
   */
-  def create(campaign: domain.Campaign, permutation: domain.Permutation) =
-    Permutation.create(campaign, permutation)
-
+  def create(permutation: domain.Permutation, campaign: domain.Campaign) =
+    Permutation.create(permutation, campaign)
 
 
   /** creates Recommendation record
@@ -92,6 +90,10 @@ class SquerylDao extends dao.Dao
   def create(recommendation:domain.Recommendation) = RecommendationHistory.create(recommendation)
 
 
+  /** creates Curve record
+  */
+  def create(curve: domain.Curve, campaign: domain.Campaign): domain.Curve =
+    Curve.create(curve: domain.Curve, campaign: domain.Campaign)
 
 
 }

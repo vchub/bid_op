@@ -46,87 +46,77 @@ class SquerylDaoSpec extends Specification with AllExpectations {
 
   "createCampaignPerformanceReport" should {
     sequential
-    "create 1 CampaignPerformance in TestDB_0" in {
+    "create 4 CampaignPerformance in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
         val campaign = dao.getCampaign("Coda", "Yandex", "y1").get
         val periodType = domain.po.PeriodType(id = 1, factor = 1, description = "")
-        val performance = createPerformance(campaign.startDate, periodType)
-        val perf_res = dao.createCampaignPerformanceReport(campaign, performance)
-        perf_res.id must_!=(0)
-    }}
-  }
+        //startDate
+        val date = new DateTime
+        // make 4 performances (in reverse order)
+        val performances = for(i <- 90 to 0 by -30) yield createPerformance(date.plusMinutes(i), periodType)
+        // store them in DB
+        val perf_stored = performances map (dao.createCampaignPerformanceReport(campaign, _))
+        // check that stored
+        perf_stored.length must_==(4)
+        perf_stored.foreach(_.id must_!=(0))
 
-  "getCampaignHistory" should {
-    sequential
-    "retrieve CampaignHistory from DB" in {
-      TestDB_0.creating_and_filling_inMemoryDB() {
-        val dao = new SquerylDao
+        //retrieve from DB, check ascending order and in conformance to historyStartDate, historyEndDate
         val c = dao.getCampaign("Coda", "Yandex", "y1").get
-
-        val c_history = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime))
-        val campaign = c_history.campaign
-        campaign.budgetHistory.length must_==(2)
-        campaign.bannerPhrases.length must_==(4)
-        campaign.performanceHistory.length must_==(2)
-        // check Curves
-        campaign.curves.length must_==(2)
-        // check Permutations
-        // it should be 1 Permutation
-        campaign.permutationHistory.length must_==(1)
-        // Permutation should has 4 elems
-        campaign.permutationHistory(0).permutation.size must_==(4)
+        c.historyStartDate = date.plusMinutes(25)
+        c.historyEndDate = date.plusMinutes(85)
+        val res = c.performanceHistory
+        res.length must_==(2)
+        res(0).dateTime must_==(performances(2).dateTime)
+        res(1).dateTime must_==(performances(1).dateTime)
 
     }}
   }
+
 
 
   "createBannerPhrasesPerformanceReport" should {
     sequential
-    "create 4 BannerPhrasePerformance in TestDB_0" in {
+    "create 4 BannerPhrasePerformances for the 4 existing BannerPhrases in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
         val c = dao.getCampaign("Coda", "Yandex", "y1").get
+        // take all all history
+        c.historyStartDate = new DateTime(0)
+        c.historyEndDate = new DateTime
+        val date = c.historyEndDate
 
-        val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
-          campaign
-        val bp = campaign.bannerPhrases
+        // it should be 4 BannerPhrases prefilled in DB
+        c.bannerPhrases.length must_==(4)
+
+        //create Mock PeriodType
         val periodType = domain.po.PeriodType(id = 1, factor = 1, description = "")
-        // I hope there's no reports on these dates
-        val (startDate, endDate) = (campaign.startDate.plusDays(5), campaign.startDate.plusDays(6))
-        // it should be 4 BannerPhrases
-        campaign.bannerPhrases.length must_==(4)
-        // List[(BannerPhrases, Performance)]
-        val report_l = bp map ((_, createPerformance(startDate, periodType)))
-        // Map
-        val report = report_l.toMap
-        // create reports
-        dao.createBannerPhrasesPerformanceReport(campaign, report)
-        // one more time create reports
-        dao.createBannerPhrasesPerformanceReport(campaign, report)
+
+        // Map[(BannerPhrases, Performance)]
+        val report1 = (c.bannerPhrases map ((_, createPerformance(date, periodType)))).toMap
+        val report2 = (c.bannerPhrases map ((_, createPerformance(date.plusMinutes(1), periodType)))).toMap
+
+        // create report
+        dao.createBannerPhrasesPerformanceReport(c, report1) must_==(true)
+        // one more time create report
+        dao.createBannerPhrasesPerformanceReport(c, report2) must_==(true)
 
         // check if saved
-        val c_res = dao.getCampaignHistory(c.id, startDate, endDate).campaign
-        val report_res = c_res.bannerPhrases map(_.performanceHistory)
-        // should be 4 List[Performance]
-        report_res.length must_==(4)
-        // should be 1 Performance in every List
-        report_res.flatten.length must_==(8)
+        val campaign = dao.getCampaign("Coda", "Yandex", "y1").get
+        campaign.historyStartDate = date
+        campaign.historyEndDate = date.plusMinutes(2)
+        val bp_performanceHistories = campaign.bannerPhrases map(_.performanceHistory)
+        // should be 4 PerformanceHistories
+        bp_performanceHistories.length must_==(4)
+        // should be 2 Performances in every PerformanceHistory
+        bp_performanceHistories.flatten.length must_==(8)
+
+        //Histories are in ascending order
+        (bp_performanceHistories(0)(0).dateTime before bp_performanceHistories(0)(1).dateTime)
     }}
 
-    "create 1 new BannerPhrases and BannerPhrasePerformance in TestDB_0" in {
+    "create 1 new BannerPhrase, 1 Banner, 1 Phrase, 1 Region and BannerPhrasePerformance in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
-        val dao = new SquerylDao
-        val c = dao.getCampaign("Coda", "Yandex", "y1").get
-
-        //check initial configuration
-        // should be 4 BannerPhrases
-        val bp1 = c.bannerPhrases
-        bp1.length must_==(4)
-        val bp1perf = bp1 map(_.performanceHistory)
-        // should be 0 Performance in every List
-        bp1perf.flatten.length must_==(0)
-
         // create bannerPhrase
         val bp = List[domain.BannerPhrase](domain.po.BannerPhrase(
             banner= Some(domain.po.Banner(network_banner_id = "bb00")),
@@ -135,42 +125,33 @@ class SquerylDaoSpec extends Specification with AllExpectations {
           )
         )
         val periodType = domain.po.PeriodType(id = 1, factor = 1, description = "")
-        // I hope there's no reports on these dates
-        val (startDate, endDate) = (c.startDate.plusDays(5), c.startDate.plusDays(6))
-        // List[(BannerPhrases, Performance)]
-        // and then Map
-        val report = (bp map ((_, createPerformance(startDate, periodType)))).toMap
+        val date = new DateTime
+        // Map [BannerPhrases, Performance]
+        val report1 = (bp map ((_, createPerformance(date, periodType)))).toMap
+        val report2 = (bp map ((_, createPerformance(date.plusDays(1), periodType)))).toMap
+
+        //get campaign
+        val dao = new SquerylDao
+        val c = dao.getCampaign("Coda", "Yandex", "y1").get
         // create reports
-        dao.createBannerPhrasesPerformanceReport(c, report) must_==(true)
-        dao.createBannerPhrasesPerformanceReport(c, report) must_==(true)
+        dao.createBannerPhrasesPerformanceReport(c, report1) must_==(true)
+        dao.createBannerPhrasesPerformanceReport(c, report2) must_==(true)
 
-        /*
         // check if saved
-        val c_res = dao.getCampaignHistory(c.id, startDate, endDate).campaign
-        // should be 5 BannerPhrases
-        val bp_res = c_res.bannerPhrases
-        bp_res.length must_==(5)
-        val report_res = c_res.bannerPhrases map(_.performanceHistory)
-        // should be 5 List[Performance]
-        report_res.length must_==(5)
-        // should be 2 Performances
-        report_res.flatten.length must_==(2)
-        */
-
-        // check if saved (using Schema relations instead of CampaignHistory)
-        // Notice: dao.getCampaignHistory() doesn't retrieve new added changes to DB
-        import org.squeryl.PrimitiveTypeMode._
-        inTransaction{
-          val b_res = AppSchema.banners.toList
-          val bp_res = (b_res map (_.bannerPhrasesRel.toList)).flatten
-          // should be 5 BannerPhrases
-          bp_res.length must_==(5)
-          // should be 2 Performances
-          val report_res = bp_res map (_.performanceHistory)
-          report_res.length must_==(5)
-          report_res.flatten.length must_==(2)
-        }
-
+        val campaign = dao.getCampaign("Coda", "Yandex", "y1").get
+        campaign.historyStartDate = date
+        campaign.historyEndDate = date.plusDays(2)
+        // find new BannerPhrase
+        val bps = campaign.bannerPhrases filter (_.banner.get.network_banner_id == "bb00")
+        //only BannerPhrase is created
+        bps.length must_==(1)
+        val created_bp = bps.head
+        // check phrase is created
+        created_bp.phrase.get.network_phrase_id must_==("pp00")
+        // check 2 Performances are created
+        created_bp.performanceHistory.length must_==(2)
+        // performanceHistory is in a hronological order
+        created_bp.performanceHistory(0).dateTime must_==(date)
 
     }}
   }
@@ -182,28 +163,31 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         val dao = new SquerylDao
         val c = dao.getCampaign("Coda", "Yandex", "y1").get
 
-        // get Campaign
-        val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
-          campaign
-        // get BannerPhrases
-        val bp = campaign.bannerPhrases
-        // fix date
-        val date = c.startDate.plusDays(5)
-        // create Permutation
+        val date = new DateTime
         val gen = (0 to 3).toIterable
-        val bp_p_list = for(b <- bp; i <- 0 to bp.size) yield (b, domain.po.Position(i))
-        val bp_p_map = bp_p_list.toMap
-        val permutation = domain.po.Permutation(0, dateTime = date, permutation = bp_p_map)
+        // create Permutation Map[BannerPhrase, Position]
+        val permutation_map = (for(b <- c.bannerPhrases; i <- 0 to c.bannerPhrases.length)
+            yield (b, domain.po.Position(i)))
+            .toMap
+        // create domain.Permutation
+        val permutation2 = domain.po.Permutation(0, dateTime = date.plusMinutes(1), permutation = permutation_map)
+        val permutation1 = domain.po.Permutation(0, dateTime = date, permutation = permutation_map)
 
-        dao.create(campaign, permutation)
+        // save in DB
+        dao.create(permutation2, c)
+        dao.create(permutation1, c)
 
         // check in DB
-        val c_res = dao.getCampaignHistory(c.id, c.startDate, date.plusDays(1)).campaign
-        // it should be 1 Permutation
-        c_res.permutationHistory.length must_==(2)
-        // Permutations should has 4 elems
-        c_res.permutationHistory(1).permutation.size must_==(4)
+        val campaign = dao.getCampaign("Coda", "Yandex", "y1").get
+        campaign.historyStartDate = date
+        campaign.historyEndDate = date.plusMinutes(2)
 
+        // it should be 2 Permutation
+        campaign.permutationHistory.length must_==(2)
+        // Permutations should has 4 elems
+        campaign.permutationHistory forall(_.permutation.size must_==(4))
+        // permutationHistory is in a chronological order
+        (campaign.permutationHistory(0).dateTime before campaign.permutationHistory(1).dateTime)
     }}
   }
 
@@ -231,13 +215,59 @@ class SquerylDaoSpec extends Specification with AllExpectations {
           budgetHistory = Nil,
           endDateHistory = List()
         )
+        // create Campaign in DB
         val c = dao.create(cc)
         // checking id (db primary key) is created
         c.id must_!=(0)
-        // the c by names
-        val c_res = dao.getCampaign("Coda", "Yandex", "y100").get
-        // check that we have some
-        c_res.id must_==(c.id)
+
+        // Histories have to be saved in DB
+        val campaign = dao.getCampaign("Coda", "Yandex", "y100").get
+        campaign.historyStartDate = startDate
+        campaign.historyEndDate = endDate
+        campaign.budget.get must_==(100)
+        campaign.budgetHistory.length must_==(1)
+        campaign.endDateHistory.length must_==(1)
+    }}
+  }
+
+  "create Curve" should {
+    sequential
+    "create 2 Curves and 2 optimal Permutation in TestDB_0" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val dao = new SquerylDao
+        val c = dao.getCampaign("Coda", "Yandex", "y1").get
+
+        val date = new DateTime
+        val gen = (0 to 3).toIterable
+        // create Permutation Map[BannerPhrase, Position]
+        val permutation_map = (for(b <- c.bannerPhrases; i <- 0 to c.bannerPhrases.length)
+            yield (b, domain.po.Position(i)))
+            .toMap
+        // create domain.Permutation
+        val permutation2 = domain.po.Permutation(0, dateTime = date.plusMinutes(1), permutation = permutation_map)
+        val permutation1 = domain.po.Permutation(0, dateTime = date, permutation = permutation_map)
+
+        // create Curves
+        val curve1 = domain.po.Curve(0,1,1,1,1,date, Some(permutation1))
+        val curve2 = domain.po.Curve(0,1,1,1,1,date.plusMinutes(1), Some(permutation2))
+
+        // save Curves in DB
+        dao.create(curve2, c)
+        dao.create(curve1, c)
+
+        // check in DB
+        val campaign = dao.getCampaign("Coda", "Yandex", "y1").get
+        campaign.historyStartDate = date
+        campaign.historyEndDate = date.plusMinutes(2)
+
+        // it should be 2 curves
+        campaign.curves.length must_==(2)
+        // it should be 2 Permutation
+        campaign.permutationHistory.length must_==(2)
+        // curves are in a chronological order
+        (campaign.curves(0).dateTime before campaign.curves(1).dateTime)
+        // curves have to have correct optimalPermutations
+        campaign.curves(0).optimalPermutation.get must_==(campaign.permutationHistory(0))
     }}
   }
 
@@ -248,32 +278,28 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         val dao = new SquerylDao
         val c = dao.getCampaign("Coda", "Yandex", "y1").get
 
-        // get Campaign
-        val campaign = dao.getCampaignHistory(c.id, c.startDate, c.endDate.getOrElse(new DateTime)).
-          campaign
-        // get BannerPhrases
-        val bp = campaign.bannerPhrases
         // fix date
-        val date = c.startDate.plusDays(5).plusMinutes(30)
+        val date = new DateTime
         // create Recommendation
-        val bp_list = for(b <- bp; i <- 1 to bp.size + 1) yield (b, i.toDouble)
-        val bp_map = bp_list.toMap
-        val recommendation = domain.po.Recommendation(0, dateTime = date, bannerPhraseBid = bp_map)
+        val bp_bid_map = (for(b <- c.bannerPhrases; i <- 1 to c.bannerPhrases.size + 1)
+            yield (b, i.toDouble)).toMap
+        val recommendation1 = domain.po.Recommendation(0, dateTime = date, bannerPhraseBid = bp_bid_map)
+        val recommendation2 = domain.po.Recommendation(0, dateTime = date.plusMinutes(1), bannerPhraseBid = bp_bid_map)
 
-        // create Recommendation record
-        dao.create(recommendation)
+        // create Recommendation records
+        dao.create(recommendation2)
+        dao.create(recommendation1)
 
         // check in DB
-        val c_res = dao.getCampaignHistory(c.id, c.startDate, date.plusDays(1)).campaign
-        // collect recommendation from 4 BannerPhrases
-        val rec_res = c_res.bannerPhrases map(_.recommendationHistory)
-        rec_res.length must_==(4)
+        val campaign = dao.getCampaign("Coda", "Yandex", "y1").get
+        campaign.historyStartDate = date
+        campaign.historyEndDate = date.plusMinutes(2)
 
-        // just checking, try to add more than 4 (from 4) BannerPhrases to Map
-        // create Recommendation
-        val bp_4_l = for(b <- bp++bp; i <- 0 to bp.size * 2) yield (b, i.toDouble)
-        bp_4_l.toMap.size must_==(4)
-
+        //for every BannerPhrase there are 2 Recommendations
+        campaign.bannerPhrases forall(_.recommendationHistory.length must_==(2))
+        // Recommendations are in a chronological order
+        (campaign.bannerPhrases(0).recommendationHistory(0).dateTime
+          before campaign.bannerPhrases(0).recommendationHistory(1).dateTime)
     }}
   }
 
