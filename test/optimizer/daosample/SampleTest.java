@@ -102,7 +102,7 @@ public class SampleTest{
         c.setHistoryEndDate(date.plusMinutes(85));
         java.util.List<Performance> res = c.performanceHistoryJList();
 
-        // check # of saved
+        // check 2 Performances are saved
         assertThat(res.size()).isEqualTo(2);
 
         // check chronological order and conformance to History Horizon
@@ -114,126 +114,126 @@ public class SampleTest{
   }
 
 
-  /** getCampaignHistory shoud retrieve CampaignHistory from DB
+  /** create 1 new BannerPhrase, 1 Banner, 1 Phrase, 1 Region
+   * and 2 BannerPhrasePerformances in TestDB_0
    */
-  /*
-  @Test
-  public void getCampaignHistory() {
-    running(fakeApplication(inMemoryDatabase()), new TestDBHelper( new Runnable() {
-      public void run() {
-        Dao dao = new SquerylDao();
-        Campaign c = dao.getCampaign("Coda", "Yandex","y1").get();
-        // get CampaignHistory
-        CampaignHistory c_history = dao.getCampaignHistory(c.id(), c.startDate(), new DateTime());
-        // CampaignHistory contains Campaign
-        Campaign campaign = c_history.campaign();
-
-        // assert that budgetHistory length is 2
-        assertThat(campaign.budgetHistory().size()).isEqualTo(2);
-        // assert that BannerPhrases length is 4
-        assertThat(campaign.bannerPhrases().size()).isEqualTo(4);
-        // etc.
-        assertThat(campaign.performanceHistory().size()).isEqualTo(2);
-        assertThat(campaign.curves().size()).isEqualTo(2);
-        assertThat(campaign.permutationHistory().size()).isEqualTo(1);
-        // Permutation should has 4 elems
-        List<Permutation> ph = campaign.permutationHistory();
-        assertThat(ph.head().permutation().size()).isEqualTo(4);
-      }
-    }));
-  }
-  */
-
-
-  /** createBannerPhrasesPerformanceReport(campaign, report) should
-    * create 1 new BannerPhrases and BannerPhrasePerformance records in TestDB_0
-   */
-  /*
   @Test
   public void createBannerPhrasesPerformanceReport() {
     running(fakeApplication(inMemoryDatabase()), new TestDBHelper( new Runnable() {
       public void run() {
-        Dao dao = new SquerylDao();
-        Campaign c1 = dao.getCampaign("Coda", "Yandex","y1").get();
-        Campaign campaign = dao.getCampaignHistory(c1.id(), c1.startDate(), new DateTime()).campaign();
-
-        //check initial configuration
-        // should be 4 BannerPhrases
-        assertThat(campaign.bannerPhrases().size()).isEqualTo(4);
-        // should be 0 Performance in any List
-        java.util.List<BannerPhrase> bp_list = campaign.bannerPhrasesJList();
-        //for(int i = 0; i < bp_list.size(); i++) {
-        for(BannerPhrase b: bp_list) {
-          assertThat(b.performanceHistory().size()).isEqualTo(0);
-        }
-
-        // create Performance
+        // create Mock PeriodType
         PeriodType periodType = new domain.po.PeriodType(1, 1, "");
+        // fix start date
+        DateTime date = new DateTime();
+
         // create bannerPhrase
         BannerPhrase bp = new domain.po.BannerPhrase(
             0,
-            //new Some(new domain.po.Banner(10, "bb00")),
-            Option.<Banner>apply(new domain.po.Banner(10, "bb00")),
+            ScalaGoodies.<Campaign>none(), // i.e. Option[Campaign] = None
+            new Some<Banner>(new domain.po.Banner(10, "bb00")),
             new Some<Phrase>(new domain.po.Phrase(10, "pp00", "s")),
             new Some<Region>(new domain.po.Region("rr00")),
+            // other ways to create Option[T]
+            //Option.<Banner>apply(new domain.po.Banner(10, "bb00")),
             //new Some<Region>(new domain.po.Region(10, "rr00", ScalaGoodies.<Region>none())),
-            //new Some(new domain.po.Region(10, "rr00", ScalaLang.<Region>none())),
             null,
             null,
             null,
             null
           );
-        Performance performance = createPerformance(campaign.startDate(), periodType);
-        java.util.Map<BannerPhrase, Performance> report = new java.util.HashMap<BannerPhrase, Performance>();
-        report.put(bp,performance);
-        // finaly creating
-        assertThat(dao.createBannerPhrasesPerformanceReport(campaign, report)).isEqualTo(true);
+
+        // create 2 Performances
+        Performance performance1 = createPerformance(date, periodType);
+        Performance performance2 = createPerformance(date.plusDays(1), periodType);
+        // 2 reports = Map[BannerPhrase, Performance]
+        java.util.Map<BannerPhrase, Performance> report1 = new java.util.HashMap<BannerPhrase, Performance>();
+        report1.put(bp,performance2);
+        java.util.Map<BannerPhrase, Performance> report2 = new java.util.HashMap<BannerPhrase, Performance>();
+        report2.put(bp,performance1);
+
+        // save BannerPhrasePerformance report in DB
+        Dao dao = new SquerylDao();
+        Campaign campaign = dao.getCampaign("Coda", "Yandex","y1").get();
+
+        // save in DB
+        assertThat(dao.createBannerPhrasesPerformanceReport(campaign, report1)).isEqualTo(true);
+        assertThat(dao.createBannerPhrasesPerformanceReport(campaign, report2)).isEqualTo(true);
+
+
+        // check if saved
+        //retrieve from DB, check ascending order and conformance to historyStartDate, historyEndDate
+        Campaign c = dao.getCampaign("Coda", "Yandex","y1").get();
+        // set up History Horizon
+        c.setHistoryStartDate(date);
+        c.setHistoryEndDate(date.plusDays(2));
+
+        // find created BannerPhrase
+        java.util.List<BannerPhrase> bp_list = c.bannerPhrasesJList();
+        java.util.List<BannerPhrase> created_list = new java.util.ArrayList<BannerPhrase>();
+        for(BannerPhrase b: bp_list) {
+          if(b.banner().get().network_banner_id() == "bb00") created_list.add(b);
+        }
+        // check there is only created BannerPhrase
+        assertThat(created_list.size()).isEqualTo(1);
+
+        // check found BannerPhrase
+        BannerPhrase created_bp = created_list.get(0);
+        assertThat(created_bp.phrase().get().network_phrase_id()).isEqualTo("pp00");
+
+        // check 2 Performances are created
+        assertThat(created_bp.performanceHistoryJList().size()).isEqualTo(2);
+        // performanceHistory is in a hronological order
+        assertThat(created_bp.performanceHistoryJList().get(0).dateTime()).isEqualTo(date);
 
       }
     }));
   }
-  */
 
 
   /** createPermutation(campaign, permutation) should
     * create 1 new Permutation record in TestDB_0
    */
-  /*
   @Test
   public void createPermutation() {
     running(fakeApplication(inMemoryDatabase()), new TestDBHelper( new Runnable() {
       public void run() {
         Dao dao = new SquerylDao();
-        Campaign c1 = dao.getCampaign("Coda", "Yandex","y1").get();
-        Campaign campaign = dao.getCampaignHistory(c1.id(), c1.startDate(), new DateTime()).campaign();
+        Campaign campaign = dao.getCampaign("Coda", "Yandex","y1").get();
 
         // get BannerPhrases
         java.util.List<BannerPhrase> bp_list = campaign.bannerPhrasesJList();
+
         // create permutation Map
         java.util.Map<BannerPhrase, Position> perm = new java.util.HashMap<BannerPhrase, Position>();
         for(int i = 0; i < bp_list.size(); i++) {
           perm.put(bp_list.get(i), new domain.po.Position(i));
         }
-        Permutation permutation = new domain.po.Permutation( c1.startDate().plusDays(5),  perm);
 
-        //store in DB
-        dao.create(campaign, permutation);
+        // fix start date
+        DateTime date = new DateTime();
+        // create Permutation
+        Permutation permutation = new domain.po.Permutation(date, perm);
 
-        // check in DB
-        Campaign c_res = dao.getCampaignHistory(campaign.id(), campaign.startDate(), campaign.startDate().plusDays(1)).campaign();
-        // it should be 2 Permutation (one was prefilled)
-        assertThat(c_res.permutationHistoryJList().size()).isEqualTo(2);
-        // Permutation #2 should has 4 elems
-        assertThat(c_res.permutationHistoryJList().get(1).permutation().size()).isEqualTo(4);
+        // save in DB
+        dao.create(permutation, campaign);
 
+        // check if saved
+        // retrieve from DB, check conformance to historyStartDate, historyEndDate
+        Campaign c = dao.getCampaign("Coda", "Yandex","y1").get();
+        // set up History Horizon
+        c.setHistoryStartDate(date);
+        c.setHistoryEndDate(date.plusMinutes(2));
+
+        // it should be 1 newly created Permutation for the perion 2 minutes
+        assertThat(c.permutationHistoryJList().size()).isEqualTo(1);
+        // the permutation should have 4 elems
+        assertThat(c.permutationHistoryJList().get(0).permutation().size()).isEqualTo(4);
       }
     }));
   }
-  */
 
   /** create Campaign and store it in DB
    */
-  /*
   @Test
   public void createAndStoreCampaign() {
     running(fakeApplication(inMemoryDatabase()), new TestDBHelper( new Runnable() {
@@ -241,11 +241,12 @@ public class SampleTest{
         Dao dao = new SquerylDao();
         DateTime startDate = new DateTime();
         DateTime endDate = startDate.plusDays(30);
-        java.util.List emptyList = new java.util.ArrayList();
 
         // Campaign object
+        /*
+        java.util.List emptyList = new java.util.ArrayList();
         Campaign cc = new domain.po.Campaign(
-          0,
+          0L,
           "y100",
           startDate,
           new Some<DateTime>(endDate),
@@ -262,42 +263,115 @@ public class SampleTest{
           emptyList,
           emptyList
         );
+        */
+
+        Campaign cc = new domain.po.Campaign(
+          0L,
+          "y100",
+          startDate,
+          new Some<DateTime>(endDate),
+          new Some(100.0),
+          dao.getUser("Coda"),
+          dao.getNetwork("Yandex"),
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        );
 
         Campaign c = dao.create(cc);
         // checking id (db primary key) is created
         assertThat(c.id()).isNotEqualTo(0);
-        // the c by names
-        Campaign c_res = dao.getCampaign("Coda", "Yandex", "y100").get();
-        // check that we have some
-        assertThat(c_res.id()).isEqualTo(c.id());
 
+        // check if saved in DB
+        Campaign campaign = dao.getCampaign("Coda", "Yandex", "y100").get();
+        campaign.setHistoryStartDate(startDate);
+        campaign.setHistoryEndDate(endDate);
+
+        // Histories have to be saved in DB
+        assertThat(campaign.budget().get()).isEqualTo(100.0);
+        assertThat(campaign.budgetHistoryJList().size()).isEqualTo(1);
+        assertThat(campaign.endDateHistory().size()).isEqualTo(1);
       }
     }));
   }
-  */
 
+  /** create Curve should
+    * create 2 Curves and 2 optimal Permutation in TestDB_0
+   */
+  @Test
+  public void createCurve() {
+    running(fakeApplication(inMemoryDatabase()), new TestDBHelper( new Runnable() {
+      public void run() {
+        Dao dao = new SquerylDao();
+        Campaign campaign = dao.getCampaign("Coda", "Yandex","y1").get();
+
+        // get BannerPhrases
+        java.util.List<BannerPhrase> bp_list = campaign.bannerPhrasesJList();
+
+        // create 2 permutation Maps
+        java.util.Map<BannerPhrase, Position> perm1 = new java.util.HashMap<BannerPhrase, Position>();
+        java.util.Map<BannerPhrase, Position> perm2 = new java.util.HashMap<BannerPhrase, Position>();
+        int n = bp_list.size();
+        for(int i = 0; i < n; i++) {
+          perm1.put(bp_list.get(i), new domain.po.Position(i));
+          perm2.put(bp_list.get(i), new domain.po.Position(n-i));
+        }
+
+        // fix start date
+        DateTime date = new DateTime();
+        // create 2 Permutations
+        Permutation permutation2 = new domain.po.Permutation(date.plusMinutes(1), perm2);
+        Permutation permutation1 = new domain.po.Permutation(date, perm1);
+
+        // create Curves
+        Curve curve1 = new domain.po.Curve(0,1,1,1,1,date, new Some<Permutation>(permutation1));
+        Curve curve2 = new domain.po.Curve(0,1,1,1,1,date.plusMinutes(1), new Some<Permutation>(permutation2));
+
+        // save Curves in DB
+        dao.create(curve2, campaign);
+        dao.create(curve1, campaign);
+
+
+        // check in DB
+        // retrieve from DB, check conformance to historyStartDate, historyEndDate
+        Campaign c = dao.getCampaign("Coda", "Yandex","y1").get();
+        // set up History Horizon
+        c.setHistoryStartDate(date);
+        c.setHistoryEndDate(date.plusMinutes(2));
+
+        // it should be 2 newly created Permutation for the period 2 minutes
+        assertThat(c.permutationHistoryJList().size()).isEqualTo(2);
+        // it should be 2 newly created Curves
+        assertThat(c.curvesJList().size()).isEqualTo(2);
+        // curves are in a chronological order
+        assertThat(c.curvesJList().get(0).dateTime().isBefore(c.curvesJList().get(1).dateTime()));
+        // curves have to have correct optimalPermutations
+        assertThat(c.curvesJList().get(0).optimalPermutation().get()).isEqualTo(c.permutationHistoryJList().get(0));
+      }
+    }));
+  }
 
   /** create Recommendations (Map<BannerPhrase, Bid>)
    * namely creates 4 recommendations (for 4 BannerPhrases) and store it in DB
    */
-  /*
   @Test
   public void createRecommendation() {
     running(fakeApplication(inMemoryDatabase()), new TestDBHelper( new Runnable() {
       public void run() {
         Dao dao = new SquerylDao();
-        Campaign c1 = dao.getCampaign("Coda", "Yandex","y1").get();
+        Campaign c = dao.getCampaign("Coda", "Yandex","y1").get();
 
-        //get Campaign
-        Campaign campaign = dao.getCampaignHistory(c1.id(), c1.startDate(), new DateTime()).campaign();
         // get BannerPhrases
-        java.util.List<BannerPhrase> bp_list = campaign.bannerPhrasesJList();
+        java.util.List<BannerPhrase> bp_list = c.bannerPhrasesJList();
         // fix date
         DateTime date = new DateTime();
         // create recommendation Map
         java.util.Map<BannerPhrase, Double> rec_map = new java.util.HashMap<BannerPhrase, Double>();
         for(int i = 0; i < bp_list.size(); i++) {
-          rec_map.put(bp_list.get(i), new Double(i) );
+          rec_map.put(bp_list.get(i), new Double(i+1) );
         }
 
         //create Recommendation object
@@ -310,22 +384,23 @@ public class SampleTest{
         dao.create(recommendation);
 
         // check in DB
-        Campaign c_res = dao.getCampaignHistory(campaign.id(), campaign.startDate(), campaign.startDate().plusDays(1)).campaign();
-        // now there is 1 recommendation for 1 BannerPhrases
-        bp_list = c_res.bannerPhrasesJList();
-        for(BannerPhrase bp: bp_list){
+        Campaign campaign = dao.getCampaign("Coda", "Yandex", "y1").get();
+        campaign.setHistoryStartDate(date);
+        campaign.setHistoryEndDate(date.plusMinutes(1));
+
+        // now there is 1 recommendation for every BannerPhrase
+        for(BannerPhrase bp: campaign.bannerPhrasesJList()){
           assertThat(bp.recommendationHistoryJList().size()).isEqualTo(1);
         }
 
         //chec the particular recommendation
-        RecommendationHistoryElem r = bp_list.get(0).recommendationHistoryJList().get(0);
+        RecommendationHistoryElem r = campaign.bannerPhrasesJList().get(0).recommendationHistoryJList().get(0);
         assertThat(r.dateTime()).isEqualTo(date);
-        assertThat(r.elem()).isEqualTo(0.0);
+        assertThat(r.elem()).isEqualTo(1.0);
 
       }
     }));
   }
-  */
 
 
 

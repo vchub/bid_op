@@ -115,7 +115,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         (bp_performanceHistories(0)(0).dateTime before bp_performanceHistories(0)(1).dateTime)
     }}
 
-    "create 1 new BannerPhrase, 1 Banner, 1 Phrase, 1 Region and BannerPhrasePerformance in TestDB_0" in {
+    "create 1 new BannerPhrase, 1 Banner, 1 Phrase, 1 Region and 2 BannerPhrasePerformances in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         // create bannerPhrase
         val bp = List[domain.BannerPhrase](domain.po.BannerPhrase(

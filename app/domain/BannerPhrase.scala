@@ -12,13 +12,13 @@ trait BannerPhrase{
   def phrase: Option[Phrase]
   def region: Option[Region]
   def actualBidHistory: List[ActualBidHistoryElem]
-  def actualBidHistoryJList: JList[ActualBidHistoryElem] = actualBidHistory
+  lazy val actualBidHistoryJList: JList[ActualBidHistoryElem] = actualBidHistory
   def recommendationHistory: List[RecommendationHistoryElem]
-  def recommendationHistoryJList: JList[RecommendationHistoryElem] = recommendationHistory
+  lazy val recommendationHistoryJList: JList[RecommendationHistoryElem] = recommendationHistory
   def netAdvisedBidsHistory: List[NetAdvisedBids]
-  def netAdvisedBidsHistoryJList: JList[NetAdvisedBids] = netAdvisedBidsHistory
+  lazy val netAdvisedBidsHistoryJList: JList[NetAdvisedBids] = netAdvisedBidsHistory
   def performanceHistory: List[Performance]
-  def performanceHistoryJList: JList[Performance] = performanceHistory
+  lazy val performanceHistoryJList: JList[Performance] = performanceHistory
 
   /** Override equality
   * well it's kind of tough. on the one hand BP are equal when Banner, Phrase and Region are equal.
