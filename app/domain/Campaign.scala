@@ -20,10 +20,10 @@ trait Campaign{
   lazy val bannerPhrasesJList: JList[BannerPhrase] = bannerPhrases
 
   // start and end Dates of retrieved Campaign Histories
-  @BeanProperty
-  var historyStartDate: DateTime = new DateTime
-  @BeanProperty
-  var historyEndDate: DateTime = new DateTime
+  //@BeanProperty
+  def historyStartDate: DateTime
+  //@BeanProperty
+  def historyEndDate: DateTime
 
   def curves: List[Curve]
   lazy val curvesJList: JList[Curve] = curves

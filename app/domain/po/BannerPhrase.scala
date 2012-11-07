@@ -8,7 +8,7 @@ import domain._
 @BeanInfo
 case class BannerPhrase(
   val id: Long = 0,
-  var campaign: Option[domain.Campaign] = None,
+  val campaign: Option[domain.Campaign] = None,
   val banner: Option[domain.Banner],
   val phrase: Option[domain.Phrase],
   val region: Option[domain.Region],

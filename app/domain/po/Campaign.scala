@@ -19,6 +19,10 @@ case class Campaign(
 
   val bannerPhrases: List[domain.BannerPhrase] = Nil,
 
+  // start and end Dates of retrieved Campaign Histories
+  val historyStartDate: DateTime = new DateTime,
+  val historyEndDate: DateTime = new DateTime,
+
   val curves: List[domain.Curve] = Nil,
   val performanceHistory: List[domain.Performance] = Nil,
   val permutationHistory: List[domain.Permutation] = Nil,

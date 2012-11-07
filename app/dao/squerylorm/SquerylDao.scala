@@ -15,8 +15,16 @@ class SquerylDao extends dao.Dao
 
 
 
-  override def getCampaign(userName: String, networkName: String, networkCampaignId: String) =
-    Campaign.select(userName: String, networkName: String, networkCampaignId: String).headOption
+  override def getCampaign(userName: String, networkName: String, networkCampaignId: String,
+    historyStartDate: DateTime = new DateTime, historyEndDate: DateTime = new DateTime
+  ) =
+    Campaign.select(userName: String, networkName: String, networkCampaignId: String).headOption map {
+      campaign => {
+        campaign.historyStartDate = historyStartDate
+        campaign.historyEndDate = historyEndDate
+        campaign
+      }
+    }
 
   override def getCampaigns(userName: String, networkName: String) =
     Campaign.select(userName: String, networkName: String)
