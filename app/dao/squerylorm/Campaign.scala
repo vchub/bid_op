@@ -3,6 +3,7 @@ package dao.squerylorm
 import org.squeryl.{Schema, KeyedEntity, Query}
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
+import org.squeryl.annotations.Transient
 import java.lang.RuntimeException
 import org.joda.time._
 import java.sql.Timestamp
@@ -20,6 +21,12 @@ case class Campaign(
 {
   val id: Long = 0
   def startDate = start
+
+  @Transient
+  var historyStartDate: DateTime = new DateTime
+  @Transient
+  var historyEndDate: DateTime = new DateTime
+
 
   /*
   // Campaign -* Banner relation
@@ -65,7 +72,7 @@ case class Campaign(
 
   //get_bannerphrases and assign Campaign (with historyStartDate, historyEndDate)
   lazy val bannerPhrases: List[domain.BannerPhrase] = inTransaction{ bannerPhrasesRel.toList map (
-    (x:domain.BannerPhrase) => {x.campaign = Some(this); x})
+    x => {x.campaign = Some(this); x})
   }
 
   lazy val curves = getHistory[Curve](curvesRel)

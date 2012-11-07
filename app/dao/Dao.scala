@@ -12,7 +12,9 @@ import domain._
 trait Dao {
   /** Shallow copies of Campaigns. Fast DB retrieval
   */
-  def getCampaign(userName: String, networkName: String, networkCampaignId: String): Option[ Campaign ]
+  def getCampaign(userName: String, networkName: String, networkCampaignId: String,
+    historyStartDate: DateTime = new DateTime, historyEndDate: DateTime = new DateTime
+  ): Option[ Campaign ]
 
 
   /** Shallow copies of Campaigns for gieve user and network names. Fast DB retrieval

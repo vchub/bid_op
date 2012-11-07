@@ -7,7 +7,7 @@ import java.util.{Map => JMap, List => JList}
 
 trait BannerPhrase{
   def id: Long
-  var campaign: Option[Campaign]
+  def campaign: Option[Campaign]
   def banner: Option[Banner]
   def phrase: Option[Phrase]
   def region: Option[Region]
