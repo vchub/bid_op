@@ -10,6 +10,6 @@ trait Recommendation
   def id: Long
   def dateTime: DateTime
   def bannerPhraseBid: Map[BannerPhrase, Double]
-  def bannerPhraseBidJMap: JMap[BannerPhrase, Double] = bannerPhraseBid
+  lazy val bannerPhraseBidJMap: JMap[BannerPhrase, Double] = bannerPhraseBid
 }
 

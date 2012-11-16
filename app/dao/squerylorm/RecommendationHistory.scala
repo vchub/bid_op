@@ -29,6 +29,7 @@ case class RecommendationHistory(
 }
 object RecommendationHistory {
 
+
   /** creates RecommendationHistory record
   */
   def create(recommendation: domain.Recommendation): Unit = inTransaction{

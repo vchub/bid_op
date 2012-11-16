@@ -11,5 +11,5 @@ trait Position {
   //def bannerPhrase: BannerPhrase
 
   //TODO
-  def bid(curve: Curve) = ???
+  def bid(curve: Curve, deviation: Double) = deviation
 }

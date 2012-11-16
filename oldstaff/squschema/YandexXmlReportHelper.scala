@@ -1,4 +1,4 @@
-package serializers
+package serializers.yandex
 
 import java.lang.RuntimeException
 import org.joda.time

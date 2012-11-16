@@ -11,7 +11,6 @@ case class User(
   val name: String = ""
 ) extends domain.User with KeyedEntity[Long]
 {
-  @transient
   val id: Long = 0
 
   @transient

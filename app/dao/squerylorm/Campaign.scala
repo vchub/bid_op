@@ -115,11 +115,40 @@ case class Campaign(
   */
 
 
+  /** get current (the earliest before dateTime) Recommendations */
+  // TODO: What about page(0,1) - change it for some SQL ?
+  def selectCurrentRecommendation(dateTime: DateTime): Option[domain.Recommendation] = inTransaction {
+    // create Query in descending order
+    val descendingRecs: Query[(BannerPhrase, RecommendationHistory)] =
+      from(bannerPhrasesRel, AppSchema.recommendationhistory)((bp, r) =>
+        where(
+          bp.campaign_id === id and
+          bp.id === r.bannerphrase_id and
+          r.date <= convertToJdbc(dateTime)
+        ) select(bp, r)
+        orderBy(r.date desc) )
+
+    // select the latest date
+    descendingRecs.page(0, 1).headOption match {
+      case None => None
+      case Some((bp, recommendation)) =>
+        val bpBid: Map[domain.BannerPhrase, Double] = from(descendingRecs)((pair) =>
+          where( pair._2.date === recommendation.date) select(pair._1, pair._2.bid)).toMap
+
+        // create domain.Recommendation
+        Some(
+          new domain.po.Recommendation(
+            0L,
+            new DateTime(recommendation.date),
+            bpBid
+          )
+        )
+    }
+  }
 
   /** creates BannerPhrasePerformance records
   * creates new Banners, Phrases, Regions and BannerPhrase if needed
   * @throw java.lang.RuntimeException - if Report is malformed - nothing created
-  */
   def create(report: Map[domain.BannerPhrase, domain.Performance]): Boolean = inTransaction{
     val res = report map {case (bp, performance) =>
       // find if BannerPhrase already exists
@@ -168,6 +197,91 @@ case class Campaign(
           }
       }
     }
+    }
+    res.nonEmpty
+  }
+  */
+
+  /** creates BannerPhrasePerformance records
+  * creates new Banners, Phrases, Regions and BannerPhrase if needed
+  * @throw java.lang.RuntimeException - if Report is malformed - nothing created
+  */
+  def createBannerPhrasesPerformanceReport(report: Map[domain.BannerPhrase, domain.Performance]): Boolean = inTransaction{
+    // f saves domain.Histories for BannerPhrase
+    def f(performance: domain.Performance)(bp: BannerPhrase) = {
+      val bp_perf = BannerPhrasePerformance((bp, performance)).put
+      require(bp_perf.id != 0)
+      require(bp_perf.bannerphrase_id == bp.id)
+    }
+    val bp_history = report map {case(bp, p) => bp -> f(p)_ }
+    createBannerPhraseHistory(bp_history)
+  }
+
+
+  /** creates ActualBidHistory and NetAdvisedBidHistory records
+  * creates new Banners, Phrases, Regions and BannerPhrase if needed
+  * @throw java.lang.RuntimeException - if Report is malformed - nothing created
+  */
+  def createActualBidAndNetAdvisedBids(report: Map[domain.BannerPhrase, (domain.ActualBidHistoryElem, domain.NetAdvisedBids)]): Boolean =
+    inTransaction {
+        // f saves domain.Histories for BannerPhrase
+        def f(pair: (domain.ActualBidHistoryElem, domain.NetAdvisedBids))(bp: BannerPhrase) = {
+          val (abid, netbid) = pair
+          require((ActualBidHistory(bp, abid).put).bannerphrase_id == bp.id)
+          require((NetAdvisedBidHistory(bp, netbid).put).bannerphrase_id == bp.id)
+        }
+        val bp_history = report map {case(bp, pair) => bp -> f(pair)_ }
+        createBannerPhraseHistory(bp_history)
+    }
+
+  /** creates History records as (BannerPhrase)=>
+  * creates new Banners, Phrases, Regions and BannerPhrase if needed
+  * @throw java.lang.RuntimeException - if Report is malformed - nothing created
+  */
+  def createBannerPhraseHistory(report: Map[domain.BannerPhrase, (BannerPhrase) => Unit]): Boolean = inTransaction{
+    val res = report map {case (bp, f) =>
+      // find if BannerPhrase already exists
+      for ( b <- bp.banner; p <- bp.phrase; r <- bp.region) yield {
+        BannerPhrase.select(this, b.network_banner_id, p.network_phrase_id, r.network_region_id) match {
+
+        case bannerphrase::Nil =>
+          // put History into DB
+          f(bannerphrase)
+
+        case Nil =>
+          // check out what's absent (Banner, Phrase, Region), create it
+          // and put created and stats into DB
+          val banner = Banner.select(b).headOption.getOrElse {
+            // create new Banner in DB
+            (Banner(b)).put
+          }
+          val phrase = Phrase.select(p).headOption.getOrElse {
+            //TODO: add phrase - have to be done in ReportHelper (dictionary)
+            // create new Phrase in DB
+            (Phrase(p)).put
+          }
+          val region = Region.select(r).headOption.getOrElse {
+            // create new Region in DB
+            (Region(r)).put
+          }
+          require(phrase.id != 0)
+          require(region.id != 0)
+          require(banner.id != 0)
+          // create and put BannerPhrase
+          val bannerphrase = BannerPhrase(campaign_id = this.id, banner_id = banner.id,
+            phrase_id = phrase.id, region_id = region.id).put
+          //check bp
+          require(bannerphrase.id != 0)
+          // put History into DB
+          f(bannerphrase)
+
+        case _ =>
+          // what the heck? we can't have more than one BannerPhrase
+          throw new RuntimeException("""DB conatains more than one BannerPhrase with
+            identical network_banner_id: %s, network_phrase_id: %s and network_region_id: %s""".
+            format(b.network_banner_id, p.network_phrase_id, r.network_region_id))
+        }
+      }
     }
     res.nonEmpty
   }

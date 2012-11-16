@@ -7,8 +7,8 @@ import play.api._
 import play.api.test._
 import play.api.test.Helpers._
 
-import dao.squschema._
-import dao.squschema.test.helpers._
+import domain.{User, Campaign, Network}
+import dao.squerylorm.test.helpers._
 
 class UserControllerSpec extends Specification with AllExpectations {
 
@@ -16,19 +16,19 @@ class UserControllerSpec extends Specification with AllExpectations {
     sequential
 
     "send 404 on a wrong User, Network or network_campaign_id request" in {
-      TestDB_0.running_FakeApplication() {
-        val Some(res) = routeAndCall(FakeRequest(GET, "/user/foo/net/bar/camp/0"))
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val Some(res) = routeAndCall(FakeRequest(GET, "/user/foo"))
         status(res) must equalTo(404)
       }
     }
 
-    "respond List[Campaign] in json" in {
-      TestDB_0.running_FakeApplication() {
-        val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1")).get
+    "respond User in json" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val res = routeAndCall(FakeRequest(GET, "/user/Coda")).get
 
         status(res) must equalTo(OK)
         contentType(res) must beSome.which(_ == "application/json")
-        contentAsString(res) must contain("y1")
+        contentAsString(res) must contain("Coda")
       }
     }
 

@@ -12,6 +12,8 @@ case class NetAdvisedBids(
   val b:Double,
   val c:Double,
   val d:Double,
+  val e:Double,
+  val f:Double,
   val dateTime: DateTime
 )extends domain.NetAdvisedBids{}
 

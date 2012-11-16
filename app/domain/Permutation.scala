@@ -12,6 +12,6 @@ trait Permutation
   def id: Long
   def dateTime: DateTime
   def permutation: Map[BannerPhrase, Position]
-  def permutationJMap: JMap[BannerPhrase, Position] = permutation
+  lazy val permutationJMap: JMap[BannerPhrase, Position] = permutation
 }
 

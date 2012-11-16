@@ -34,7 +34,7 @@ class CampaignSpec extends Specification with AllExpectations{
       BudgetHistoryElem(dateTime = startDate, elem = 100.0)
     ).sorted
 
-    Campaign(
+    new po.Campaign(
       id = 0,
       network_campaign_id = null,
       startDate = startDate, endDate = Some(endDate),

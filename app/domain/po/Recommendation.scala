@@ -7,7 +7,7 @@ import java.util.{Map => JMap, List => JList}
 
 
 @BeanInfo
-case class Recommendation(
+class Recommendation(
   val id: Long = 0,
   val dateTime: DateTime,
   val bannerPhraseBid: Map[domain.BannerPhrase, Double]

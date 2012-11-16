@@ -7,7 +7,7 @@ import java.util.{Map => JMap, List => JList}
 
 
 @BeanInfo
-case class Campaign(
+class Campaign(
   val id: Long = 0,
   val network_campaign_id: String = "",
   val startDate: DateTime = new DateTime,
@@ -31,8 +31,38 @@ case class Campaign(
   val endDateHistory: List[domain.EndDateHistoryElem] = Nil
 
 ) extends domain.Campaign
-{}
+{
+
+  /** Constructor from domain.Campaign
+  */
+  def this(c: domain.Campaign) = this(
+    id = c.id,
+    network_campaign_id = c.network_campaign_id,
+    startDate = c.startDate,
+    endDate = c.endDate,
+    budget = c.budget,
+
+    user = c.user,
+    network = c.network,
+
+    bannerPhrases = c.bannerPhrases,
+
+    historyStartDate = c.historyStartDate,
+    historyEndDate = c.historyEndDate,
+
+    curves = c.curves,
+    performanceHistory = c.performanceHistory,
+    permutationHistory = c.permutationHistory,
+
+    budgetHistory = c.budgetHistory,
+    endDateHistory = c.endDateHistory
+  )
+}
 object Campaign {
+
+
+  /** Constructor from some attributes[JList]
+  */
   def apply(
     id: Long,
     network_campaign_id: String,

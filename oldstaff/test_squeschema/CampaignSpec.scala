@@ -14,7 +14,7 @@ import scala.xml._
 
 import dao.squschema._;
 import dao.squschema.test.helpers._
-import serializers.YandexXmlReportHelper
+import serializers.yandex.YandexXmlReportHelper
 
 class CampaignSpec extends Specification with AllExpectations {
 

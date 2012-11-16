@@ -29,6 +29,7 @@ trait Dao {
 
   /** creates CampaignPerformance in DB
   */
+  //TODO: PeriodType is NOT set in Dao now. Fix.
   def createCampaignPerformanceReport(campaign: Campaign, performance: Performance):  Performance
 
   /** creates Performance for java.Campaign in DB
@@ -48,6 +49,12 @@ trait Dao {
     createBannerPhrasesPerformanceReport(campaign, report.toMap)
 
 
+  /** creates BannerPhrase NetAdvisedBids and ActualBidHistory records in DB
+  * creates new BannerPhrase in case it's not present in DB.
+  * @throw java.util.RunTimeException
+  */
+  def createBannerPhraseNetAndActualBidReport(campaign: Campaign,
+      report: Map[BannerPhrase, (ActualBidHistoryElem, NetAdvisedBids)]): Boolean
 
   /** creates new Campaign record
   */
@@ -79,14 +86,21 @@ trait Dao {
 
 
 
-  /** creates Permutation record
+  /** creates Permutation records
   * @throw java.util.RunTimeException
-  * TODO: add Exception checking in Controllers
-  * TODO: change return to Permutation
   * probably add back curve to Permutation and don't use curve in def.
   */
   def create(permutation: Permutation, campaign: Campaign): Permutation
 
+  /** Creates Permutation records
+  * Calculates absolute values of bids for every position and saves it
+  * as Recommendations with the same DateTime
+  * Creates currentRecommendationsDate record
+  *
+  * @throw java.util.RunTimeException
+  * probably add back curve to Permutation and don't use curve in def.
+  */
+  def createPermutaionRecommendation(permutation: Permutation, campaign: Campaign, curve: Curve): DateTime
 
   /** creates Recommendation records
   */
@@ -96,5 +110,15 @@ trait Dao {
   /** creates Curve record
   */
   def create(curve: Curve, campaign: Campaign): Curve
+
+  /** get PeriodType for a given DateTime */
+  def getPeriodType(dateTime: DateTime): domain.PeriodType
+
+  /** check if Recommendation has changed since dateTime */
+  def recommendationChangedSince(c: Campaign, dateTime: DateTime): Boolean
+
+  /** get current Recommendation */
+  def getCurrentRecommedation(c: Campaign, dateTime: DateTime): Option[Recommendation]
+
 
 }

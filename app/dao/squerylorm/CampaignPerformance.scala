@@ -25,7 +25,8 @@ case class CampaignPerformance(
   val id: Long = 0
 
   def dateTime = date
-  def periodType: domain.PeriodType = periodTypeRel.head
+  // TODO: optimize... it should be no direct access to DB
+  def periodType: domain.PeriodType = inTransaction{ periodTypeRel.head }
 
   // PeriodType -* CampaignPerformance relation
   lazy val periodTypeRel: ManyToOne[PeriodType] = AppSchema.periodTypeCampaignPerformance.right(this)

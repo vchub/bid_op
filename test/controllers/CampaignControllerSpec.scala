@@ -7,12 +7,13 @@ import play.api._
 import play.api.libs.json.{JsValue, Json, JsObject}
 import play.api.test._
 import play.api.test.Helpers._
-import java.util.Date
+
 import org.joda.time._
 import scala.xml._
 
-import dao.squschema._
-import dao.squschema.test.helpers._
+import domain.{User, Campaign, Network}
+import dao.squerylorm._
+import dao.squerylorm.test.helpers._
 
 
 class CampaignControllerSpec extends Specification with AllExpectations {
@@ -21,7 +22,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     sequential
 
     "send 404 on a wrong User, Network or network_campaign_id request" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
         val Some(res) = routeAndCall(FakeRequest(GET, "/user/boum/net/Yandex/camp"))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
@@ -33,7 +34,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     }
 
     "respond Campaign in json" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         val Some(res) = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp"))
 
         status(res) must equalTo(OK)
@@ -41,14 +42,13 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         contentAsString(res) must contain("y1")
       }
     }
-
-
   }
+
   "campaign" should {
     sequential
 
     "send 404 on a wrong User, Network or network_campaign_id request" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
         val Some(res) = routeAndCall(FakeRequest(GET, "/user/boum/net/Yandex/camp/y1"))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
@@ -64,7 +64,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     }
 
     "respond Campaign in json" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1")).get
 
         status(res) must equalTo(OK)
@@ -72,35 +72,13 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         contentAsString(res) must contain("y1")
       }
     }
-
-
-    /*
-    "render an empty form on index" in {
-      running(FakeApplication()) {
-        val home = routeAndCall(FakeRequest(GET, "/")).get
-
-        status(home) must equalTo(OK)
-        contentType(home) must beSome.which(_ == "text/html")
-      }
-    }
-
-    "send BadRequest on form error" in {
-      running(FakeApplication()) {
-        val home = routeAndCall(FakeRequest(GET, "/hello?name=Bob&repeat=xx")).get
-
-        status(home) must equalTo(BAD_REQUEST)
-        contentType(home) must beSome.which(_ == "text/html")
-      }
-    }
-    */
-
   }
 
-  "create_TimeSlot" should {
+  "createCampaignPerformance" should {
     sequential
 
     "send 404 on a wrong User, Network or network_campaign_id request" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
         val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/stats"))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
@@ -115,22 +93,18 @@ class CampaignControllerSpec extends Specification with AllExpectations {
       }
     }
 
-    "respond status 201(created) and TimeSlot in json" in {
-      TestDB_0.running_FakeApplication() {
+    "respond status 201(created) and Performance in json" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         import play.api.libs.json.{JsValue, Json, JsObject}
-        //import com.codahale.jerkson
 
-        val cust_fmt = format.DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss")
-        val date: DateTime = cust_fmt.parseDateTime("2012-09-19 10:00:00")
-        val cust_fmt_no_Z = format.DateTimeFormat.forPattern("yyyy-MM-dd'T'hh:mm:ss.SSS")
-
-        //cust_fmt
+        val date_fmt = format.DateTimeFormat.forPattern("yyyy-MM-dd")
+        val iso_fmt = format.ISODateTimeFormat.dateTime() // standart 8601
+        val start_date: DateTime = iso_fmt.parseDateTime("2012-10-19T00:00:00.000+04:00")
+        val date: DateTime = iso_fmt.parseDateTime("2012-10-19T10:00:00.000+04:00")
 
         val node = Json.toJson(Map(
-          "start_date" -> cust_fmt_no_Z.print(date),
-          "end_date" -> cust_fmt_no_Z.print(date.plusMinutes(30)),
-          //"start_date" -> "2012-09-19 10:00:00",
-          //"end_date" -> "2012-09-19 10:30:00",
+          "start_date" -> iso_fmt.print(start_date),// in format "yyyy-MM-dd"
+          "end_date" -> iso_fmt.print(date), // in standart ISO 8601
           "sum_search" -> "2.0",
           "sum_context" -> "2.5",
           "impress_search" -> "4",
@@ -146,8 +120,17 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         contentType(res) must beSome.which(_ == "application/json")
         contentAsString(res) must contain("sum_search")
         //must contain Date.getTime result
-        //TODO: date is stored in DB without Time Zone! Do we need to fix it?
-        contentAsString(res) must contain(date.plusHours(4).toDate.getTime.toString)
+        contentAsString(res) must contain(date.getTime.toString)
+
+        //retrieve from DB, check ascending order and in conformance to historyStartDate, historyEndDate
+        val dao = new SquerylDao
+        val c = dao.getCampaign("Coda", "Yandex", "y1", historyStartDate = date.minusMinutes(1),
+          historyEndDate = date.plusMinutes(1)).get
+        val perfHistory = c.performanceHistory
+        perfHistory.length must_==(1)
+        val performance = perfHistory(0)
+        performance.dateTime must_==(date)
+        performance.periodType.id must_!=(0)
       }
     }
   }
@@ -156,7 +139,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     sequential
 
     "send 404 on a wrong User, Network" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
         val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp"))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
@@ -168,22 +151,22 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     }
 
     "send BadRequest (400) on empty request body" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp"))
         status(res2) must equalTo(400)
       }
     }
 
     "send BadRequest (400) on malformed json representation of Campaign" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         import com.codahale.jerkson
         import org.joda.time
         //date
-        val fmt_date = time.format.ISODateTimeFormat.date()
+        val fmt_date = format.ISODateTimeFormat.date()
         val date: DateTime = fmt_date.parseDateTime("2012-09-19")
 
         // sourse json
-        // not network_campaign_id
+        // no network_campaign_id
         val js = """{
           "start_date": "%s",
           "end_date": "%s",
@@ -197,21 +180,21 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     }
 
     "respond status 201(created) and Campaign in json" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         import com.codahale.jerkson
         import org.joda.time
 
         //date
-        val fmt_date = time.format.ISODateTimeFormat.date()
-        val date: DateTime = fmt_date.parseDateTime("2012-09-19")
+        val iso_fmt = format.ISODateTimeFormat.dateTime() // standart 8601
+        val date: DateTime = iso_fmt.parseDateTime("2012-10-19T11:00:00.000+04:00")
 
         // sourse json
         val js = """{
           "start_date": "%s",
           "end_date": "%s",
           "network_campaign_id": "y100",
-          "budget": 50
-        }""".format(fmt_date.print(date), fmt_date.print(date.plusDays(30)))
+          "daily_budget": 50
+        }""".format(iso_fmt.print(date), iso_fmt.print(date.plusDays(30)))
         val node = Json.parse(js)
 
         val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp")
@@ -220,16 +203,27 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         status(res) must equalTo(201)
         contentType(res) must beSome.which(_ == "application/json")
         contentAsString(res) must contain("budget")
-        contentAsString(res) must contain(date.plusHours(4).toDate.getTime.toString)
+        //must contain Date.getTime result
+        contentAsString(res) must contain(date.getTime.toString)
+
+        //retrieve from DB, check ascending order and in conformance to historyStartDate, historyEndDate
+        val dao = new SquerylDao
+        val c = dao.getCampaign("Coda", "Yandex", "y100", historyStartDate = date.minusMinutes(1),
+          historyEndDate = date.plusMinutes(2)).get
+        c.id must_!=(0)
+        c.network_campaign_id must_==("y100")
+        c.budgetHistory.length must_==(1)
+        c.endDate must_==(Some(date.plusDays(30)))
+        c.budget must_==(Some(50.0))
       }
     }
   }
 
-  "create Report" should {
+  "createXmlReport" should {
     sequential
 
     "send 404 on a wrong User, Network or network_campaign_id request" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
         val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/reports"))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
@@ -245,7 +239,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     }
 
     "send BadRequest (400) on empty request body" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/reports"))
         status(res) must equalTo(400)
       }
@@ -263,11 +257,10 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     }
 
     "send BadRequest (400) on malformed or not complete (dates, sums and other fields) xml" in {
-      TestDB_0.running_FakeApplication() {
-        val campaign = Campaign.select("Coda", "Yandex", "y1").head
+      TestDB_0.creating_and_filling_inMemoryDB() {
         // get test data
-        val file_name = "test/serializers/report1.xml"
-        val node = scala.xml.XML.loadFile(file_name)
+        val file_name = "test/serializers/yandex/reports/report1.xml"
+        val node = xml.XML.loadFile(file_name)
         // create a copy w/o end_date
         val bad_node = <report> {(node\"stat")}</report>
         // prepare and make request
@@ -286,25 +279,140 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     }
 
     "respond status 201(created) and Campaign in json" in {
-      TestDB_0.running_FakeApplication() {
-        val campaign = Campaign.select("Coda", "Yandex", "y1").head
+      TestDB_0.creating_and_filling_inMemoryDB() {
         // get test data
-        val file_name = "test/serializers/report1.xml"
-        val node = scala.xml.XML.loadFile(file_name)
+        val file_name = "test/serializers/yandex/reports/report1.xml"
+        val node = xml.XML.loadFile(file_name)
         val Some(res) = routeAndCall(get_FakeRequest_POST_xml("/user/Coda/net/Yandex/camp/y1/reports",
             node))
 
         status(res) must equalTo(201)
 
-        // check out new entities
-        // from the row 1
-        val banner = Banner.select(network_banner_id = "123456").head
-        banner.id must_!=(0)
-        banner.network_banner_id must_==("123456")
-        // from the row 2
-        val region = Region.select(network_region_id = "2").head
-        region.id must_!=(0)
-        region.network_region_id must_==("2")
+        // check if saved in DB
+        val dao = new SquerylDao
+        //date
+        val iso_fmt = format.ISODateTimeFormat.dateTime() // standart 8601
+        val date: DateTime = iso_fmt.parseDateTime("2012-10-20T00:00:00.000+04:00")
+
+        val campaign = dao.getCampaign("Coda", "Yandex", "y1", historyStartDate = date.minusDays(2),
+          historyEndDate = date.plusMinutes(2)).get
+        // it should be 4 old and 3 new BannerPhrase
+        campaign.bannerPhrases.length must_==(7)
+
+        // get one of the new BannerPhrases
+        val bps = campaign.bannerPhrases filter (_.banner.get.network_banner_id == "123456")
+        //only BannerPhrase is created
+        bps.length must_==(1)
+        val created_bp = bps.head
+        // check phrase is created
+        created_bp.phrase.get.network_phrase_id must_==("538205157")
+
+        // check 1 Performance is created
+        created_bp.performanceHistory.length must_==(1)
+        val performance = created_bp.performanceHistory(0)
+        performance.clicks_search must_==(100)
+        performance.dateTime must_==(date)
+      }
+    }
+  }
+
+  "createBannerReport" should {
+    sequential
+
+    "send 404 on a wrong User, Network or network_campaign_id request" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        // wrong User
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/bannerreports"))
+        status(res) must equalTo(404) //SimpleResult(404, Map()))
+
+        // wrong Network
+        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp/y1/bannerreports"))
+        status(res1) must equalTo(404) //SimpleResult(404, Map()))
+
+        // wrong network_campaign_id
+        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y100/bannerreports"))
+        status(res2) must equalTo(404) //SimpleResult(404, Map()))
+      }
+    }
+
+    "send BadRequest (400) on empty request body" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports"))
+        status(res) must equalTo(400)
+      }
+    }
+
+    "send BadRequest (400) on malformed json representation of Campaign" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        import com.codahale.jerkson
+        import org.joda.time
+        //date
+        val fmt_date = format.ISODateTimeFormat.date()
+        val date: DateTime = fmt_date.parseDateTime("2012-09-19")
+
+        // sourse json
+        // no network_campaign_id
+        val js = """{
+          "start_date": "%s",
+          "end_date": "%s",
+          "budget": 50
+        }""".format(fmt_date.print(date), fmt_date.print(date.plusDays(30)))
+        val node = Json.parse(js)
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports")
+          .withJsonBody(node))
+        status(res) must equalTo(400)
+      }
+    }
+
+    "respond status 201(created) and true in json" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        import com.codahale.jerkson
+        import org.joda.time
+
+        //date
+        //val iso_fmt = format.ISODateTimeFormat.dateTime() // standart 8601
+        //val date: DateTime = iso_fmt.parseDateTime("2012-10-19T11:00:00.000+04:00")
+
+        // sourse json
+        val file_name = "test/serializers/yandex/reports/bannerReport0.json"
+        val js = io.Source.fromFile(file_name, "utf-8").getLines.mkString
+        val node = Json.parse(js)
+
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports")
+          .withJsonBody(node))
+
+        status(res) must equalTo(201)
+        contentType(res) must beSome.which(_ == "application/json")
+        contentAsString(res) must contain("true")
+
+        //retrieve from DB, check ascending order and in conformance to historyStartDate, historyEndDate
+        val dao = new SquerylDao
+        // Histories are created w/ dateTime = Now
+        val date = new DateTime
+        val c = dao.getCampaign("Coda", "Yandex", "y1", historyStartDate = date.minusMinutes(1),
+          historyEndDate = date.plusMinutes(2)).get
+
+        // get one of the new BannerPhrases
+        val bps = c.bannerPhrases filter (_.banner.get.network_banner_id == "11")
+        //only BannerPhrase is created
+        bps.length must_==(2)
+
+        val created_bp = bps.head
+        // check phrase is created
+        created_bp.phrase.get.network_phrase_id must_==("22")
+
+        // check 1 NetAdvisedBids is created
+        created_bp.netAdvisedBidsHistory.length must_==(1)
+        val record = created_bp.netAdvisedBidsHistory(0)
+        record.a must_==(1.1)
+        record.b must_==(2.0)
+        (record.dateTime.isAfter(date))
+
+        // Check that ActualBidHistory record is created
+        created_bp.actualBidHistory.length must_==(1)
+        val ab = created_bp.actualBidHistory(0)
+        ab.elem must_==(1.0)
+        (ab.dateTime.isAfter(date))
       }
     }
   }
@@ -314,7 +422,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     sequential
 
     "send 404 on a wrong User, Network or network_campaign_id request" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
         val Some(res) = routeAndCall(FakeRequest(GET, "/user/boum/net/Yandex/camp/y1/recommendations").withHeaders(
           ("If-Modified-Since", "2012-09-19T11:00:00.000+04:00")))
@@ -327,21 +435,34 @@ class CampaignControllerSpec extends Specification with AllExpectations {
       }
     }
 
+    /** creates Permutations wich creates Recommendations in DB */
+    def createPermutaionRecommendation(c: Campaign, dateTime: DateTime) = {
+      // create Permutation Map[BannerPhrase, Position]
+      val permutation_map = (for(b <- c.bannerPhrases; i <- 0 to c.bannerPhrases.length)
+          yield (b, domain.po.Position(i))).toMap
+
+      // create domain.Permutation
+      val permutation = new domain.po.Permutation(0, dateTime = dateTime, permutation = permutation_map)
+      // create dummy Curve
+      val curve = new domain.po.Curve(0,1,1,1,1,dateTime, None)
+      // save Permutation Recommendation and RecommendationChangeDate to DB
+      val dao = new SquerylDao
+      dao.createPermutaionRecommendation(permutation, c, curve)
+    }
+
+
     "respond status 304 (NOT_MODIFIED) if recommendations are not modified since" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         val campaign = Campaign.select("Coda", "Yandex", "y1").head
 
         // set Date
-        val date_str = "2012-09-19T13:00:00.000+04:00"
+        val date_str = "2012-10-19T13:00:10.000+04:00"
         val fmt = format.ISODateTimeFormat.dateTime()
         val date: DateTime = fmt.parseDateTime(date_str)
 
-        // create Recommendation entity with early start_date
-        import org.squeryl.PrimitiveTypeMode._
-        inTransaction {
-          campaign.recommendations.associate(Recommendation(start_date =
-            date.plusMinutes(1).toDate))
-        }
+        // create 2 Recommendations entity with early and late start_date
+        createPermutaionRecommendation(campaign, date.minusMinutes(1))
+        createPermutaionRecommendation(campaign, date.plusMinutes(1))
 
         // make a request
         val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1/recommendations").withHeaders(
@@ -352,41 +473,38 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     }
 
     "respond recommendations" in {
-      TestDB_0.running_FakeApplication() {
+      TestDB_0.creating_and_filling_inMemoryDB() {
         val campaign = Campaign.select("Coda", "Yandex", "y1").head
 
         // set Date
-        //val date_str = "2012-09-19T00:01:00.000+04:00"
-        val date_str = "2012-09-19T00:00:00.000+04:00"
+        val date_str = "2012-09-19T01:00:00.000+04:00"
         val fmt = format.ISODateTimeFormat.dateTime()
         val date: DateTime = fmt.parseDateTime(date_str)
 
         // create Recommendation entity with early start_date
-        /*
-        import org.squeryl.PrimitiveTypeMode._
-        inTransaction {
-          campaign.recommendations.associate(Recommendation(start_date = date.minusHours(5).toDate))
-        }
-        */
-        (new Recommendation(campaign.id, date.toDate)).put
+        createPermutaionRecommendation(campaign, date.plusMinutes(1))
 
         // make a request
         val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1/recommendations").withHeaders(
-          ("If-Modified-Since", fmt.print(date.minusMinutes(1)) ))).get
-
-        // check how model works
-        campaign.recommendations_changed_since(date.minusMinutes(10).toDate) must_==(true)
-        campaign.recommendations_changed_since(date.plusMinutes(10).toDate) must_==(false)
+          ("If-Modified-Since", fmt.print(date) ))).get
 
         // check status
         status(res) must equalTo(OK)
         contentType(res) must beSome.which(_ == "application/json")
-        contentAsString(res) must contain("7") // network_region_id
-        contentAsString(res) must contain("regionID") // network_region_id
+        // check result
+        val content = contentAsString(res)
+        content must not contain("regionID") // network_region_id
+        // create serializers.Recommendation from result
+        import com.codahale.jerkson.Json
+        val rec = Json.parse[serializers.Recommendation](content)
+        rec.param.length must_==(4)
+        rec.param(0).CampaignID must_==(1)
+
       }
     }
-
   }
 
 
 }
+
+

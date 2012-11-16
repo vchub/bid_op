@@ -26,6 +26,7 @@ object AppSchema extends Schema {
   val bannerphrases = table[BannerPhrase]
   val positions = table[Position]
   val periodtypes = table[PeriodType]
+  val recommendationchangedate = table[RecommendationChangeDate]
 
   //for test purpose
   val checktimes = table[CheckTime]

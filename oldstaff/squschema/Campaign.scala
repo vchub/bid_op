@@ -268,7 +268,7 @@ case class Campaign(
   * @return Boolean - success - Report processed, entities created
   * @throw java.lang.RuntimeException - if Report is malformed - nothing created
   */
-  def process_report(node: scala.xml.NodeSeq, reportHelper: serializers.ReportHelper): Boolean = {
+  def process_report(node: scala.xml.NodeSeq, reportHelper: serializers.yandex.ReportHelper): Boolean = {
     // create List[(BannerPhraseHelper, BannerPhraseStats)]
     val bp_st = reportHelper.createBannerPhraseStats(node)
 

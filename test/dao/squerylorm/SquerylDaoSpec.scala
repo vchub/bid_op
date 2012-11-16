@@ -18,6 +18,34 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         val campaigns = dao.getCampaigns("Coda", "Yandex")
         campaigns.length must be_==(2)
     }}
+
+    "Campaigns are shallow objects i.e. all aggregates are Nil" in {
+      TestDB_0.creating_and_filling_inMemoryDB() {
+        val dao = new SquerylDao
+        val campaigns = dao.getCampaigns("Coda", "Yandex")
+        val c = campaigns(0)
+        c.id must_!=(0)
+        c.network_campaign_id must_!=("")
+        c.startDate.isAfter(0L) must_==(true)
+        c.endDate must_==(None)
+        c.budget must_!=(0)
+
+        c.user must_==( None)
+        c.network must_==( None)
+
+        c.bannerPhrases must_!=( Nil)
+
+          // start and end Dates of retrieved Campaign Histories
+        c.historyStartDate.isAfter(0) must_==(true)
+        c.historyEndDate.isAfter(0) must_==(true)
+
+        c.curves must_==( Nil)
+        c.performanceHistory must_==( Nil)
+        c.permutationHistory must_==( Nil)
+
+        c.budgetHistory must_==( Nil)
+        c.endDateHistory must_==( Nil)
+    }}
   }
 
   "getCampaign(userName, networkName, networkCampaignId)" should {
@@ -50,7 +78,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
         val campaign = dao.getCampaign("Coda", "Yandex", "y1").get
-        val periodType = domain.po.PeriodType(id = 1, factor = 1, description = "")
+        val periodType = new domain.po.PeriodType(id = 1, factor = 1, description = "")
         //startDate
         val date = new DateTime
         // make 4 performances (in reverse order)
@@ -77,6 +105,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
 
   "createBannerPhrasesPerformanceReport" should {
     sequential
+
     "create 4 BannerPhrasePerformances for the 4 existing BannerPhrases in TestDB_0" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val dao = new SquerylDao
@@ -90,7 +119,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         c.bannerPhrases.length must_==(4)
 
         //create Mock PeriodType
-        val periodType = domain.po.PeriodType(id = 1, factor = 1, description = "")
+        val periodType = new domain.po.PeriodType(id = 1, factor = 1, description = "")
 
         // Map[(BannerPhrases, Performance)]
         val report1 = (c.bannerPhrases map ((_, createPerformance(date, periodType)))).toMap
@@ -124,7 +153,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
             region= Some(domain.po.Region(network_region_id = "rr00"))
           )
         )
-        val periodType = domain.po.PeriodType(id = 1, factor = 1, description = "")
+        val periodType = new domain.po.PeriodType(id = 1, factor = 1, description = "")
         val date = new DateTime
         // Map [BannerPhrases, Performance]
         val report1 = (bp map ((_, createPerformance(date, periodType)))).toMap
@@ -199,7 +228,7 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         val fmt = format.ISODateTimeFormat.date()
         val startDate: DateTime = fmt.parseDateTime("2012-09-19")
         val endDate = startDate.plusDays(30)
-        val cc = domain.po.Campaign(
+        val cc = new domain.po.Campaign(
           id = 0,
           network_campaign_id = "y100",
           startDate = startDate, endDate = Some(endDate),
@@ -283,8 +312,8 @@ class SquerylDaoSpec extends Specification with AllExpectations {
         // create Recommendation
         val bp_bid_map = (for(b <- c.bannerPhrases; i <- 1 to c.bannerPhrases.size + 1)
             yield (b, i.toDouble)).toMap
-        val recommendation1 = domain.po.Recommendation(0, dateTime = date, bannerPhraseBid = bp_bid_map)
-        val recommendation2 = domain.po.Recommendation(0, dateTime = date.plusMinutes(1), bannerPhraseBid = bp_bid_map)
+        val recommendation1 = new domain.po.Recommendation(0, dateTime = date, bannerPhraseBid = bp_bid_map)
+        val recommendation2 = new domain.po.Recommendation(0, dateTime = date.plusMinutes(1), bannerPhraseBid = bp_bid_map)
 
         // create Recommendation records
         dao.create(recommendation2)
