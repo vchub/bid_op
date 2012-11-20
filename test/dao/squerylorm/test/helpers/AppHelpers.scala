@@ -18,7 +18,7 @@ trait AppHelpers {
   * @param block of code
   * @return T
   */
-  def creating_and_filling_inMemoryDB[T]()(block: ⇒ T): T = {
+  def creating_and_filling_inMemoryDB[T]()(block: => T): T = {
     running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
       inTransaction {
         AppSchema.create

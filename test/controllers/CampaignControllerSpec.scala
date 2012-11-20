@@ -435,7 +435,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
       }
     }
 
-    /** creates Permutations wich creates Recommendations in DB */
+    /** creates Permutations which creates Recommendations in DB */
     def createPermutaionRecommendation(c: Campaign, dateTime: DateTime) = {
       // create Permutation Map[BannerPhrase, Position]
       val permutation_map = (for(b <- c.bannerPhrases; i <- 0 to c.bannerPhrases.length)
