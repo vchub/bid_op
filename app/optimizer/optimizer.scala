@@ -27,8 +27,7 @@ class Optimizer(_t: DateTime, _c: Campaign) {
     (for (b <- c.bannerPhrases; i <- 0 to c.bannerPhrases.length)
       yield (b, domain.po.Position(i))).toMap
   }
-  
-  
+    
   //create Curve
   def createCurve: Curve = new domain.po.Curve(0, 1, 1, 1, 1, t, None)
   
