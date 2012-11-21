@@ -1,7 +1,7 @@
 package serializers.yandex
 
 import org.joda.time
-import dao.squschema._
+//import dao.squschema._
 
 class XmlReport(val node: xml.NodeSeq)
 {
