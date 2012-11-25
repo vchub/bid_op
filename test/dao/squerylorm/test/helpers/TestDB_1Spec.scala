@@ -5,9 +5,8 @@ import org.specs2.specification._
 import play.api.test._
 import play.api.test.Helpers._
 import org.squeryl.PrimitiveTypeMode.inTransaction
-//import org.squeryl.PrimitiveTypeMode.view2QueryAll
-
 import dao.squerylorm._
+import dao.Dao
 
 class TestDB_1Spec extends Specification with AllExpectations {
   val NumberOfUser = 1
@@ -126,6 +125,17 @@ class TestDB_1Spec extends Specification with AllExpectations {
       }
     }
 
+    /*"budgetHistory" in {
+      TestDB_1.creating_and_filling_inMemoryDB() {
+        inTransaction {
+          import org.squeryl.PrimitiveTypeMode._
+          val campaign = Campaign.select("User_0", "Network_0", "Net_0_Id").head
+
+          campaign.historyStartDate must_!= campaign.historyEndDate
+
+        }
+      }
+    }*/
   }
 
 }

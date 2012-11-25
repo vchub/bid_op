@@ -116,7 +116,7 @@ class SquerylDao extends dao.Dao
       val permDateTime = permutation.dateTime
       //create domain.Recommendation
       val bpBid = permutation.permutation map {case (bp, pos) =>
-        bp -> pos.bid(curve = curve, deviation = 1)}
+        bp -> pos.bid(curve = curve, bannerPhrase = bp)}
 
       val recommendation = new domain.Recommendation {
         val id = 0L
