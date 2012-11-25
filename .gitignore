@@ -15,6 +15,7 @@ bin
 
 # Scala IDE WorkSheet
 .worksheet
+.sc
 
 *.py[co]
 
