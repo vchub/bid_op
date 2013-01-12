@@ -120,7 +120,7 @@ class TestDB_1Spec extends Specification with AllExpectations {
 
           // find bannerPhrases for the Permutation
           permutations(0).positionsRel.toList.length must_== (NumberOfPhrasesInBanner * NumberOfBanners)
-          permutations(0).positionsRel.head.bannerphrase_id must_== (bannerPhrases(0).id)
+          //permutations(0).positionsRel.head.bannerphrase_id must_== (bannerPhrases(0).id)
         }
       }
     }
@@ -136,7 +136,20 @@ class TestDB_1Spec extends Specification with AllExpectations {
         }
       }
     }*/
+    
+    //fill postgreSQL DB
+    /* "fill postgreSQL DB" in {
+      TestDB_1.create_postgreSQL_test_db_from_squeryl_schema()
+      
+        inTransaction {
+          import org.squeryl.PrimitiveTypeMode._
+          AppSchema.users.toList.length must_== (NumberOfUser)
+          AppSchema.networks.toList.length must_== (NumberOfNetworks)
+          AppSchema.campaigns.toList.length must_== (NumberOfCampaigns)
+        }
+      
+    }
+   */ 
   }
-
 }
 

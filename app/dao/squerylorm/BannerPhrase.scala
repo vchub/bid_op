@@ -1,6 +1,6 @@
 package dao.squerylorm
 
-import org.squeryl.{Schema, KeyedEntity, Query}
+import org.squeryl.{ Schema, KeyedEntity, Query }
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
 import org.squeryl.annotations.Transient
@@ -9,15 +9,13 @@ import java.sql.Timestamp
 import scala.reflect._
 import common._
 
-
 @BeanInfo
 case class BannerPhrase(
   val campaign_id: Long = 0, //fk
   val banner_id: Long = 0, //fk
   val phrase_id: Long = 0, //fk
   val region_id: Long = 0 //fk
-)extends domain.BannerPhrase with KeyedEntity[Long]
-{
+  ) extends domain.BannerPhrase with KeyedEntity[Long] {
   val id: Long = 0
 
   @Transient
@@ -28,17 +26,16 @@ case class BannerPhrase(
   def region = inTransaction { regionRel.headOption }
 
   // BannerPhrase History in ascending order and in conformance to campaign.historyStartDate, historyEndDate
-  def getBannerPhraseHistory[T<:History](qRel: Query[T]): List[T] = campaign match {
+  def getBannerPhraseHistory[T <: History](qRel: Query[T]): List[T] = campaign match {
     case None => Nil
-    case Some(campaign) if(campaign.historyStartDate != campaign.historyEndDate) =>  inTransaction{
+    case Some(campaign) if (campaign.historyStartDate != campaign.historyEndDate) => inTransaction {
       from(qRel)((b) =>
         where(b.date >= convertToJdbc(campaign.historyStartDate)
           and b.date <= convertToJdbc(campaign.historyEndDate))
-        select(b) orderBy(b.date asc)).toList
+          select (b) orderBy (b.date asc)).toList
     }
     case _ => Nil
   }
-
 
   //get History using Campaign.historyStartDate and historyEndDate
   lazy val actualBidHistory = getBannerPhraseHistory[ActualBidHistory](bannerPhraseActualBidHistoryRel)
@@ -81,37 +78,40 @@ case class BannerPhrase(
   // BannerPhrase -* NetAdvisedBidHistory relation
   lazy val bannerPhraseNetAdvisedBidsHistoryRel: OneToMany[NetAdvisedBidHistory] = AppSchema.bannerPhraseNetAdvisedBidsHistory.left(this)
 
-
-
-
-  /** default put - save to db
-  **/
+  /**
+   * default put - save to db
+   */
   def put(): BannerPhrase = inTransaction { AppSchema.bannerphrases insert this }
-
 
 }
 
 object BannerPhrase {
 
   /**
-  * select BannerPhrase for given Campaign, network_banner_id, network_phrase_id and network_region_id
-  * it should be 1 BannerPhrase
-  * @param Campaign, String, String, String
-  * @return BannerPhrase
-  **/
+   * select BannerPhrase for given Campaign, network_banner_id, network_phrase_id and network_region_id
+   * it should be 1 BannerPhrase
+   * @param Campaign, String, String, String
+   * @return BannerPhrase
+   */
   def select(campaign: Campaign, network_banner_id: String, network_phrase_id: String,
-    network_region_id: String ): List[BannerPhrase] = inTransaction {
-      from(AppSchema.bannerphrases, AppSchema.banners, AppSchema.phrases, AppSchema.regions)((bp, b, ph, r) =>
-        where(
-          bp.campaign_id === campaign.id and
+    network_region_id: String): List[BannerPhrase] = inTransaction {
+    from(AppSchema.bannerphrases, AppSchema.banners, AppSchema.phrases, AppSchema.regions)((bp, b, ph, r) =>
+      where(
+        bp.campaign_id === campaign.id and
           bp.banner_id === b.id and
           bp.phrase_id === ph.id and
           bp.region_id === r.id and
           b.network_banner_id === network_banner_id and
           ph.network_phrase_id === network_phrase_id and
-          r.network_region_id === network_region_id
-        ) select(bp)).toList
+          r.network_region_id === network_region_id) select (bp)).toList
   }
-
 }
 
+/**
+ * def apply(c: domain.Campaign, b: domain.Banner, p: domain.Phrase, r: domain.Region): BannerPhrase =
+    BannerPhrase(
+      campaign_id = c.id,
+      banner_id = b.id,
+      phrase_id = p.id,
+      region_id = r.id)
+**/

@@ -15,9 +15,11 @@ trait Campaign{
 
   def user: Option[User]
   def network: Option[Network]
+  def login: Option[String]
+  def token: Option[String]
 
   def bannerPhrases: List[BannerPhrase]
-  lazy val bannerPhrasesJList: JList[BannerPhrase] = bannerPhrases
+  @transient lazy val bannerPhrasesJList: JList[BannerPhrase] = bannerPhrases
 
   // start and end Dates of retrieved Campaign Histories
   //@BeanProperty
@@ -26,15 +28,15 @@ trait Campaign{
   def historyEndDate: DateTime
 
   def curves: List[Curve]
-  lazy val curvesJList: JList[Curve] = curves
+  @transient lazy val curvesJList: JList[Curve] = curves
   def performanceHistory: List[Performance]
-  lazy val performanceHistoryJList: JList[Performance] = performanceHistory
+  @transient lazy val performanceHistoryJList: JList[Performance] = performanceHistory
   def permutationHistory: List[Permutation]
-  lazy val permutationHistoryJList: JList[Permutation] = permutationHistory
+  @transient lazy val permutationHistoryJList: JList[Permutation] = permutationHistory
 
   def budgetHistory: List[BudgetHistoryElem]
-  lazy val budgetHistoryJList: JList[BudgetHistoryElem] = budgetHistory
+  @transient lazy val budgetHistoryJList: JList[BudgetHistoryElem] = budgetHistory
   def endDateHistory: List[EndDateHistoryElem]
-  lazy val endDateHistoryJList: JList[EndDateHistoryElem] = endDateHistory
+  @transient lazy val endDateHistoryJList: JList[EndDateHistoryElem] = endDateHistory
 }
 

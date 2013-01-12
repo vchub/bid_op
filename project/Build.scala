@@ -12,27 +12,45 @@ object Dependencies {
   val codahale = "com.codahale" %% "jerkson" % "0.5.0"
   val fasterxml = "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
   val lift_json = "net.liftweb" %% "lift-json" % "2.4"
+
+  //TODO
+  /**Matrix library and so on --------------------------------------------------------
+  val breeze_math = "org.scalanlp" %% "breeze-math" % "0.1"
+  val breeze_learn = "org.scalanlp" %% "breeze-learn" % "0.1"
+  val breeze_process = "org.scalanlp" %% "breeze-process" % "0.1"
+  val breeze_viz = "org.scalanlp" %% "breeze-viz" % "0.1"
+ ---------------------------------------------------------------------------------*/
 }
 
 object Resolvers {
   val codahale = "codahale" at "http://repo.codahale.com"
+
+  //TODO
+  /**Matrix library and so on --------------------------------------------------------*/
+  // other resolvers here
+  // if you want to use snapshot builds (currently 0.2-SNAPSHOT), use this.
+  // val breeze = "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+  
 }
 
 object ApplicationBuild extends Build {
 
-    val appName         = "bid"
-    val appVersion      = "1.0-SNAPSHOT"
+  val appName = "bid"
+  val appVersion = "1.0-SNAPSHOT"
 
-    import Dependencies._
-    val appDependencies = Seq(
-      // Add your project dependencies here,
-      squeryl_orm, postgresDriver, codahale, fasterxml, mysqlDriver, scalatest, lift_json
-    )
+  import Dependencies._
+  val appDependencies = Seq(
+    // Add your project dependencies here,
+    squeryl_orm, postgresDriver, codahale, fasterxml, mysqlDriver, scalatest, lift_json)
+    
+    //TODO
+    //breeze_math, breeze_learn, breeze_process, breeze_viz)
 
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
-      // Add your own project settings here
-      testOptions in Test := Nil,
-      resolvers += Resolvers.codahale
-    )
-
+  val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
+    // Add your own project settings here
+    testOptions in Test := Nil,
+    resolvers +=Resolvers.codahale)
+    
+    //TODO
+    //++= Seq(Resolvers.codahale,Resolvers.breeze))
 }

@@ -34,7 +34,7 @@ object RecommendationChangeDate {
       where(r.campaign_id === campaign_id)
       select(r.dateTime)
     ).headOption match {
-      case None => false
+      case None => false 
       case Some(date) => date isAfter dateTime
     }
   }

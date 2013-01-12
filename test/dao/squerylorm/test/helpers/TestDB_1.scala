@@ -45,19 +45,23 @@ object TestDB_1 extends AppHelpers {
     //---------------------------------
 
     //Users
-    val users = 0 until NumberOfUser map (i => User("User_" + i.toString).put)
+    val users = 0 until NumberOfUser map (i => User("User_" + i.toString,"").put)
 
+   
     //Networks
-    val networks = 0 until NumberOfNetworks map (i => Network("Network_" + i.toString).put)
+    val networks = 0 until NumberOfNetworks map (i => Network("Network_0").put)
 
     // add Campaigns to User Network
-    val campaigns = List(users(0).networksRel.associate(networks(0), Campaign(0, 0, "Net_0_Id", date)))
-
+    val campaigns = List(users(0).networksRel.associate(networks(0), Campaign(0, 0, "Net_0_Id", date,"login_1","token_1")))
+ 
     //BudgetHistory
     val budgetHistory = List(
       campaigns(0).budgetHistoryRel.associate(BudgetHistory(campaign_id = 0, date = date, budget = 100)),
       campaigns(0).budgetHistoryRel.associate(BudgetHistory(campaign_id = 0, date = date.plusDays(10), budget = 50)))
     //---------------------------------
+
+    //PeriodType
+    val periodTypes = List(PeriodType(factor = 1, description = "day").put, PeriodType(factor = 0.5, description = "night").put)
 
     // add Banners to Campaigns(0)
     val banners = 0 until NumberOfBanners map (i => Banner("Banner_" + i.toString).put)
@@ -75,6 +79,22 @@ object TestDB_1 extends AppHelpers {
       banner_id = banners(i).id,
       phrase_id = phrases((i * NumberOfPhrasesInBanner) + j).id,
       region_id = regions(0).id).put
+      
+    //BannerPhrasePerformance 
+    def createBannerPhrasePerformance(bp: BannerPhrase, ts: Timestamp): BannerPhrasePerformance = {
+      BannerPhrasePerformance(
+        bannerphrase_id = bp.id,
+        periodtype_id = periodTypes(0).id,
+        cost_search = 5 * rnd.nextDouble(),
+        cost_context = 5 * rnd.nextDouble(),
+        impress_search = 10,
+        impress_context = 10,
+        clicks_search = 1,
+        clicks_context = 1,
+        date = ts)
+    }
+    val bannerPhrasePerformance = for (bp <- bannerPhrases; i <- 0 until NumOfDays)
+      yield createBannerPhrasePerformance(bp, plusDays(i)).put
 
     //NetAdvisedBidHistory
     val netAdvisedBidHistory = for (i <- 0 until NumOfTimestamps; bp <- bannerPhrases)
@@ -104,17 +124,18 @@ object TestDB_1 extends AppHelpers {
 
     //--------------------------------
 
-    //PeriodType
-    val periodTypes = List(PeriodType(factor = 1, description = "day").put, PeriodType(factor = 0.5, description = "night").put)
-
     //CampaignPerformance
     def createCampaignPerformance(ts: Timestamp): CampaignPerformance = {
       CampaignPerformance(
         campaign_id = campaigns(0).id,
         periodtype_id = periodTypes(0).id,
-        date = ts,
-        cost_search = 1, cost_context = 1, impress_search = 10, impress_context = 10,
-        clicks_search = 1, clicks_context = 1)
+        cost_search = 5 * rnd.nextDouble(),
+        cost_context = 5 * rnd.nextDouble(),
+        impress_search = 10,
+        impress_context = 10,
+        clicks_search = 1,
+        clicks_context = 1,
+        date = ts)
     }
     val campaignPerformances = 0 until NumOfTimestamps map
       (i => createCampaignPerformance(plusMinutes(30 * i)).put)
@@ -127,25 +148,33 @@ object TestDB_1 extends AppHelpers {
     //--------------------------------
 
     //Position
-    /**val positions = for (bP_i <- bannerPhrases; p_j <- permutations)
-      yield Position(
-      bannerphrase_id = bP_i.id,
-      permutation_id = p_j.id,
-      position = rnd.nextInt(bannerPhrases.length)).put*/
+    /**
+     * val positions = for (bP_i <- bannerPhrases; p_j <- permutations)
+     * yield Position(
+     * bannerphrase_id = bP_i.id,
+     * permutation_id = p_j.id,
+     * position = rnd.nextInt(bannerPhrases.length)).put
+     */
+    //val n = bannerPhrases.length / 10
+    def perm(ind: List[BannerPhrase], n: Int): List[BannerPhrase] =
+      if (ind.length <= n) scala.util.Random.shuffle(ind)
+      else scala.util.Random.shuffle(ind.take(n)) ::: perm(ind.drop(n), n)
 
-    val positions1 = for (p_j <- permutations)
-      yield (scala.util.Random.shuffle(0 until bannerPhrases.length) zip bannerPhrases) map {
-      case (ind, bP_i) => Position(
-        bannerphrase_id = bP_i.id,
-        permutation_id = p_j.id,
-        position = ind).put
+    val positions = for (p_j <- permutations) yield {
+      val n = bannerPhrases.length / (rnd.nextInt(5)+1);
+      perm(bannerPhrases.toList, n).zipWithIndex map {
+        case (bP_i, ind) => Position(
+          bannerphrase_id = bP_i.id,
+          permutation_id = p_j.id,
+          position = ind).put
+      }
     }
     //--------------------------------
 
     //Curves
     def createCurve(ts: Timestamp, i: Int): Curve = {
-      Curve(campaign_id = 0, optimalPermutation_id = Some(48 * i + 1), a = rnd.nextGaussian(),
-        b = rnd.nextGaussian(), c = rnd.nextGaussian(), d = rnd.nextGaussian(), date = ts)
+      Curve(campaign_id = 0, optimalPermutation_id = Some(48 * i + 1), a = -0.2,
+        b = 5, c = rnd.nextGaussian(), d = rnd.nextGaussian(), date = ts)
     }
     val curves = 0 until NumOfDays map
       (i => campaigns(0).curvesRel.associate(createCurve(plusDays(i), i)))

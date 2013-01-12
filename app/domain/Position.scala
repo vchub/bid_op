@@ -17,6 +17,8 @@ trait Position {
     else {
       val netAdvisedBids = bannerPhrase.netAdvisedBidsHistory.head
       val mean_advised_bid = netAdvisedBids.a + netAdvisedBids.b + netAdvisedBids.c + netAdvisedBids.d
-      1 / (1 + math.exp(-curve.a * position - curve.b)) * mean_advised_bid
+      1 / (1 + math.exp(-curve.a * position.toDouble - curve.b)) * mean_advised_bid
     }
+
+  def bid(curve: Curve) = 1 / (1 + math.exp(-curve.a * position.toDouble - curve.b))
 }

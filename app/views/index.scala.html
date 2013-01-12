@@ -1,7 +1,40 @@
-@(message: String)
+@(fForm: Form[fullForm])
 
-@main("Hi") {
+@import helper._
+@import helper.twitterBootstrap._
 
-  <h3> TODO: </h3>
+@main("Hi man") {
 
+   @helper.form(action = routes.Application.index()) {
+        
+        <fieldset>
+            <legend>Full Form!</legend>
+            
+            @inputText(
+                fForm("username"),
+                '_label -> "Username", 
+                '_help -> "Please choose a valid username.",
+                '_error -> fForm.globalError
+            )
+            
+            @inputText(
+                fForm("network"), '_label -> "Email",
+                '_help -> "Enter a valid email address."
+            )
+            
+            @inputText(
+                fForm("campaign"), '_label -> "Email",
+                '_help -> "Enter a valid email address."
+            )
+            
+        </fieldset>
+        
+        
+        <div class="actions">
+            <input type="submit" class="btn primary" value="Sign Up">
+            <a href="@routes.Application.index" class="btn">Cancel</a>
+        </div>
+        
+    }
+    
 }

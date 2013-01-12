@@ -4,17 +4,16 @@ import org.specs2.mutable._
 import org.specs2.specification._
 import play.api.mvc._
 import play.api._
-import play.api.libs.json.{JsValue, Json, JsObject}
+import play.api.libs.json.{ JsValue, Json, JsObject }
 import play.api.test._
 import play.api.test.Helpers._
 
 import org.joda.time._
 import scala.xml._
 
-import domain.{User, Campaign, Network}
+import domain.{ User, Campaign, Network }
 import dao.squerylorm._
 import dao.squerylorm.test.helpers._
-
 
 class CampaignControllerSpec extends Specification with AllExpectations {
 
@@ -95,7 +94,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
 
     "respond status 201(created) and Performance in json" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
-        import play.api.libs.json.{JsValue, Json, JsObject}
+        import play.api.libs.json.{ JsValue, Json, JsObject }
 
         val date_fmt = format.DateTimeFormat.forPattern("yyyy-MM-dd")
         val iso_fmt = format.ISODateTimeFormat.dateTime() // standart 8601
@@ -103,15 +102,14 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val date: DateTime = iso_fmt.parseDateTime("2012-10-19T10:00:00.000+04:00")
 
         val node = Json.toJson(Map(
-          "start_date" -> iso_fmt.print(start_date),// in format "yyyy-MM-dd"
+          "start_date" -> iso_fmt.print(start_date), // in format "yyyy-MM-dd"
           "end_date" -> iso_fmt.print(date), // in standart ISO 8601
           "sum_search" -> "2.0",
           "sum_context" -> "2.5",
           "impress_search" -> "4",
           "impress_context" -> "5",
           "clicks_search" -> "1",
-          "clicks_context" -> "2"
-        ))
+          "clicks_context" -> "2"))
 
         val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/stats")
           .withJsonBody(node))
@@ -127,10 +125,10 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val c = dao.getCampaign("Coda", "Yandex", "y1", historyStartDate = date.minusMinutes(1),
           historyEndDate = date.plusMinutes(1)).get
         val perfHistory = c.performanceHistory
-        perfHistory.length must_==(1)
+        perfHistory.length must_== (1)
         val performance = perfHistory(0)
-        performance.dateTime must_==(date)
-        performance.periodType.id must_!=(0)
+        performance.dateTime must_== (date)
+        performance.periodType.id must_!= (0)
       }
     }
   }
@@ -193,7 +191,9 @@ class CampaignControllerSpec extends Specification with AllExpectations {
           "start_date": "%s",
           "end_date": "%s",
           "network_campaign_id": "y100",
-          "daily_budget": 50
+          "daily_budget": 50,
+          "_login": "",
+          "_token": ""
         }""".format(iso_fmt.print(date), iso_fmt.print(date.plusDays(30)))
         val node = Json.parse(js)
 
@@ -210,11 +210,11 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val dao = new SquerylDao
         val c = dao.getCampaign("Coda", "Yandex", "y100", historyStartDate = date.minusMinutes(1),
           historyEndDate = date.plusMinutes(2)).get
-        c.id must_!=(0)
-        c.network_campaign_id must_==("y100")
-        c.budgetHistory.length must_==(1)
-        c.endDate must_==(Some(date.plusDays(30)))
-        c.budget must_==(Some(50.0))
+        c.id must_!= (0)
+        c.network_campaign_id must_== ("y100")
+        c.budgetHistory.length must_== (1)
+        c.endDate must_== (Some(date.plusDays(30)))
+        c.budget must_== (Some(50.0))
       }
     }
   }
@@ -253,7 +253,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
 
     def get_FakeRequest_POST_xml(uri: String, node: NodeSeq) = {
       FakeRequest(POST, uri, FakeHeaders(Map("Content-Type" -> Seq("application/xml"))),
-          AnyContentAsXml(node), "localhost")
+        AnyContentAsXml(node), "localhost")
     }
 
     "send BadRequest (400) on malformed or not complete (dates, sums and other fields) xml" in {
@@ -262,10 +262,10 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val file_name = "test/serializers/yandex/reports/report1.xml"
         val node = xml.XML.loadFile(file_name)
         // create a copy w/o end_date
-        val bad_node = <report> {(node\"stat")}</report>
+        val bad_node = <report> { (node \ "stat") }</report>
         // prepare and make request
         val Some(res) = routeAndCall(get_FakeRequest_POST_xml("/user/Coda/net/Yandex/camp/y1/reports",
-            bad_node))
+          bad_node))
         status(res) must equalTo(400)
 
         // create a copy w/o sum_search
@@ -273,7 +273,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val bad_node_1 = change_in_node(node, pattern, "")
         // make request
         val Some(res1) = routeAndCall(get_FakeRequest_POST_xml("/user/Coda/net/Yandex/camp/y1/reports",
-            bad_node))
+          bad_node))
         status(res1) must equalTo(400)
       }
     }
@@ -284,7 +284,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val file_name = "test/serializers/yandex/reports/report1.xml"
         val node = xml.XML.loadFile(file_name)
         val Some(res) = routeAndCall(get_FakeRequest_POST_xml("/user/Coda/net/Yandex/camp/y1/reports",
-            node))
+          node))
 
         status(res) must equalTo(201)
 
@@ -297,21 +297,21 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val campaign = dao.getCampaign("Coda", "Yandex", "y1", historyStartDate = date.minusDays(2),
           historyEndDate = date.plusMinutes(2)).get
         // it should be 4 old and 3 new BannerPhrase
-        campaign.bannerPhrases.length must_==(7)
+        campaign.bannerPhrases.length must_== (7)
 
         // get one of the new BannerPhrases
         val bps = campaign.bannerPhrases filter (_.banner.get.network_banner_id == "123456")
         //only BannerPhrase is created
-        bps.length must_==(1)
+        bps.length must_== (1)
         val created_bp = bps.head
         // check phrase is created
-        created_bp.phrase.get.network_phrase_id must_==("538205157")
+        created_bp.phrase.get.network_phrase_id must_== ("538205157")
 
         // check 1 Performance is created
-        created_bp.performanceHistory.length must_==(1)
+        created_bp.performanceHistory.length must_== (1)
         val performance = created_bp.performanceHistory(0)
-        performance.clicks_search must_==(100)
-        performance.dateTime must_==(date)
+        performance.clicks_search must_== (100)
+        performance.dateTime must_== (date)
       }
     }
   }
@@ -395,28 +395,27 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         // get one of the new BannerPhrases
         val bps = c.bannerPhrases filter (_.banner.get.network_banner_id == "11")
         //only BannerPhrase is created
-        bps.length must_==(2)
+        bps.length must_== (2)
 
         val created_bp = bps.head
         // check phrase is created
-        created_bp.phrase.get.network_phrase_id must_==("22")
+        created_bp.phrase.get.network_phrase_id must_== ("22")
 
         // check 1 NetAdvisedBids is created
-        created_bp.netAdvisedBidsHistory.length must_==(1)
+        created_bp.netAdvisedBidsHistory.length must_== (1)
         val record = created_bp.netAdvisedBidsHistory(0)
-        record.a must_==(1.1)
-        record.b must_==(2.0)
+        record.a must_== (1.1)
+        record.b must_== (2.0)
         (record.dateTime.isAfter(date))
 
         // Check that ActualBidHistory record is created
-        created_bp.actualBidHistory.length must_==(1)
+        created_bp.actualBidHistory.length must_== (1)
         val ab = created_bp.actualBidHistory(0)
-        ab.elem must_==(1.0)
+        ab.elem must_== (1.0)
         (ab.dateTime.isAfter(date))
       }
     }
   }
-
 
   "recommendations" should {
     sequential
@@ -438,18 +437,17 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     /** creates Permutations which creates Recommendations in DB */
     def createPermutaionRecommendation(c: Campaign, dateTime: DateTime) = {
       // create Permutation Map[BannerPhrase, Position]
-      val permutation_map = (for(b <- c.bannerPhrases; i <- 0 to c.bannerPhrases.length)
-          yield (b, domain.po.Position(i))).toMap
+      val permutation_map = (for (b <- c.bannerPhrases; i <- 0 to c.bannerPhrases.length)
+        yield (b, domain.po.Position(i))).toMap
 
       // create domain.Permutation
       val permutation = new domain.po.Permutation(0, dateTime = dateTime, permutation = permutation_map)
       // create dummy Curve
-      val curve = new domain.po.Curve(0,1,1,1,1,dateTime, None)
+      val curve = new domain.po.Curve(0, 1, 1, 1, 1, dateTime, None)
       // save Permutation Recommendation and RecommendationChangeDate to DB
       val dao = new SquerylDao
       dao.createPermutaionRecommendation(permutation, c, curve)
     }
-
 
     "respond status 304 (NOT_MODIFIED) if recommendations are not modified since" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
@@ -486,24 +484,27 @@ class CampaignControllerSpec extends Specification with AllExpectations {
 
         // make a request
         val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1/recommendations").withHeaders(
-          ("If-Modified-Since", fmt.print(date) ))).get
+          ("If-Modified-Since", fmt.print(date)))).get
 
         // check status
         status(res) must equalTo(OK)
         contentType(res) must beSome.which(_ == "application/json")
         // check result
         val content = contentAsString(res)
-        content must not contain("regionID") // network_region_id
+        content must not contain ("regionID") // network_region_id
         // create serializers.Recommendation from result
         import com.codahale.jerkson.Json
+        val rec = Json.parse[List[serializers.PhrasePriceInfo]](content)
+        rec.length must_== (4)
+        rec(0).CampaignID must_== (1)
+        
+        /* Changed!!!
         val rec = Json.parse[serializers.Recommendation](content)
-        rec.param.length must_==(4)
-        rec.param(0).CampaignID must_==(1)
-
+        rec.param.length must_== (4)
+        rec.param(0).CampaignID must_== (1)*/
       }
     }
   }
-
 
 }
 

@@ -56,17 +56,20 @@ class CampaignControllerSpec1 extends Specification with AllExpectations {
     /** creates Permutations which creates Recommendations in DB*/
     def createPermutaionRecommendation(c: Campaign, dateTime: DateTime) = {
 
-      // create optimizer object
+      // create optimizer object 
       val opt = new Optimizer
 
       // create domain.Permutation
       val permutation = opt.createLocalPermutation(c,dateTime)
-      // create dummy Curve
-      val curve = opt.createCurve(c,dateTime)
-
+      
       // save Permutation Recommendation and RecommendationChangeDate to DB
       //val dao = new SquerylDao
-      dao.createPermutaionRecommendation(permutation, c, curve)
+      val dt = dao.createPermutaionRecommendation(permutation, c, c.curves.head)
+
+      // create dummy Curve
+      val curve = opt.createCurve(c,dateTime)
+      
+      dt
     }
 
     "check selected Campaigns is not Nil" in {

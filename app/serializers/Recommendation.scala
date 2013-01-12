@@ -9,7 +9,7 @@ case class Recommendation(
   val param: List[PhrasePriceInfo]
 )
 {
-  def getAsJson = Json generate this
+  def getAsJson = Json generate this.param  //Changed!
 }
 
 object Recommendation{

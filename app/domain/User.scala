@@ -7,5 +7,6 @@ package domain
 trait User{
   def id: Long
   def name: String
+  def password: String
 }
 

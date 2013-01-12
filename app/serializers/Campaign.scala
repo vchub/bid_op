@@ -3,19 +3,18 @@ package serializers
 import org.joda.time._
 import com.codahale.jerkson.Json
 
-
 case class Campaign(
   val network_campaign_id: String = "",
   val start_date: DateTime = new DateTime,
   val end_date: DateTime = new DateTime,
-  val daily_budget: Double = 0.0
-
-
-) extends domain.Campaign
-{
+  val daily_budget: Double = 0.0,
+  val _login: String = "",
+  val _token: String = "") extends domain.Campaign {
+  @transient
   var id: Long = 0
   @transient
   val startDate: DateTime = start_date
+
   @transient
   val endDate: Option[DateTime] = Some(end_date)
   @transient
@@ -25,6 +24,10 @@ case class Campaign(
   var user: Option[domain.User] = None
   @transient
   var network: Option[domain.Network] = None
+  @transient
+  val login: Option[String] = Some(_login)
+  @transient
+  val token: Option[String] = Some(_token)
 
   @transient
   var bannerPhrases: List[domain.BannerPhrase] = Nil
@@ -49,19 +52,21 @@ case class Campaign(
 }
 object Campaign {
 
-  /** Constructor from domain.Campaign
-  */
+  /**
+   * Constructor from domain.Campaign
+   */
   def apply(c: domain.Campaign): Campaign = Campaign(
     network_campaign_id = c.network_campaign_id,
     start_date = c.startDate,
     end_date = c.endDate.getOrElse(new DateTime(0)),
-    daily_budget = c.budget.getOrElse(0.0)
-  )
+    daily_budget = c.budget.getOrElse(0.0),
+    _login = c.login.getOrElse(""), 
+    _token = c.token.getOrElse(""))
 
-  /** Constructor from JSON as String
-  */
+  /**
+   * Constructor from JSON as String
+   */
   def apply(jsonString: String): Campaign = Json.parse[Campaign](jsonString)
-
 
 }
 
