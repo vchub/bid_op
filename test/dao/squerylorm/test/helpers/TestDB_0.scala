@@ -22,7 +22,7 @@ object TestDB_0 extends AppHelpers {
     //def get_from_standart_string_DateTime(date: DateTime): String = date.toString(app_formatter)
 
     //Users
-    val users = List(User("Coda").put, User("Some").put)
+    val users = List(User("Coda","123").put, User("Some","123").put)
 
     //Networks
     val networks = List(Network("Yandex").put, Network("Google").put)

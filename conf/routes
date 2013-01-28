@@ -8,9 +8,9 @@ GET     /clear_db                   controllers.Application.clear_db
 
 # UserController
 #
-GET   /user/:name               controllers.UserController.user_old(name: String)
-POST  /user/:name               controllers.UserController.user(name: String)
-POST  /user               		controllers.UserController.createUser
+#GET   /user/:name               	controllers.UserController.user_old(name: String)
+GET    /user/:name                  controllers.UserController.user(name: String)
+POST   /user                		controllers.UserController.createUser
 
 # CampaignController
 #

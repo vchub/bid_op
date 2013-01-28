@@ -55,8 +55,7 @@ object Application extends Controller {
   import dao.squerylorm.SquerylDao
   def clear_db = Action {
     val dao = new SquerylDao
-    dao.clearDB
-    Created("SUCCESS")
+    if (dao.clearDB) Ok else BadRequest
   }
 
   //  /**

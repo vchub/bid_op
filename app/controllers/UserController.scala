@@ -8,7 +8,7 @@ import com.codahale.jerkson.Json
 import domain.{ User, Campaign, Network }
 import dao.squerylorm.SquerylDao
 
-object UserController extends Controller {
+object UserController extends Controller with Secured {
 
   /**
    * TODO: get user's Networks
@@ -23,27 +23,7 @@ object UserController extends Controller {
     }
   }
 
-  def user(user_name: String) = Action { implicit request =>
-    request.body.asJson match {
-      case None => BadRequest("Invalid json body")
-      case Some(jbody) =>
-        try {
-          val pass = Json.parse[Map[String, String]](jbody.toString)
-          val password = pass.get("password").get
-
-          val dao = new SquerylDao
-          dao.getUser(user_name, password).headOption match {
-            case None => NotFound
-            case Some(user) => Ok(Json generate user).as(JSON)
-          }
-        } catch {
-          case e =>
-            println(e) //TODO: change to log
-            BadRequest("exception caught: " + e)
-        }
-
-    }
-  }
+  def user(user_name: String) = IsAuth(user_name, (dao, user) => request => Ok(Json generate user) as (JSON))
 
   def createUser = Action { implicit request =>
     request.body.asJson match {
@@ -70,6 +50,30 @@ object UserController extends Controller {
       CACHE_CONTROL -> "max-age=3600",
       ETAG -> "xx")
   }
-
 }
+
+
+/*
+ def user(user_name: String) = Action { implicit request =>
+    request.body.asJson match {
+      case None => BadRequest("Invalid json body")
+      case Some(jbody) =>
+        try {
+          val pass = Json.parse[Map[String, String]](jbody.toString)
+          val password = pass.get("password").get
+
+          val dao = new SquerylDao
+          dao.getUser(user_name, password).headOption match {
+            case None => NotFound
+            case Some(user) => Ok(Json generate user).as(JSON)
+          }
+        } catch {
+          case e =>
+            println(e) //TODO: change to log
+            BadRequest("exception caught: " + e)
+        }
+
+    }
+  }
+ */
 

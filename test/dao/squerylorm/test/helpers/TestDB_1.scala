@@ -45,7 +45,7 @@ object TestDB_1 extends AppHelpers {
     //---------------------------------
 
     //Users
-    val users = 0 until NumberOfUser map (i => User("User_" + i.toString,"").put)
+    val users = 0 until NumberOfUser map (i => User("User_" + i.toString,"123").put)
 
    
     //Networks

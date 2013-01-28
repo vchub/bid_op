@@ -23,18 +23,18 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     "send 404 on a wrong User, Network or network_campaign_id request" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
-        val Some(res) = routeAndCall(FakeRequest(GET, "/user/boum/net/Yandex/camp"))
+        val Some(res) = routeAndCall(FakeRequest(GET, "/user/boum/net/Yandex/camp").withHeaders(("password" -> "123")))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong Network
-        val Some(res1) = routeAndCall(FakeRequest(GET, "/user/Coda/net/yandex/camp"))
+        val Some(res1) = routeAndCall(FakeRequest(GET, "/user/Coda/net/yandex/camp").withHeaders(("password" -> "123")))
         status(res1) must equalTo(404) //SimpleResult(404, Map()))
       }
     }
 
     "respond Campaign in json" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
-        val Some(res) = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp"))
+        val Some(res) = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp").withHeaders(("password" -> "123")))
 
         status(res) must equalTo(OK)
         contentType(res) must beSome.which(_ == "application/json")
@@ -49,22 +49,22 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     "send 404 on a wrong User, Network or network_campaign_id request" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
-        val Some(res) = routeAndCall(FakeRequest(GET, "/user/boum/net/Yandex/camp/y1"))
+        val Some(res) = routeAndCall(FakeRequest(GET, "/user/boum/net/Yandex/camp/y1").withHeaders(("password" -> "123")))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong Network
-        val Some(res1) = routeAndCall(FakeRequest(GET, "/user/Coda/net/yandex/camp/y1"))
+        val Some(res1) = routeAndCall(FakeRequest(GET, "/user/Coda/net/yandex/camp/y1").withHeaders(("password" -> "123")))
         status(res1) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong network_campaign_id
-        val Some(res2) = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y100"))
+        val Some(res2) = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y100").withHeaders(("password" -> "123")))
         status(res2) must equalTo(404) //SimpleResult(404, Map()))
       }
     }
 
     "respond Campaign in json" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
-        val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1")).get
+        val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1").withHeaders(("password" -> "123"))).get
 
         status(res) must equalTo(OK)
         contentType(res) must beSome.which(_ == "application/json")
@@ -79,15 +79,15 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     "send 404 on a wrong User, Network or network_campaign_id request" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/stats"))
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/stats").withHeaders(("password" -> "123")))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong Network
-        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp/y1/stats"))
+        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp/y1/stats").withHeaders(("password" -> "123")))
         status(res1) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong network_campaign_id
-        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y100/stats"))
+        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y100/stats").withHeaders(("password" -> "123")))
         status(res2) must equalTo(404) //SimpleResult(404, Map()))
       }
     }
@@ -111,7 +111,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
           "clicks_search" -> "1",
           "clicks_context" -> "2"))
 
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/stats")
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/stats").withHeaders(("password" -> "123"))
           .withJsonBody(node))
 
         status(res) must equalTo(201)
@@ -139,18 +139,18 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     "send 404 on a wrong User, Network" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp"))
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp").withHeaders(("password" -> "123")))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong Network
-        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp"))
+        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp").withHeaders(("password" -> "123")))
         status(res1) must equalTo(404) //SimpleResult(404, Map()))
       }
     }
 
     "send BadRequest (400) on empty request body" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
-        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp"))
+        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp").withHeaders(("password" -> "123")))
         status(res2) must equalTo(400)
       }
     }
@@ -171,7 +171,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
           "budget": 50
         }""".format(fmt_date.print(date), fmt_date.print(date.plusDays(30)))
         val node = Json.parse(js)
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp")
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp").withHeaders(("password" -> "123"))
           .withJsonBody(node))
         status(res) must equalTo(400)
       }
@@ -197,7 +197,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         }""".format(iso_fmt.print(date), iso_fmt.print(date.plusDays(30)))
         val node = Json.parse(js)
 
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp")
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp").withHeaders(("password" -> "123"))
           .withJsonBody(node))
 
         status(res) must equalTo(201)
@@ -225,22 +225,22 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     "send 404 on a wrong User, Network or network_campaign_id request" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/reports"))
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/reports").withHeaders(("password" -> "123")))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong Network
-        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp/y1/reports"))
+        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp/y1/reports").withHeaders(("password" -> "123")))
         status(res1) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong network_campaign_id
-        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y100/reports"))
+        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y100/reports").withHeaders(("password" -> "123")))
         status(res2) must equalTo(404) //SimpleResult(404, Map()))
       }
     }
 
     "send BadRequest (400) on empty request body" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/reports"))
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/reports").withHeaders(("password" -> "123")))
         status(res) must equalTo(400)
       }
     }
@@ -265,7 +265,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val bad_node = <report> { (node \ "stat") }</report>
         // prepare and make request
         val Some(res) = routeAndCall(get_FakeRequest_POST_xml("/user/Coda/net/Yandex/camp/y1/reports",
-          bad_node))
+          bad_node).withHeaders(("password" -> "123")))
         status(res) must equalTo(400)
 
         // create a copy w/o sum_search
@@ -273,7 +273,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val bad_node_1 = change_in_node(node, pattern, "")
         // make request
         val Some(res1) = routeAndCall(get_FakeRequest_POST_xml("/user/Coda/net/Yandex/camp/y1/reports",
-          bad_node))
+          bad_node).withHeaders(("password" -> "123")))
         status(res1) must equalTo(400)
       }
     }
@@ -284,7 +284,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val file_name = "test/serializers/yandex/reports/report1.xml"
         val node = xml.XML.loadFile(file_name)
         val Some(res) = routeAndCall(get_FakeRequest_POST_xml("/user/Coda/net/Yandex/camp/y1/reports",
-          node))
+          node).withHeaders(("password" -> "123")))
 
         status(res) must equalTo(201)
 
@@ -322,22 +322,22 @@ class CampaignControllerSpec extends Specification with AllExpectations {
     "send 404 on a wrong User, Network or network_campaign_id request" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/bannerreports"))
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/boum/net/Yandex/camp/y1/bannerreports").withHeaders(("password" -> "123")))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong Network
-        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp/y1/bannerreports"))
+        val Some(res1) = routeAndCall(FakeRequest(POST, "/user/Coda/net/yandex/camp/y1/bannerreports").withHeaders(("password" -> "123")))
         status(res1) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong network_campaign_id
-        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y100/bannerreports"))
+        val Some(res2) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y100/bannerreports").withHeaders(("password" -> "123")))
         status(res2) must equalTo(404) //SimpleResult(404, Map()))
       }
     }
 
     "send BadRequest (400) on empty request body" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports"))
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports").withHeaders(("password" -> "123")))
         status(res) must equalTo(400)
       }
     }
@@ -358,7 +358,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
           "budget": 50
         }""".format(fmt_date.print(date), fmt_date.print(date.plusDays(30)))
         val node = Json.parse(js)
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports")
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports").withHeaders(("password" -> "123"))
           .withJsonBody(node))
         status(res) must equalTo(400)
       }
@@ -378,7 +378,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val js = io.Source.fromFile(file_name, "utf-8").getLines.mkString
         val node = Json.parse(js)
 
-        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports")
+        val Some(res) = routeAndCall(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports").withHeaders(("password" -> "123"))
           .withJsonBody(node))
 
         status(res) must equalTo(201)
@@ -424,12 +424,12 @@ class CampaignControllerSpec extends Specification with AllExpectations {
       TestDB_0.creating_and_filling_inMemoryDB() {
         // wrong User
         val Some(res) = routeAndCall(FakeRequest(GET, "/user/boum/net/Yandex/camp/y1/recommendations").withHeaders(
-          ("If-Modified-Since", "2012-09-19T11:00:00.000+04:00")))
+          ("If-Modified-Since", "2012-09-19T11:00:00.000+04:00"), ("password" -> "123")))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong network_campaign_id
         val Some(res2) = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y100/recommendations").withHeaders(
-          ("If-Modified-Since", "2012-09-19T12:00:00.000+04:00")))
+          ("If-Modified-Since", "2012-09-19T12:00:00.000+04:00"), ("password" -> "123")))
         status(res2) must equalTo(404) //SimpleResult(404, Map()))
       }
     }
@@ -464,7 +464,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
 
         // make a request
         val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1/recommendations").withHeaders(
-          ("If-Modified-Since", date_str))).get
+          ("If-Modified-Since", date_str), ("password" -> "123"))).get
         // check status
         status(res) must equalTo(NOT_MODIFIED)
       }
@@ -484,7 +484,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
 
         // make a request
         val res = routeAndCall(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1/recommendations").withHeaders(
-          ("If-Modified-Since", fmt.print(date)))).get
+          ("If-Modified-Since", fmt.print(date)), ("password" -> "123"))).get
 
         // check status
         status(res) must equalTo(OK)
@@ -497,7 +497,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val rec = Json.parse[List[serializers.PhrasePriceInfo]](content)
         rec.length must_== (4)
         rec(0).CampaignID must_== (1)
-        
+
         /* Changed!!!
         val rec = Json.parse[serializers.Recommendation](content)
         rec.param.length must_== (4)

@@ -12,12 +12,14 @@ trait Position {
   //def bannerPhrase: BannerPhrase
 
   //TODO
-  def bid(curve: Curve, bannerPhrase: BannerPhrase) =
-    if (bannerPhrase.netAdvisedBidsHistory == Nil) 1
+  def bid(curve: Curve, bannerPhrase: BannerPhrase):Double =
+    if (bannerPhrase.netAdvisedBidsHistory == Nil) {println("<<<<<<<<<<<< 0.01 >>>>>>>>>>>");0.01}
     else {
       val netAdvisedBids = bannerPhrase.netAdvisedBidsHistory.head
       val mean_advised_bid = netAdvisedBids.a + netAdvisedBids.b + netAdvisedBids.c + netAdvisedBids.d
-      1 / (1 + math.exp(-curve.a * position.toDouble - curve.b)) * mean_advised_bid
+      val v = 1 / (1 + math.exp(-curve.a * position.toDouble - curve.b)) * mean_advised_bid
+      println("<<<<<<<<<<<< "+v+" >>>>>>>>>>>")
+      v
     }
 
   def bid(curve: Curve) = 1 / (1 + math.exp(-curve.a * position.toDouble - curve.b))

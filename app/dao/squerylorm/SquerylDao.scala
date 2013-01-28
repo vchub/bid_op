@@ -61,7 +61,7 @@ class SquerylDao extends dao.Dao {
    * creates Campaign record
    */
   def create(campaign: dCam) = Campaign.create(cc = campaign)
-  
+
   /**
    * creates new records in EndDateHistory or BudgetHistory
    * TODO: change definition. funct. should take {new_budget: date, new_endDate: date} ...
@@ -72,7 +72,7 @@ class SquerylDao extends dao.Dao {
    * creates new User record
    */
   def create(user: domain.User): domain.User = User.create(user)
-  
+
   /**
    * updates user.name
    */
@@ -159,19 +159,23 @@ class SquerylDao extends dao.Dao {
   def getCurrentRecommedation(c: domain.Campaign, dateTime: DateTime = new DateTime): Option[domain.Recommendation] =
     Campaign.get_by_id(c.id).selectCurrentRecommendation(dateTime)
 
-
-  def clearDB = {
+  def clearDB: Boolean = {
     import scala.util.control.Exception._
-    inTransaction {      
-      allCatch opt AppSchema.drop
-      allCatch opt AppSchema.create
-      
-      //Networks
-    val networks = List("Yandex","Google","Begun")
-    val fillNets = networks map (Network(_).put)
-    val fillPeriodTypes = PeriodType(new DateTime()).put
+    inTransaction {
+      try {
+        allCatch opt AppSchema.drop
+        allCatch opt AppSchema.create
+
+        //Networks
+        val networks = List("Yandex", "Google", "Begun")
+        val fillNets = networks map (Network(_).put)
+        val fillPeriodTypes = PeriodType(new DateTime()).put
+        true
+      } catch {
+        case e => false
+      }
     }
-  }  
+  }
 }
 
 /**

@@ -32,23 +32,32 @@ class CampaignControllerSpec1 extends Specification with AllExpectations {
       TestDB_1.creating_and_filling_inMemoryDB() {
         // true parameters
         val Some(res0) = routeAndCall(FakeRequest(GET, "/user/User_0/net/Network_0/camp/Net_0_Id/recommendations").withHeaders(
-          ("If-Modified-Since", "2012-09-19T13:00:00.000+04:00")))
-        status(res0) must not equalTo (404) //SimpleResult(404, Map()))
+          ("If-Modified-Since" -> "2012-09-19T13:00:00.000+04:00"), ("password" -> "123")))
+        status(res0) must not equalTo (404) //SimpleResult(404, Map()))        
 
         // wrong User
         val Some(res) = routeAndCall(FakeRequest(GET, "/user/User_1/net/Network_0/camp/Net_0_Id/recommendations").withHeaders(
-          ("If-Modified-Since", "2012-09-19T11:00:00.000+04:00")))
+          ("If-Modified-Since", "2012-09-19T11:00:00.000+04:00"), ("password" -> "123")))
         status(res) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong Network
         val Some(res1) = routeAndCall(FakeRequest(GET, "/user/User_0/net/Network_1/camp/Net_0_Id/recommendations").withHeaders(
-          ("If-Modified-Since", "2012-09-19T12:00:00.000+04:00")))
+          ("If-Modified-Since", "2012-09-19T12:00:00.000+04:00"), ("password" -> "123")))
         status(res1) must equalTo(404) //SimpleResult(404, Map()))
 
         // wrong network_campaign_id
         val Some(res2) = routeAndCall(FakeRequest(GET, "/user/User_0/net/Network_0/camp/Net_1_id/recommendations").withHeaders(
-          ("If-Modified-Since", "2012-09-19T13:00:00.000+04:00")))
+          ("If-Modified-Since", "2012-09-19T13:00:00.000+04:00"), ("password" -> "123")))
         status(res2) must equalTo(404) //SimpleResult(404, Map()))
+        
+        // wrong password
+        val Some(res3) = routeAndCall(FakeRequest(GET, "/user/User_0/net/Network_0/camp/Net_0_Id/recommendations").withHeaders(
+          ("If-Modified-Since" -> "2012-09-19T13:00:00.000+04:00"), ("password" -> "123456789")))
+        status(res3) must equalTo (404) //NotFound
+        
+        val Some(res4) = routeAndCall(FakeRequest(GET, "/user/User_0/net/Network_0/camp/Net_0_Id/recommendations").withHeaders(
+          ("If-Modified-Since" -> "2012-09-19T13:00:00.000+04:00")))
+        status(res4) must equalTo (400) //BadRequest
 
       }
     }
@@ -60,15 +69,15 @@ class CampaignControllerSpec1 extends Specification with AllExpectations {
       val opt = new Optimizer
 
       // create domain.Permutation
-      val permutation = opt.createLocalPermutation(c,dateTime)
-      
+      val permutation = opt.createLocalPermutation(c, dateTime)
+
       // save Permutation Recommendation and RecommendationChangeDate to DB
       //val dao = new SquerylDao
       val dt = dao.createPermutaionRecommendation(permutation, c, c.curves.head)
 
       // create dummy Curve
-      val curve = opt.createCurve(c,dateTime)
-      
+      val curve = opt.createCurve(c, dateTime)
+
       dt
     }
 
