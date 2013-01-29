@@ -18,24 +18,26 @@ class UserControllerSpec extends Specification with AllExpectations {
     "send 404 on a wrong User, Network or network_campaign_id request" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val Some(res) = routeAndCall(FakeRequest(GET, "/user/foo").withHeaders(("password" -> "123")))
-        status(res) must equalTo(404)
+        status(res.asInstanceOf[AsyncResult].result.await.get) must equalTo(404)
       }
     }
 
     "send 404 or 400 on a wrong Password request" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
         val Some(res0) = routeAndCall(FakeRequest(GET, "/user/Coda").withHeaders(("password" -> "12345678")))
-        status(res0) must equalTo(404) //NotFound
+        status(res0.asInstanceOf[AsyncResult].result.await.get) must equalTo(404) //NotFound
 
         val Some(res1) = routeAndCall(FakeRequest(GET, "/user/Coda"))
-        status(res1) must equalTo(400) //BadRequest
+        status(res1.asInstanceOf[AsyncResult].result.await.get) must equalTo(400) //BadRequest
       }
     }
 
     "respond User in json" in {
       TestDB_0.creating_and_filling_inMemoryDB() {
-        val res = routeAndCall(FakeRequest(GET, "/user/Coda").withHeaders(("password" -> "123"))).get
-
+        val res0 = routeAndCall(FakeRequest(GET, "/user/Coda").withHeaders(("password" -> "123"))).get
+        
+        val res = res0.asInstanceOf[AsyncResult].result.await.get
+        
         status(res) must equalTo(OK)
         contentType(res) must beSome.which(_ == "application/json")
         contentAsString(res) must contain("Coda")

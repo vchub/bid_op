@@ -17,7 +17,10 @@ object AppSchema extends Schema {
 
   val banners = table[Banner]
   val regions = table[Region]
+
   val phrases = table[Phrase]
+  on(phrases)(ph => declare(ph.phrase is (dbType("varchar(512)"))))
+
   val bannerphrases = table[BannerPhrase]
   val positions = table[Position]
   val periodtypes = table[PeriodType]
