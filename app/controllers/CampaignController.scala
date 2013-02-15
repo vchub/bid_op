@@ -3,7 +3,9 @@ package controllers
 import play.api._
 import play.api.mvc._
 import org.joda.time._
-import com.codahale.jerkson.Json
+
+import play.api.libs.json._
+
 import domain.{ User, Campaign, Network }
 import dao.squerylorm.SquerylDao
 import serializers.yandex.XmlReport
@@ -20,9 +22,9 @@ object CampaignController extends Controller with Secured {
     (dao, user) => implicit request => {
       dao.getCampaigns(user_name, net_name) match {
         case Nil => NotFound("CAMPAIGNS are NOT FOUND...")
-        case campaigns =>
-          val sCampaigns = campaigns map (serializers.Campaign(_))
-          Ok(Json generate sCampaigns).as(JSON)
+        case campaigns => 
+          val sCampaigns = campaigns map (serializers.Campaign._apply(_))
+          Ok(Json.toJson(sCampaigns)(common.Writes.campaignList)).as(JSON)
       }
     })
 
@@ -36,8 +38,8 @@ object CampaignController extends Controller with Secured {
       dao.getCampaign(user_name, net_name, network_campaign_id) match {
         case None => NotFound("CAMPAIGN is NOT FOUND...")
         case Some(c) =>
-          val serialCampaign = serializers.Campaign(c)
-          Ok(Json generate List(serialCampaign)).as(JSON)
+          val sCampaign = serializers.Campaign._apply(c)
+          Ok(Json.toJson(List(sCampaign))(common.Writes.campaignList)).as(JSON)
       }
     })
 
@@ -62,14 +64,14 @@ object CampaignController extends Controller with Secured {
             case Some(jbody) =>
               try {
                 //Create Campaign
-                val c = serializers.Campaign(jbody.toString)
+                val c = serializers.Campaign._apply(jbody)
                 c.user = Some(user)
                 c.network = network
                 // insert Campaign
                 val domCamp = dao.create(c)
 
                 // respond with CREATED header and Campaign body
-                Created(Json generate serializers.Campaign(domCamp)) as (JSON)
+                Created(Json.toJson(serializers.Campaign._apply(domCamp))(common.Writes.campaign)) as (JSON)
               } catch {
                 case e =>
                   println(e) //TODO: change to log
@@ -140,7 +142,7 @@ object CampaignController extends Controller with Secured {
             case Some(jbody) =>
               try {
                 println("!!!!!!!!!!!!! FAKE !!!!!!!!!!!!!")
-                val performance = serializers.Performance(jbody.toString())
+                val performance = serializers.Performance._apply(jbody)
                 // insert Performance
                 // TODO: no PeriodType now. Fix.
                 println("SERIALIZED PERFORMANCE!!!!!!!!!!!!!" + c.toString() + "&&&&&&&&&" + performance.toString())
@@ -160,7 +162,7 @@ object CampaignController extends Controller with Secured {
                 else
                   println("Algorithm is FAILED!!!!!!!!!!!!")
 
-                Created(Json generate serializers.Performance(domPerf)) as (JSON)
+                Created(Json.toJson(serializers.Performance._apply(domPerf))(common.Writes.performance)) as (JSON)
               } catch {
                 case e =>
                   e.printStackTrace //TODO: change to log
@@ -199,7 +201,7 @@ object CampaignController extends Controller with Secured {
       }
       true
     } catch {
-      case t => false
+      case t: Throwable => false
     }
   }
 
@@ -225,14 +227,14 @@ object CampaignController extends Controller with Secured {
             case None => BadRequest("Invalid json body")
             case Some(jbody) =>
               try {
-                val br = serializers.yandex.BannerReport(jbody.toString)
+                val br = serializers.yandex.BannerReport._apply(jbody)
                 val l = println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 val report = br.getDomainReport
                 val q = println("$$$$$$$$$$$$$$$$$$$$$$$$")
                 // save in DB
                 val res = dao.createBannerPhraseNetAndActualBidReport(c, report)
                 // respond with CREATED header and res: Boolean
-                Created(Json generate res) as (JSON)
+                Created(Json.toJson(res)) as (JSON)
               } catch {
                 case e =>
                   println(e) //TODO: change to log

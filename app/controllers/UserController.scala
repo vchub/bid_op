@@ -3,7 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 
-import com.codahale.jerkson.Json
+import play.api.libs.json._
 
 import domain.{ User, Campaign, Network }
 import dao.squerylorm.SquerylDao
@@ -19,22 +19,22 @@ object UserController extends Controller with Secured {
     val dao = new SquerylDao
     dao.getUser(user_name).headOption match {
       case None => NotFound
-      case Some(user) => Ok(Json generate List(user)).as(JSON)
+      case Some(user) => Ok(Json.toJson(serializers.User._apply(user))(common.Formats.user)).as(JSON)
     }
   }
 
-  def user(user_name: String) = IsAuth(user_name, (dao, user) => request => Ok(Json generate user) as (JSON))
+  def user(user_name: String) = IsAuth(user_name, (dao, user) => request => Ok(Json.toJson(serializers.User._apply(user))(common.Formats.user)) as (JSON))
 
   def createUser = Action { implicit request =>
     request.body.asJson match {
       case None => BadRequest("Invalid json body")
       case Some(jbody) =>
         try {
-          val u = serializers.User(jbody.toString())
+          val sUser = serializers.User._apply(jbody)
           val dao = new SquerylDao
-          val newUser = dao.create(u)
+          val newUser = dao.create(sUser)
           // respond with CREATED header and User body
-          Created(Json generate newUser) as (JSON)
+          Created(Json.toJson(sUser)(common.Formats.user)) as (JSON)
         } catch {
           case e =>
             println(e) //TODO: change to log

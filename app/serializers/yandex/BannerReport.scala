@@ -1,7 +1,8 @@
 package serializers.yandex
 
 import org.joda.time._
-import com.codahale.jerkson.Json
+
+import play.api.libs.json._
 
 import common._
 
@@ -9,7 +10,8 @@ import domain._
 
 /** Yandex GetBanners (Live) API call output data structure */
 case class BannerReport(
-  val data: List[BannerInfo]) {
+  val data: List[BannerInfo]) { //,
+  //@transient val trash: String = "") {
 
   /** creates Map (see return) of domain.Types */
   def getDomainReport: Map[BannerPhrase, (ActualBidHistoryElem, NetAdvisedBids)] = {
@@ -38,9 +40,12 @@ case class BannerReport(
 
 }
 
-object BannerReport {
-  def apply(jsonString: String): BannerReport = {
-    Json.parse[BannerReport](jsonString)
+object BannerReport extends Function1[List[BannerInfo], BannerReport] {
+  def _apply(jsValue: JsValue): BannerReport = {
+    Json.fromJson[BannerReport](jsValue)(common.Reads.bannerReport).get
+    /*import common.Reads.bannerReport
+    jsValue.validate[BannerReport].map { br => br }.
+      recoverTotal(er => { println(er); BannerReport(data = List()) })*/
   }
 }
 

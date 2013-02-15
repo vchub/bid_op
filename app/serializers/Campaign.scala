@@ -1,7 +1,8 @@
 package serializers
 
 import org.joda.time._
-import com.codahale.jerkson.Json
+
+import play.api.libs.json._
 
 case class Campaign(
   val network_campaign_id: String = "",
@@ -50,23 +51,23 @@ case class Campaign(
   @transient
   var endDateHistory: List[domain.EndDateHistoryElem] = Nil
 }
-object Campaign {
+object Campaign extends Function6[String, DateTime, DateTime, Double, String, String, Campaign] {
 
   /**
    * Constructor from domain.Campaign
    */
-  def apply(c: domain.Campaign): Campaign = Campaign(
+  def _apply(c: domain.Campaign): Campaign = Campaign(
     network_campaign_id = c.network_campaign_id,
     start_date = c.startDate,
     end_date = c.endDate.getOrElse(new DateTime(0)),
     daily_budget = c.budget.getOrElse(0.0),
-    _login = c.login.getOrElse(""), 
+    _login = c.login.getOrElse(""),
     _token = c.token.getOrElse(""))
 
   /**
    * Constructor from JSON as String
    */
-  def apply(jsonString: String): Campaign = Json.parse[Campaign](jsonString)
+  def _apply(jsValue: JsValue): Campaign = Json.fromJson[Campaign](jsValue)(common.Formats.campaign).get
 
 }
 

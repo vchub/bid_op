@@ -1,18 +1,18 @@
 package serializers
 
-import com.codahale.jerkson.Json
+import play.api.libs.json._
 
 case class User(
   val name: String,
   val password: String) extends domain.User {
   @transient var id: Long = 0
 }
- 
-object User {
-  def apply(user: domain.User): User = User(
+
+object User extends Function2[String, String, User] {
+  def _apply(user: domain.User): User = User(
     name = user.name,
     password = user.password)
 
-  def apply(jsonstring: String): User = Json.parse[User](jsonstring)
+  def _apply(jsValue: JsValue): User = Json.fromJson[User](jsValue)(common.Formats.user).get
 }
 

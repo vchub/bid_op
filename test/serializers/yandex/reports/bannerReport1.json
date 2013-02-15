@@ -1,0 +1,121 @@
+{
+   "data": [
+      { 
+         "BannerID": 11,
+         "CampaignID": 0,
+         "Title": "",
+         "Text": "some",
+         "Href": "",
+         "Domain": "",
+         "Geo": "12, 11 ",
+         "ContactInfo": {
+            
+            "ContactPerson": "",
+            "Country": "",
+            "CountryCode": "",
+            "City": "",
+            "Street": "",
+            "House": "",
+            "Build": "",
+            "Apart": "",
+            "Metro": 0,
+            "CityCode": "",
+            "Phone": "",
+            "PhoneExt": "",
+            "CompanyName": "",
+            "IMClient": "",
+            "IMLogin": "",
+            "ExtraMessage": "",
+            "ContactEmail": "",
+            "WorkTime": "",
+            "OGRN": "",
+            "PointOnMap": {
+               
+               "x": 0.0,
+               "y": 0.0,
+               "x1": 0.0,
+               "y1": 0.0,
+               "x2": 0.0,
+               "y2": 0.0
+            }
+         },
+         "Phrases": [
+            {  
+               "Phrase": "",
+               "IsRubric": "",
+               "Clicks": 10,
+               "FirstPlaceClicks": 0,
+               "PremiumClicks": 0,
+               "Shows": 0,
+               "Min": 1.1,
+               "Max": 2.0,
+               "PremiumMin": 0.0,
+               "PremiumMax": 0.0,
+               "CTR": 0.0,
+               "FirstPlaceCTR": 0.0,
+               "PremiumCTR": 0.0,
+               "LowCTRWarning": "",
+               "LowCTR": "",
+               "ContextPrice": 0.5,
+               "ContextCoverage": [
+                  {  
+                     "Probability": 0.0,
+                     "Price": 0.0
+                  }
+               ],
+               "BannerID": 11,
+               "Price": 1.0,
+               "Prices": [
+                  0.0
+               ],
+               "Coverage": [
+                  {  
+                     "Probability": 0.0,
+                     "Price": 0.0
+                  }
+               ],
+               "AutoBroker": "Yes",
+               "PhraseID": 22,
+               "CurrentOnSearch": 1.0,
+               "CampaignID": 0,
+               "MinPrice": 0.0,
+               "AutoBudgetPriority": "",
+               "StatusPhraseModerate": "",
+               "ContextLowCTR": "",
+               "UserParams": {
+                  
+                  "Param1": "",
+                  "Param2": ""
+               }
+            }
+         ],
+         "StatusActivating": "",
+         "StatusArchive": "",
+         "StatusBannerModerate": "",
+         "StatusPhrasesModerate": "",
+         "StatusPhoneModerate": "",
+         "StatusShow": "",
+         "IsActive": "",
+         "StatusSitelinksModerate": "",
+         "Sitelinks": [
+            {  
+               "Title": "",
+               "Href": ""
+            }
+         ],
+         "AdWarnings": [
+            ""
+         ],
+         "FixedOnModeration": "",
+         "ModerateRejectionReasons": [
+            {  
+               "Type": "",
+               "Text": ""
+            }
+         ],
+         "MinusKeywords": [
+            ""
+         ]
+      }
+   ]
+}
