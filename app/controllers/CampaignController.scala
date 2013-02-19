@@ -24,7 +24,7 @@ object CampaignController extends Controller with Secured {
         case Nil => NotFound("CAMPAIGNS are NOT FOUND...")
         case campaigns => 
           val sCampaigns = campaigns map (serializers.Campaign._apply(_))
-          Ok(Json.toJson(sCampaigns)(common.Writes.campaignList)).as(JSON)
+          Ok(Json.toJson(sCampaigns)(json_api.Writes.campaignList)).as(JSON)
       }
     })
 
@@ -39,7 +39,7 @@ object CampaignController extends Controller with Secured {
         case None => NotFound("CAMPAIGN is NOT FOUND...")
         case Some(c) =>
           val sCampaign = serializers.Campaign._apply(c)
-          Ok(Json.toJson(List(sCampaign))(common.Writes.campaignList)).as(JSON)
+          Ok(Json.toJson(List(sCampaign))(json_api.Writes.campaignList)).as(JSON)
       }
     })
 
@@ -71,7 +71,7 @@ object CampaignController extends Controller with Secured {
                 val domCamp = dao.create(c)
 
                 // respond with CREATED header and Campaign body
-                Created(Json.toJson(serializers.Campaign._apply(domCamp))(common.Writes.campaign)) as (JSON)
+                Created(Json.toJson(serializers.Campaign._apply(domCamp))(json_api.Writes.campaign)) as (JSON)
               } catch {
                 case e =>
                   println(e) //TODO: change to log
@@ -162,7 +162,7 @@ object CampaignController extends Controller with Secured {
                 else
                   println("Algorithm is FAILED!!!!!!!!!!!!")
 
-                Created(Json.toJson(serializers.Performance._apply(domPerf))(common.Writes.performance)) as (JSON)
+                Created(Json.toJson(serializers.Performance._apply(domPerf))(json_api.Writes.performance)) as (JSON)
               } catch {
                 case e =>
                   e.printStackTrace //TODO: change to log

@@ -49,7 +49,7 @@ object Performance extends Function8[DateTime, DateTime, Double, Double, Int, In
    * it needs Dao to find out the PeriodType
    */
   def _apply(jsValue: JsValue, pdao: dao.Dao = new SquerylDao): Performance = {
-    val perf = Json.fromJson[Performance](jsValue)(common.Formats.performance).get
+    val perf = Json.fromJson[Performance](jsValue)(json_api.Formats.performance).get
     perf.periodType = pdao.getPeriodType(perf.dateTime)
     perf
   }

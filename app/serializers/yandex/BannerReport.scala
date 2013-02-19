@@ -42,7 +42,7 @@ case class BannerReport(
 
 object BannerReport extends Function1[List[BannerInfo], BannerReport] {
   def _apply(jsValue: JsValue): BannerReport = {
-    Json.fromJson[BannerReport](jsValue)(common.Reads.bannerReport).get
+    Json.fromJson[BannerReport](jsValue)(json_api.Reads.bannerReport).get
     /*import common.Reads.bannerReport
     jsValue.validate[BannerReport].map { br => br }.
       recoverTotal(er => { println(er); BannerReport(data = List()) })*/

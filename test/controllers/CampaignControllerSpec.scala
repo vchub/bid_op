@@ -491,7 +491,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         content must not contain ("regionID") // network_region_id
         // create serializers.Recommendation from result
 
-        import common.Formats.phrasePriceInfo
+        import json_api.Formats.phrasePriceInfo
         val rec = Json.fromJson[List[serializers.PhrasePriceInfo]](Json.toJson(content)).get
         rec.length must_== (4)
         rec(0).CampaignID must_== (1)

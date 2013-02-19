@@ -13,6 +13,6 @@ object User extends Function2[String, String, User] {
     name = user.name,
     password = user.password)
 
-  def _apply(jsValue: JsValue): User = Json.fromJson[User](jsValue)(common.Formats.user).get
+  def _apply(jsValue: JsValue): User = Json.fromJson[User](jsValue)(json_api.Formats.user).get
 }
 

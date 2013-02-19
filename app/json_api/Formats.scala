@@ -1,8 +1,7 @@
-package common
+package json_api
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import play.api.libs.json.util._
 
 import serializers._
 import serializers.yandex._

@@ -4,7 +4,7 @@ import org.joda.time._
 
 import play.api.libs.json._
 
-import common.Formats._
+import json_api.Formats._
 
 case class Recommendation(
   val method: String = "UpdatePrices",
