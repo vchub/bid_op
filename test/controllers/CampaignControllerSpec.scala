@@ -101,15 +101,20 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         val start_date: DateTime = iso_fmt.parseDateTime("2012-10-19T00:00:00.000+04:00")
         val date: DateTime = iso_fmt.parseDateTime("2012-10-19T10:00:00.000+04:00")
 
-        val node = Json.toJson(Map(
-          "start_date" -> iso_fmt.print(start_date), // in format "yyyy-MM-dd"
-          "end_date" -> iso_fmt.print(date), // in standart ISO 8601
-          "sum_search" -> "2.0",
-          "sum_context" -> "2.5",
-          "impress_search" -> "4",
-          "impress_context" -> "5",
-          "clicks_search" -> "1",
-          "clicks_context" -> "2"))
+        val data = """
+       {"start_date": %d,
+        "end_date": %d,
+        "sum_search": 2.0,
+        "sum_context": 2.5,
+        "impress_search": 4,        
+        "impress_context": 5,
+        "clicks_search": 1,        
+        "clicks_context": 2
+        }""".format(
+          start_date.getMillis(), // in format "yyyy-MM-dd"
+          date.getMillis() // in standart ISO 8601
+          )
+        val node = Json.parse(data)
 
         val Some(res0) = route(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/stats").withHeaders(("password" -> "123"))
           .withJsonBody(node))
@@ -165,10 +170,10 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         // sourse json
         // no network_campaign_id
         val js = """{
-          "start_date": "%s",
-          "end_date": "%s",
+          "start_date": %d,
+          "end_date": %d,
           "budget": 50
-        }""".format(fmt_date.print(date), fmt_date.print(date.plusDays(30)))
+        }""".format(date.getMillis(), date.plusDays(30).getMillis())
         val node = Json.parse(js)
         val Some(res) = route(FakeRequest(POST, "/user/Coda/net/Yandex/camp").withHeaders(("password" -> "123"))
           .withJsonBody(node))
@@ -187,13 +192,13 @@ class CampaignControllerSpec extends Specification with AllExpectations {
 
         // sourse json
         val js = """{
-          "start_date": "%s",
-          "end_date": "%s",
+          "start_date": %d,
+          "end_date": %d,
           "network_campaign_id": "y100",
           "daily_budget": 50,
           "_login": "",
           "_token": ""
-        }""".format(iso_fmt.print(date), iso_fmt.print(date.plusDays(30)))
+        }""".format(date.getMillis(), date.plusDays(30).getMillis())
         val node = Json.parse(js)
 
         val Some(res0) = route(FakeRequest(POST, "/user/Coda/net/Yandex/camp").withHeaders(("password" -> "123"))
@@ -351,10 +356,10 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         // sourse json
         // no network_campaign_id
         val js = """{
-          "start_date": "%s",
-          "end_date": "%s",
+          "start_date": %d,
+          "end_date": %d,
           "budget": 50
-        }""".format(fmt_date.print(date), fmt_date.print(date.plusDays(30)))
+        }""".format(date.getMillis(), date.plusDays(30).getMillis())
         val node = Json.parse(js)
         val Some(res) = route(FakeRequest(POST, "/user/Coda/net/Yandex/camp/y1/bannerreports").withHeaders(("password" -> "123"))
           .withJsonBody(node))
@@ -371,7 +376,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         //val date: DateTime = iso_fmt.parseDateTime("2012-10-19T11:00:00.000+04:00")
 
         // sourse json
-        val file_name = "test/serializers/yandex/reports/bannerReport0.json"
+        val file_name = "test/serializers/yandex/reports/bannerReport1.json"
         val js = io.Source.fromFile(file_name, "utf-8").getLines.mkString
         val node = Json.parse(js)
 
@@ -482,7 +487,7 @@ class CampaignControllerSpec extends Specification with AllExpectations {
         // make a request
         val res0 = route(FakeRequest(GET, "/user/Coda/net/Yandex/camp/y1/recommendations").withHeaders(
           ("If-Modified-Since", fmt.print(date)), ("password" -> "123"))).get
- 
+
         // check status
         status(res0) must equalTo(OK)
         contentType(res0) must beSome.which(_ == "application/json")

@@ -71,7 +71,7 @@ object CampaignController extends Controller with Secured {
 
                   // respond with CREATED header and Campaign body
                   Created(toJson[serializers.Campaign](serializers.Campaign._apply(domCamp))) as (JSON)
-                } getOrElse BadRequest                
+                } getOrElse BadRequest
               } catch {
                 case e =>
                   println(e) //TODO: change to log
@@ -141,27 +141,29 @@ object CampaignController extends Controller with Secured {
             case None => BadRequest("Invalid json body")
             case Some(jbody) =>
               try {
-                val performance = serializers.Performance._apply(jbody)
-                // insert Performance
-                // TODO: no PeriodType now. Fix.
-                println("SERIALIZED PERFORMANCE!!!!!!!!!!!!!" + c.toString() + "&&&&&&&&&" + performance.toString())
-                val domPerf = dao.createCampaignPerformanceReport(c, performance)
-                // respond with CREATED header and Performance body
-                println("CREATED PERFORMANCE!!!!!!!!!!!!!!")
+                fromJson[serializers.Performance](jbody) map { performance =>
+                  /* it needs Dao to find out the PeriodType */
+                  performance.periodType = dao.getPeriodType(performance.dateTime)
 
-                /** Create Permutation-Recommendation **/
-                c.historyStartDate = c.startDate
-                c.historyEndDate = c.endDate.getOrElse(new DateTime())
+                  // insert Performance
+                  // TODO: no PeriodType now. Fix.
+                  val domPerf = dao.createCampaignPerformanceReport(c, performance)
+                  println("CREATED PERFORMANCE!!!!!!!!!!!!!!")
 
-                println("<<<<< " + c.permutationHistory.toString + " >>>>>")
-                println("<<<<< " + c.curves.toString + " >>>>>")
+                  /** Create Permutation-Recommendation **/
+                  /*c.historyStartDate = c.startDate
+                  c.historyEndDate = c.endDate.getOrElse(new DateTime())
 
-                if (runOptimizerAlgorithm(c, performance, dao))
-                  println("CREATED PERMUTATION-RECOMMENDATION!!!!!!!!!!!!!!")
-                else
-                  println("Algorithm is FAILED!!!!!!!!!!!!")
+                  println("<<<<< " + c.permutationHistory.toString + " >>>>>")
+                  println("<<<<< " + c.curves.toString + " >>>>>")
+                  if (runOptimizerAlgorithm(c, performance, dao))
+                    println("CREATED PERMUTATION-RECOMMENDATION!!!!!!!!!!!!!!")
+                  else
+                    println("Algorithm is FAILED!!!!!!!!!!!!")*/
 
-                Created(Json.toJson(serializers.Performance._apply(domPerf))(json_api.Writes.performance)) as (JSON)
+                  // respond with CREATED header and Performance body
+                  Created(toJson[serializers.Performance](serializers.Performance._apply(domPerf))) as (JSON)
+                } getOrElse BadRequest
               } catch {
                 case e =>
                   e.printStackTrace //TODO: change to log
