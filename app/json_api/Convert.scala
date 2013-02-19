@@ -16,7 +16,10 @@ object Convert {
     "Performance" -> "serializers.Performance",
 
     "BannerInfo" -> "serializers.yandex.BannerInfo",
-    "List[BannerInfo]" -> "scala.collection.immutable.List[serializers.yandex.BannerInfo]")
+    "List[BannerInfo]" -> "scala.collection.immutable.List[serializers.yandex.BannerInfo]",
+
+    "PhrasePriceInfo" -> "serializers.PhrasePriceInfo",
+    "List[PhrasePriceInfo]" -> "scala.collection.immutable.List[serializers.PhrasePriceInfo]")
 
   def fromJson[T](data: JsValue)(implicit mf: Manifest[T]): Option[T] = {
     import Reads._
@@ -58,6 +61,11 @@ object Convert {
 
         case "Performance" =>
           Json.toJson[Performance](data.asInstanceOf[Performance])
+
+        case "PhrasePriceInfo" =>
+          Json.toJson[PhrasePriceInfo](data.asInstanceOf[PhrasePriceInfo])
+        case "List[PhrasePriceInfo]" =>
+          Json.toJson[List[PhrasePriceInfo]](data.asInstanceOf[List[PhrasePriceInfo]])
       }
     } getOrElse (JsNull)
   }

@@ -88,4 +88,35 @@ class Convert_toJsonSpec extends Specification with AllExpectations {
       res \ "impress_context" must_== (JsNumber(20))
     }
   }
+
+  /*------------- PhrasePriceInfo ---------------------------------------------------*/
+  "toJson - PhrasePriceInfo" should {
+    sequential
+
+    "take TRUE data" in {
+      val data = PhrasePriceInfo(
+        PhraseID = 1,
+        BannerID = 2,
+        CampaignID = 3,
+        Price = 1.0)
+
+      val res = toJson[PhrasePriceInfo](data)
+      res \ "PhraseID" must_== (JsNumber(1))
+      res \ "Price" must_== (JsNumber(1.0))      
+    }
+  }
+  /*------------- List[PhrasePriceInfo] ---------------------------------------------------*/
+  "toJson - List[PhrasePriceInfo]" should {
+    sequential
+
+    "take TRUE data" in {
+      val data = List(
+        PhrasePriceInfo(PhraseID = 1, BannerID = 2, CampaignID = 3, Price = 1.1),
+        PhrasePriceInfo(PhraseID = 2, BannerID = 3, CampaignID = 4, Price = 2.2))
+
+      val res = toJson[List[PhrasePriceInfo]](data)
+      res \\ "PhraseID" map (_.as[Int]) must_== (List(1, 2))
+      res \\ "Price" must_== (List(JsNumber(1.1), JsNumber(2.2)))      
+    }
+  }
 }

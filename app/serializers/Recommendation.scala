@@ -4,28 +4,17 @@ import org.joda.time._
 
 import play.api.libs.json._
 
-import json_api.Formats._
-
-case class Recommendation(
-  val method: String = "UpdatePrices",
-  val param: List[PhrasePriceInfo]) {
-
-  def getAsJson = Json.toJson(this.param) //Changed! 
-
-}
-
 object Recommendation {
   /** Constructor from domain.Recommendation */
-  def apply(c: domain.Campaign, rec: domain.Recommendation): Recommendation = {
+  def apply(c: domain.Campaign, rec: domain.Recommendation): List[PhrasePriceInfo] = {
     val campID = filterDigits(c.network_campaign_id)
-    val param = (rec.bannerPhraseBid map ((x: (domain.BannerPhrase, Double)) =>
+
+    (rec.bannerPhraseBid map ((x: (domain.BannerPhrase, Double)) =>
       PhrasePriceInfo(
         PhraseID = filterDigits(x._1.phrase.get.network_phrase_id),
         BannerID = filterDigits(x._1.banner.get.network_banner_id),
         CampaignID = campID,
         Price = x._2))).toList
-
-    Recommendation(param = param)
   }
 
   def filterDigits(s: String): Int = s.filter(_.isDigit).toInt

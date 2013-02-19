@@ -300,7 +300,7 @@ object CampaignController extends Controller with Secured {
                     }
                     case Some(rec) => {
                       println("YES Changed!!!!");
-                      Ok(serializers.Recommendation(c, rec).getAsJson) as (JSON)
+                      Ok(toJson[List[serializers.PhrasePriceInfo]](serializers.Recommendation(c, rec))) as (JSON)
                     }
                   }
               }
