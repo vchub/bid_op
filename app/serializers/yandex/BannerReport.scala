@@ -9,12 +9,10 @@ import common._
 import domain._
 
 /** Yandex GetBanners (Live) API call output data structure */
-case class BannerReport(
-  val data: List[BannerInfo]) { //,
-  //@transient val trash: String = "") {
+object BannerReport {
 
   /** creates Map (see return) of domain.Types */
-  def getDomainReport: Map[BannerPhrase, (ActualBidHistoryElem, NetAdvisedBids)] = {
+  def getDomainReport(data: List[BannerInfo]): Map[BannerPhrase, (ActualBidHistoryElem, NetAdvisedBids)] = {
     val res = for {
       bInfo <- data
       region <- bInfo.createRegions()
@@ -40,14 +38,14 @@ case class BannerReport(
 
 }
 
-object BannerReport extends Function1[List[BannerInfo], BannerReport] {
+/*object BannerReport extends Function1[List[BannerInfo], BannerReport] {
   def _apply(jsValue: JsValue): BannerReport = {
     Json.fromJson[BannerReport](jsValue)(json_api.Reads.bannerReport).get
     /*import common.Reads.bannerReport
     jsValue.validate[BannerReport].map { br => br }.
       recoverTotal(er => { println(er); BannerReport(data = List()) })*/
   }
-}
+}*/
 
 case class BannerInfo(
   val BannerID: Long,

@@ -2,6 +2,7 @@ package json_api
 
 import json_api.Convert._
 import serializers._
+import serializers.yandex._
 
 import org.specs2.mutable._
 import org.specs2.specification._
@@ -106,6 +107,77 @@ class Convert_fromJsonSpec extends Specification with AllExpectations {
       res.sum_search must_== (100.1)
       res.impress_context must_== (49)
       res.start_date must_== (date)
+    }
+  }
+  
+  /*------------- BannerInfo ---------------------------------------------------*/
+  "fromJson - BannerInfo" should {
+    sequential
+
+    "take wrong data null" in {
+      val data = JsNull
+      fromJson[BannerInfo](data) must_== (None)
+    }
+
+    "take WRONG data" in {
+      /* wrong data */
+      val data = """
+      {"BannerID": "100",
+        "Text": "text1"
+        }"""
+
+      fromJson[BannerInfo](Json.parse(data)) must_== (None)
+    }
+
+    "take TRUE data" in {
+      val file_name = "test/json_api/bannerInfo.json"
+      val data = io.Source.fromFile(file_name, "utf-8").getLines.mkString
+
+      val Some(res) = fromJson[BannerInfo](Json.parse(data))
+
+      res.BannerID must_== (11)
+      res.Text must_== ("some")
+      res.Geo must_== ("12, 11")
+      res.Phrases.length must_== (2)
+      res.Phrases.head.PhraseID must_== (22)
+      res.Phrases.head.Max must_== (2.0)
+      res.Phrases.head.AutoBroker must_== ("Yes")
+    }
+  }
+
+  /*------------- List[BannerInfo] ---------------------------------------------------*/
+  "fromJson - List[BannerInfo]" should {
+    sequential
+
+    "take wrong data null" in {
+      val data = JsNull
+      fromJson[List[BannerInfo]](data) must_== (None)
+    }
+
+    "take WRONG data" in {
+      /* wrong data */
+      val data = """[
+      {"BannerID": "100",
+        "Text": "text1"
+        }]"""
+
+      fromJson[List[BannerInfo]](Json.parse(data)) must_== (None)
+    }
+
+    "take TRUE data" in {
+      val file_name = "test/json_api/bannerInfoList.json"
+      val data = io.Source.fromFile(file_name, "utf-8").getLines.mkString
+
+      val Some(res) = fromJson[List[BannerInfo]](Json.parse(data))
+      res.length must_== (2)
+
+      res.head.BannerID must_== (11)
+      res.head.Text must_== ("some")
+      res.head.Geo must_== ("12, 11")
+      res.head.Phrases.length must_== (2)
+      res.head.Phrases.head.PhraseID must_== (22)
+      res.head.Phrases.head.Max must_== (2.0)
+      res.head.Phrases.head.AutoBroker must_== ("Yes")
     }
   }
 }

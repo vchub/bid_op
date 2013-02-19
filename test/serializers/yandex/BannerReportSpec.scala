@@ -9,9 +9,8 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 import io.Source
 import dao.squerylorm.test.helpers._
-import org.codehaus.jackson.JsonFactory
-import org.codehaus.jackson.JsonParser.Feature.ALLOW_COMMENTS
-import org.codehaus.jackson.map.ObjectMapper
+
+import json_api.Convert._
 
 class BannerReportSpec extends Specification with AllExpectations {
 
@@ -27,9 +26,9 @@ class BannerReportSpec extends Specification with AllExpectations {
 
       val file_name = "test/serializers/yandex/reports/bannerReport1.json"
       val js = Source.fromFile(file_name, "utf-8").getLines.mkString
-      val breport = BannerReport._apply(Json.parse(js))
-      breport.data.length must_== (1)
-      val bInfo = breport.data(0)
+      val bInfoList = fromJson[List[BannerInfo]](Json.parse(js)).get
+      bInfoList.length must_== (1)
+      val bInfo = bInfoList.head
       bInfo.BannerID must_== (11)
       bInfo.Text must_== ("some")
       // Phrases
@@ -47,8 +46,8 @@ class BannerReportSpec extends Specification with AllExpectations {
       // get test data
       val file_name = "test/serializers/yandex/reports/bannerReport1.json"
       val js = Source.fromFile(file_name, "utf-8").getLines.mkString
-      val breport = BannerReport._apply(Json.parse(js))
-      val regions = breport.data(0).createRegions()
+      val bInfoList = fromJson[List[BannerInfo]](Json.parse(js)).get
+      val regions = bInfoList.head.createRegions()
       regions.length must_== (2)
       regions(0).network_region_id must_== ("12")
     }
@@ -57,8 +56,8 @@ class BannerReportSpec extends Specification with AllExpectations {
       // get test data
       val file_name = "test/serializers/yandex/reports/bannerReport1.json"
       val js = Source.fromFile(file_name, "utf-8").getLines.mkString
-      val breport = BannerReport._apply(Json.parse(js))
-      val regions = breport.data(0).createRegions("")
+      val bInfoList = fromJson[List[BannerInfo]](Json.parse(js)).get
+      val regions = bInfoList.head.createRegions("")
       regions.length must_== (1)
       regions(0).network_region_id must_== ("0")
     }

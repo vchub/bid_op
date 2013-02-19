@@ -207,7 +207,7 @@ object CampaignController extends Controller with Secured {
   }
 
   /**
-   * Actual Bids and NetAdvised Bids! CREATE INITIAL BANNERS,PHRASES,BANNERPHRASES,...
+   * ActualBids and NetAdvised Bids! CREATE INITIAL BANNERS,PHRASES,BANNERPHRASES,...
    * for - Get ActualBids and NetAdvisedBids - BUTTON
    * POST analogous to getBanners (Live) Yandex report
    * it creates ActualBidHistory and NetAdvisedBidHistory records
@@ -228,14 +228,17 @@ object CampaignController extends Controller with Secured {
             case None => BadRequest("Invalid json body")
             case Some(jbody) =>
               try {
-                val br = serializers.yandex.BannerReport._apply(jbody)
-                val l = println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                val report = br.getDomainReport
-                val q = println("$$$$$$$$$$$$$$$$$$$$$$$$")
-                // save in DB
-                val res = dao.createBannerPhraseNetAndActualBidReport(c, report)
-                // respond with CREATED header and res: Boolean
-                Created(Json.toJson(res)) as (JSON)
+                fromJson[List[serializers.yandex.BannerInfo]](jbody) map { bil =>
+                  val report = serializers.yandex.BannerReport.getDomainReport(bil)
+
+                  // save in DB
+                  val res = dao.createBannerPhraseNetAndActualBidReport(c, report)
+
+                  val q = println("$$$$$$$$$$$$ CREATED BannerReport $$$$$$$$$$$$")
+
+                  // respond with CREATED header and res: Boolean
+                  Created(Json.toJson(res)) as (JSON)
+                } getOrElse BadRequest
               } catch {
                 case e =>
                   println(e) //TODO: change to log

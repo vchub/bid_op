@@ -1,6 +1,8 @@
 package json_api
 
 import serializers._
+import serializers.yandex._
+
 import play.api.libs.json._
 
 object Convert {
@@ -11,7 +13,10 @@ object Convert {
     "Campaign" -> "serializers.Campaign",
     "List[Campaign]" -> "scala.collection.immutable.List[serializers.Campaign]",
 
-    "Performance" -> "serializers.Performance")
+    "Performance" -> "serializers.Performance",
+
+    "BannerInfo" -> "serializers.yandex.BannerInfo",
+    "List[BannerInfo]" -> "scala.collection.immutable.List[serializers.yandex.BannerInfo]")
 
   def fromJson[T](data: JsValue)(implicit mf: Manifest[T]): Option[T] = {
     import Reads._
@@ -29,6 +34,11 @@ object Convert {
 
         case "Performance" =>
           Json.fromJson[Performance](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
+
+        case "BannerInfo" =>
+          Json.fromJson[BannerInfo](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
+        case "List[BannerInfo]" =>
+          Json.fromJson[List[BannerInfo]](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
       }
     } getOrElse (None)
   }
