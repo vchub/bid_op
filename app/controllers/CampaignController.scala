@@ -141,7 +141,6 @@ object CampaignController extends Controller with Secured {
             case None => BadRequest("Invalid json body")
             case Some(jbody) =>
               try {
-                println("!!!!!!!!!!!!! FAKE !!!!!!!!!!!!!")
                 val performance = serializers.Performance._apply(jbody)
                 // insert Performance
                 // TODO: no PeriodType now. Fix.

@@ -82,4 +82,30 @@ class Convert_fromJsonSpec extends Specification with AllExpectations {
       res.last.daily_budget must_== (50.0)
     }
   }
+
+  /*------------- Performance ---------------------------------------------------*/
+  "fromJson - Performance" should {
+    sequential
+
+    "take TRUE data" in {
+      val date = iso_fmt.parseDateTime("2013-01-01T12:00:00.000+04:00")
+
+      val data = """
+       {"start_date": %d,
+        "end_date": %d,
+        "sum_search": 100.1,
+        "sum_context": 99.9,
+        "impress_search": 51,        
+        "impress_context": 49,
+        "clicks_search": 101,        
+        "clicks_context": 99
+        }""".format(date.getMillis(), date.plusDays(1).getMillis())
+
+      val Some(res) = fromJson[Performance](Json.parse(data))
+
+      res.sum_search must_== (100.1)
+      res.impress_context must_== (49)
+      res.start_date must_== (date)
+    }
+  }
 }

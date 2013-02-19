@@ -3,13 +3,15 @@ package json_api
 import serializers._
 import play.api.libs.json._
 
-object Convert { 
+object Convert {
 
   val typeList = Map(
     "User" -> "serializers.User",
 
     "Campaign" -> "serializers.Campaign",
-    "List[Campaign]" -> "scala.collection.immutable.List[serializers.Campaign]")
+    "List[Campaign]" -> "scala.collection.immutable.List[serializers.Campaign]",
+
+    "Performance" -> "serializers.Performance")
 
   def fromJson[T](data: JsValue)(implicit mf: Manifest[T]): Option[T] = {
     import Reads._
@@ -24,6 +26,9 @@ object Convert {
           Json.fromJson[Campaign](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
         case "List[Campaign]" =>
           Json.fromJson[List[Campaign]](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
+
+        case "Performance" =>
+          Json.fromJson[Performance](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
       }
     } getOrElse (None)
   }
@@ -40,6 +45,9 @@ object Convert {
           Json.toJson[Campaign](data.asInstanceOf[Campaign])
         case "List[Campaign]" =>
           Json.toJson[List[Campaign]](data.asInstanceOf[List[Campaign]])
+
+        case "Performance" =>
+          Json.toJson[Performance](data.asInstanceOf[Performance])
       }
     } getOrElse (JsNull)
   }
