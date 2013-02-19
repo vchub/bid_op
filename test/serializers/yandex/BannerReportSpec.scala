@@ -36,7 +36,7 @@ class BannerReportSpec extends Specification with AllExpectations {
       val phrase = bInfo.Phrases(0)
       phrase.Min must_== (1.1)
       phrase.AutoBroker must_== ("Yes")
-      phrase.CurrentOnSearch must_== (1.0)
+      phrase.CurrentOnSearch must_== (Some(1.0))
     }
   }
 

@@ -29,7 +29,7 @@ object BannerReport {
               b = phInfo.Max,
               c = phInfo.PremiumMin,
               d = phInfo.PremiumMax,
-              e = phInfo.CurrentOnSearch,
+              e = phInfo.CurrentOnSearch.getOrElse(0.0),
               f = 0,
               dateTime = new DateTime)))
     }
@@ -70,9 +70,9 @@ case class BannerPhraseInfo(
   val Max: Double,
   val PremiumMin: Double,
   val PremiumMax: Double,
-  // val ContextPrice: Double, //CPC on sites in the Yandex Advertising Network
+  val ContextPrice: Option[Double] = Some(0.0), //CPC on sites in the Yandex Advertising Network
   val AutoBroker: String, // Yes / No
   val Price: Double, // Maximum CPC on Yandex search set for the phrase.
-  val CurrentOnSearch: Double //The current CPC set by Autobroker
+  val CurrentOnSearch: Option[Double] = Some(0.0) //The current CPC set by Autobroker
   ) {}
 
