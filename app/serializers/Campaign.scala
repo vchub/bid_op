@@ -63,11 +63,5 @@ object Campaign extends Function6[String, DateTime, DateTime, Double, String, St
     daily_budget = c.budget.getOrElse(0.0),
     _login = c.login.getOrElse(""),
     _token = c.token.getOrElse(""))
-
-  /**
-   * Constructor from JSON as String
-   */
-  def _apply(jsValue: JsValue): Campaign = Json.fromJson[Campaign](jsValue)(json_api.Formats.campaign).get
-
 }
 

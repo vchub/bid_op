@@ -26,7 +26,7 @@ trait Secured extends Controller {
         request.headers.get("password") match {
           case None => BadRequest("PASSWORD requestHeader is EMPTY...")
           case Some(password) =>
-            dao.getUser(user_name, password).headOption match {
+            dao.getUser(user_name, password) match {
               case None => NotFound("User NOT FOUND... Invalid name or password...")
               case Some(user) => f(dao, user)(request)
             }

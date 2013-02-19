@@ -4,6 +4,7 @@ import play.api._
 import play.api.mvc._
 import org.joda.time._
 
+import json_api.Convert._
 import play.api.libs.json._
 
 import domain.{ User, Campaign, Network }
@@ -22,9 +23,9 @@ object CampaignController extends Controller with Secured {
     (dao, user) => implicit request => {
       dao.getCampaigns(user_name, net_name) match {
         case Nil => NotFound("CAMPAIGNS are NOT FOUND...")
-        case campaigns => 
+        case campaigns =>
           val sCampaigns = campaigns map (serializers.Campaign._apply(_))
-          Ok(Json.toJson(sCampaigns)(json_api.Writes.campaignList)).as(JSON)
+          Ok(toJson[List[serializers.Campaign]](sCampaigns)) as (JSON)
       }
     })
 
@@ -39,7 +40,7 @@ object CampaignController extends Controller with Secured {
         case None => NotFound("CAMPAIGN is NOT FOUND...")
         case Some(c) =>
           val sCampaign = serializers.Campaign._apply(c)
-          Ok(Json.toJson(List(sCampaign))(json_api.Writes.campaignList)).as(JSON)
+          Ok(toJson[List[serializers.Campaign]](List(sCampaign))) as (JSON)
       }
     })
 
@@ -57,21 +58,20 @@ object CampaignController extends Controller with Secured {
       dao.getNetwork(net_name) match {
         case None => NotFound("network not found")
         case network => {
-          // expecting valid json 
-          println("----------------------------------------------------------------------------")
           request.body.asJson match {
             case None => BadRequest("Invalid json body")
             case Some(jbody) =>
               try {
                 //Create Campaign
-                val c = serializers.Campaign._apply(jbody)
-                c.user = Some(user)
-                c.network = network
-                // insert Campaign
-                val domCamp = dao.create(c)
+                fromJson[serializers.Campaign](jbody) map { c =>
+                  c.user = Some(user)
+                  c.network = network
+                  // insert Campaign
+                  val domCamp = dao.create(c)
 
-                // respond with CREATED header and Campaign body
-                Created(Json.toJson(serializers.Campaign._apply(domCamp))(json_api.Writes.campaign)) as (JSON)
+                  // respond with CREATED header and Campaign body
+                  Created(toJson[serializers.Campaign](serializers.Campaign._apply(domCamp))) as (JSON)
+                } getOrElse BadRequest                
               } catch {
                 case e =>
                   println(e) //TODO: change to log
