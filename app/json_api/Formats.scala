@@ -12,8 +12,8 @@ import serializers.yandex._
 object Formats {
 
   /* serializers */
-  implicit lazy val phrasePriceInfo = Format(Reads.phrasePriceInfo, Writes.phrasePriceInfo)
   implicit lazy val user = Format(Reads.user, Writes.user)
+  implicit lazy val phrasePriceInfo = Format(Reads.phrasePriceInfo, Writes.phrasePriceInfo)
   implicit lazy val performance = Format(Reads.performance, Writes.performance)
   implicit lazy val campaign = Format(Reads.campaign, Writes.campaign)
   implicit lazy val campaignList = Format(Reads.campaignList, Writes.campaignList)
@@ -28,8 +28,8 @@ object Reads {
   import play.api.libs.json.Reads._
 
   /* serializers */
-  implicit lazy val phrasePriceInfo = Json.reads[PhrasePriceInfo]
   implicit lazy val user = Json.reads[User]
+  implicit lazy val phrasePriceInfo = Json.reads[PhrasePriceInfo]
   implicit lazy val performance = Json.reads[Performance]
   implicit lazy val campaign = Json.reads[Campaign]
   implicit lazy val campaignList = (__ \ "key1").read(list[Campaign])
@@ -54,8 +54,8 @@ object Writes {
   import play.api.libs.json.Writes._
 
   /* serializers */
-  implicit lazy val phrasePriceInfo = Json.writes[PhrasePriceInfo]
   implicit lazy val user = Json.writes[User]
+  implicit lazy val phrasePriceInfo = Json.writes[PhrasePriceInfo]
   implicit lazy val performance = Json.writes[Performance]
   implicit lazy val campaign = Json.writes[Campaign]
   implicit lazy val campaignList = (__ \ "key1").write(list[Campaign])
