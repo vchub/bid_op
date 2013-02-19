@@ -8,6 +8,8 @@ import play.api.libs.json._
 import domain.{ User, Campaign, Network }
 import dao.squerylorm.SquerylDao
 
+import json_api.Convert._
+
 object UserController extends Controller with Secured {
 
   /**
@@ -17,31 +19,23 @@ object UserController extends Controller with Secured {
    */
   def user_old(user_name: String) = Action {
     val dao = new SquerylDao
-    dao.getUser(user_name).headOption match {
+    dao.getUser(user_name) match {
       case None => NotFound
-      case Some(user) => Ok(Json.toJson(serializers.User._apply(user))(json_api.Formats.user)).as(JSON)
+      case Some(user) => Ok(toJson[serializers.User](serializers.User._apply(user))).as(JSON)
     }
   }
 
-  def user(user_name: String) = IsAuth(user_name, (dao, user) => request => Ok(Json.toJson(serializers.User._apply(user))(json_api.Formats.user)) as (JSON))
+  def user(user_name: String) = IsAuth(user_name, (dao, user) => request => Ok(toJson[serializers.User](serializers.User._apply(user))) as (JSON))
 
-  def createUser = Action { implicit request =>
-    request.body.asJson match {
-      case None => BadRequest("Invalid json body")
-      case Some(jbody) =>
-        try {
-          val sUser = serializers.User._apply(jbody)
-          val dao = new SquerylDao
-          val newUser = dao.create(sUser)
-          // respond with CREATED header and User body
-          Created(Json.toJson(sUser)(json_api.Formats.user)) as (JSON)
-        } catch {
-          case e =>
-            println(e) //TODO: change to log
-            BadRequest("exception caught: " + e)
-        }
-
-    }
+  def createUser = Action(parse.json) { implicit request =>
+    fromJson[serializers.User](request.body) map { sUser =>
+      val dao = new SquerylDao
+      if (!dao.getUser(sUser.name).isDefined) { //if this User is not exists
+        val newUser = dao.create(sUser)
+        // respond with CREATED header and User body
+        Created(toJson[serializers.User](sUser)) as (JSON)
+      } else BadRequest
+    } getOrElse BadRequest
   }
 
   def sample(id: String, c: String) = Action {

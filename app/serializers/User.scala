@@ -12,7 +12,5 @@ object User extends Function2[String, String, User] {
   def _apply(user: domain.User): User = User(
     name = user.name,
     password = user.password)
-
-  def _apply(jsValue: JsValue): User = Json.fromJson[User](jsValue)(json_api.Formats.user).get
 }
 
