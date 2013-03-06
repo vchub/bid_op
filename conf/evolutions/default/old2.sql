@@ -1,5 +1,5 @@
 
-# --- First database schema
+-- Old first database schema
 
 # --- !Ups
 
