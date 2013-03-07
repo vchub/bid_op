@@ -121,7 +121,7 @@ CREATE TABLE "Permutation" (
 
 CREATE TABLE "Phrase" (
     network_phrase_id character varying(128) NOT NULL,
-    phrase character varying(512) NOT NULL,
+    phrase character varying(1024) NOT NULL,
     id bigint NOT NULL
 );
 

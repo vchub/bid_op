@@ -46,8 +46,11 @@ object CampaignPerformance {
 
   def apply(c: domain.Campaign, p: domain.Performance): CampaignPerformance = {
     //current day performance List
-    val perf = c.performanceHistory.filter(
-      _.dateTime.after(p.dateTime.minusSeconds(p.dateTime.getSecondOfDay())))
+    val camp = Campaign.get_by_id(c.id)
+    camp.historyStartDate = p.dateTime.minusDays(1)
+    camp.historyEndDate = p.dateTime
+    val perf = camp.performanceHistory.filter(
+      _.dateTime.after(p.dateTime.minusMillis(p.dateTime.getMillisOfDay())))
 
     CampaignPerformance(
       campaign_id = c.id,
