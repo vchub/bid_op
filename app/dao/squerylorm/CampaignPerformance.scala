@@ -1,13 +1,12 @@
 package dao.squerylorm
 
-import org.squeryl.{Schema, KeyedEntity}
+import org.squeryl.{ Schema, KeyedEntity }
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl._
 import org.joda.time._
 import java.sql.Timestamp
 import scala.reflect._
 import common._
-
 
 @BeanInfo
 case class CampaignPerformance(
@@ -19,49 +18,48 @@ case class CampaignPerformance(
   val impress_context: Int = 0,
   val clicks_search: Int = 0,
   val clicks_context: Int = 0,
-  val date: Timestamp = new Timestamp(0)
-) extends domain.Performance with KeyedEntity[Long] with History
-{
+  val date: Timestamp = new Timestamp(0)) extends domain.Performance with KeyedEntity[Long] with History {
   val id: Long = 0
 
   def dateTime = date
   // TODO: optimize... it should be no direct access to DB
-  def periodType: domain.PeriodType = inTransaction{ periodTypeRel.head }
+  def periodType: domain.PeriodType = inTransaction { periodTypeRel.head }
 
   // PeriodType -* CampaignPerformance relation
   lazy val periodTypeRel: ManyToOne[PeriodType] = AppSchema.periodTypeCampaignPerformance.right(this)
 
-
   /**
-  * put - save to db
-  **/
+   * put - save to db
+   */
   def put(): CampaignPerformance = inTransaction { AppSchema.campaignperformance insert this }
-
 
 }
 
 object CampaignPerformance {
 
   /**
-  * get CampaignPerformance from DB
-  */
-  def get_by_id(id: Long): CampaignPerformance = inTransaction{
-    AppSchema.campaignperformance.where(a => a.id === id).single }
+   * get CampaignPerformance from DB
+   */
+  def get_by_id(id: Long): CampaignPerformance = inTransaction {
+    AppSchema.campaignperformance.where(a => a.id === id).single
+  }
 
+  def apply(c: domain.Campaign, p: domain.Performance): CampaignPerformance = {
+    //current day performance List
+    val perf = c.performanceHistory.filter(
+      _.dateTime.after(p.dateTime.minusSeconds(p.dateTime.getSecondOfDay())))
 
-
-  def apply(c: domain.Campaign, p: domain.Performance): CampaignPerformance = CampaignPerformance(
-    campaign_id = c.id,
-    periodtype_id = p.periodType.id,
-    cost_search = p.cost_search,
-    cost_context = p.cost_context,
-    impress_search = p.impress_search,
-    impress_context = p.impress_context,
-    clicks_search = p.clicks_search,
-    clicks_context = p.clicks_context,
-    date = p.dateTime
-  )
-
+    CampaignPerformance(
+      campaign_id = c.id,
+      periodtype_id = p.periodType.id,
+      cost_search = p.cost_search - perf.map(_.cost_search).sum,
+      cost_context = p.cost_context - perf.map(_.cost_context).sum,
+      impress_search = p.impress_search - perf.map(_.impress_search).sum,
+      impress_context = p.impress_context - perf.map(_.impress_context).sum,
+      clicks_search = p.clicks_search - perf.map(_.clicks_search).sum,
+      clicks_context = p.clicks_context - perf.map(_.clicks_context).sum,
+      date = p.dateTime)
+  }
 }
 
 

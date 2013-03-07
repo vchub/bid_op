@@ -75,7 +75,7 @@ trait Dao {
    * creates new User record
    */
   def create(user: User): User
- 
+
   /**
    * updates user.name
    */
