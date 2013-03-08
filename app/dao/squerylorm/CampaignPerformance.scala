@@ -49,8 +49,13 @@ object CampaignPerformance {
     val camp = Campaign.get_by_id(c.id)
     camp.historyStartDate = p.dateTime.minusDays(1)
     camp.historyEndDate = p.dateTime
-    val perf = camp.performanceHistory.filter(
-      _.dateTime.after(p.dateTime.minusMillis(p.dateTime.getMillisOfDay())))
+
+    val after = if (p.dateTime.getMinuteOfDay() <= 1)
+      camp.historyStartDate //if now 00:00 then we consider the 00:00 of previous day
+    else
+      p.dateTime.minusMillis(p.dateTime.getMillisOfDay()) // if now 13:20 -> start in 00:00
+
+    val perf = camp.performanceHistory.filter(_.dateTime.after(after))
 
     CampaignPerformance(
       campaign_id = c.id,
