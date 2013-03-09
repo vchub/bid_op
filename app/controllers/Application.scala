@@ -11,7 +11,7 @@ import dao.squerylorm._
 import play.api.libs.{ Comet }
 import play.api.libs.iteratee._
 
-object Application extends Controller {
+object Application extends Controller with Secured {
 
   /**
    * A String Enumerator producing a formatted Time message every 100 millis.
@@ -48,22 +48,14 @@ object Application extends Controller {
       ETAG -> "xx")
   }
 
-  import dao.squerylorm.SquerylDao
-  def clear_db = Action {
-    val dao = new SquerylDao
-    if (dao.clearDB) Ok else BadRequest
-  }
-
-  //  /**
-  //   * Handle form submission.
-  //   */
-  //  def submit = Action { implicit request =>
-  //    signupForm.bindFromRequest.fold(
-  //      // Form has errors, redisplay it
-  //      errors => BadRequest(html.signup.form(errors)),
-  //
-  //      // We got a valid User value, display the summary
-  //      user => Ok(html.signup.summary(user)))
-  //  }
+  /**
+   * clear database function
+   * is used with GET request from web client
+   */
+  def clearDB(user_name: String) = IsAuth(
+    user_name,
+    (dao, user) => implicit request => if (dao.clearDB) Ok else BadRequest)
 
 }
+
+

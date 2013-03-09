@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /clear_db                   controllers.Application.clear_db
+GET     /clearDB/:user              controllers.Application.clearDB(user:String)
 
 # The clock Comet stream
 GET     /clock                      controllers.Application.liveClock
