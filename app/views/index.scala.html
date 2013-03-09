@@ -1,40 +1,21 @@
-@(fForm: Form[fullForm])
-
-@import helper._
-@import helper.twitterBootstrap._
-
-@main("Hi man") {
-
-   @helper.form(action = routes.Application.index()) {
-        
-        <fieldset>
-            <legend>Full Form!</legend>
-            
-            @inputText(
-                fForm("username"),
-                '_label -> "Username", 
-                '_help -> "Please choose a valid username.",
-                '_error -> fForm.globalError
-            )
-            
-            @inputText(
-                fForm("network"), '_label -> "Email",
-                '_help -> "Enter a valid email address."
-            )
-            
-            @inputText(
-                fForm("campaign"), '_label -> "Email",
-                '_help -> "Enter a valid email address."
-            )
-            
-        </fieldset>
-        
-        
-        <div class="actions">
-            <input type="submit" class="btn primary" value="Sign Up">
-            <a href="@routes.Application.index" class="btn">Cancel</a>
-        </div>
-        
-    }
+@main("BOS") {
+    
+    <h1>BID OPTIMIZATION SERVICE</h1>
+    
+    <h1 id="clock"></h1>    
+    
+    <p id="pID"> 
+    	service is working now...       
+    </p>
+    
+    <script type="text/javascript" charset="utf-8">
+        // Called for each Comet message
+        var clockChanged = function(time) {
+            $('#clock').html(time.replace(/(\d)/g, '<span>$1</span>'));
+        }
+    </script>
+    
+    
+    <iframe id="comet" src="@routes.Application.liveClock.unique"></iframe>
     
 }

@@ -6,6 +6,9 @@
 GET     /                           controllers.Application.index
 GET     /clear_db                   controllers.Application.clear_db
 
+# The clock Comet stream
+GET     /clock                      controllers.Application.liveClock
+
 # UserController
 #
 #GET   /user/:name               	controllers.UserController.user_old(name: String)
