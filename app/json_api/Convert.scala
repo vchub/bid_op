@@ -19,7 +19,9 @@ object Convert {
     "List[BannerInfo]" -> "scala.collection.immutable.List[serializers.yandex.BannerInfo]",
 
     "PhrasePriceInfo" -> "serializers.PhrasePriceInfo",
-    "List[PhrasePriceInfo]" -> "scala.collection.immutable.List[serializers.PhrasePriceInfo]")
+    "List[PhrasePriceInfo]" -> "scala.collection.immutable.List[serializers.PhrasePriceInfo]",
+
+    "GetBannersStatResponse" -> "serializers.GetBannersStatResponse")
 
   def fromJson[T](data: JsValue)(implicit mf: Manifest[T]): Option[T] = {
     import Reads._
@@ -42,6 +44,10 @@ object Convert {
           Json.fromJson[BannerInfo](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
         case "List[BannerInfo]" =>
           Json.fromJson[List[BannerInfo]](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
+
+        case "GetBannersStatResponse" => //BannerPhrases Performance during the day (alternative to XMLreport)
+          Json.fromJson[GetBannersStatResponse](data) map (s => Some(s.asInstanceOf[T])) recoverTotal (e => None)
+
       }
     } getOrElse (None)
   }

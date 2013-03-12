@@ -119,7 +119,7 @@ object CampaignController extends Controller with Secured {
           }
       }
     })
-
+    
   /**
    * recieve stats DURING the day! CREATE INITIAL PERMUTATION, CURVE, RECOMMENDATION,...
    * for - GetStats - BUTTON
