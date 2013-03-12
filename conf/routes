@@ -17,19 +17,21 @@ POST   /user                		controllers.UserController.createUser
 
 # CampaignController
 #
-GET   /user/:user/net/:net/camp            controllers.CampaignController.campaigns(user: String, net: String)
+GET   /user/:user/net/:net/camp           			 	controllers.CampaignController.campaigns(user: String, net: String)
 
-GET   /user/:user/net/:net/camp/:id   controllers.CampaignController.campaign(user: String, net: String, id: String)
+GET   /user/:user/net/:net/camp/:id   					controllers.CampaignController.campaign(user: String, net: String, id: String)
 
-POST   /user/:user/net/:net/camp    controllers.CampaignController.createCampaign(user: String, net: String)
+POST   /user/:user/net/:net/camp    					controllers.CampaignController.createCampaign(user: String, net: String)
 
-POST   /user/:user/net/:net/camp/:id/stats  controllers.CampaignController.createCampaignPerformance(user: String, net: String, id: String)
+POST   /user/:user/net/:net/camp/:id/stats  			controllers.CampaignController.createCampaignPerformance(user: String, net: String, id: String)
 
-POST   /user/:user/net/:net/camp/:id/reports  controllers.CampaignController.createXmlReport(user: String, net: String, id: String)
+POST   /user/:user/net/:net/camp/:id/bannersstats  		controllers.CampaignController.createBannersPerformance(user: String, net: String, id: String)
 
-POST   /user/:user/net/:net/camp/:id/bannerreports  controllers.CampaignController.createBannerReport(user: String, net: String, id: String)
+POST   /user/:user/net/:net/camp/:id/reports  			controllers.CampaignController.createXmlReport(user: String, net: String, id: String)
 
-GET   /user/:user/net/:net/camp/:id/recommendations  controllers.CampaignController.recommendations(user: String, net: String, id: String)
+POST   /user/:user/net/:net/camp/:id/bannerreports  	controllers.CampaignController.createBannerReport(user: String, net: String, id: String)
+
+GET   /user/:user/net/:net/camp/:id/recommendations		controllers.CampaignController.recommendations(user: String, net: String, id: String)
 
 
 # Misc development
