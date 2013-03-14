@@ -45,17 +45,13 @@ object CampaignPerformance {
   }
 
   def apply(c: domain.Campaign, p: domain.Performance): CampaignPerformance = {
+    //p.dateTime must be between 00:00:00 and 23:59:59
     //current day performance List
     val camp = Campaign.get_by_id(c.id)
-    camp.historyStartDate = p.dateTime.minusDays(1)
-    camp.historyEndDate = p.dateTime
+    camp.historyStartDate = p.dateTime.minusMillis(p.dateTime.getMillisOfDay()) //00:00:00
+    camp.historyEndDate = camp.historyStartDate.plusDays(1) //current day
 
-    val after = if (p.dateTime.getMinuteOfDay() <= 1)
-      camp.historyStartDate //if now 00:00 then we consider the 00:00 of previous day
-    else
-      p.dateTime.minusMillis(p.dateTime.getMillisOfDay()) // if now 13:20 -> start in 00:00
-
-    val perf = camp.performanceHistory.filter(_.dateTime.after(after))
+    val perf = camp.performanceHistory //only today performance
 
     CampaignPerformance(
       campaign_id = c.id,

@@ -241,7 +241,7 @@ case class Campaign(
           BannerPhrase.select(this, b.network_banner_id, p.network_phrase_id, r.network_region_id) match {
 
             case bannerphrase :: Nil =>
-              // put History into DB
+              // put History into DB              
               f(bannerphrase)
 
             case Nil =>
@@ -268,7 +268,7 @@ case class Campaign(
                 phrase_id = phrase.id, region_id = region.id).put
               //check bp
               require(bannerphrase.id != 0)
-              // put History into DB
+              // put History into DB              
               f(bannerphrase)
 
             case _ =>

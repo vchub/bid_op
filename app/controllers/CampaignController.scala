@@ -107,7 +107,9 @@ object CampaignController extends Controller with Secured {
 
                 //save report in DB
                 dao.createBannerPhrasesPerformanceReport(c, report) match {
-                  case true => Created("Report has been created")
+                  case true =>
+                    println("!!!!!!!!!!!!!!! CREATED XmlReport !!!!!!!!!!!!!!")
+                    Created("Report has been created")
                   case false => BadRequest("Report has NOT been created. Post it agaign if you sure that Report content is OK")
                 }
               } catch {
@@ -119,7 +121,52 @@ object CampaignController extends Controller with Secured {
           }
       }
     })
-    
+
+  /**
+   * recieve Banners Stats DURING the day! CREATE INITIAL PERMUTATION, CURVE, RECOMMENDATION,...
+   * for - GetStats - BUTTON
+   * POST Banners Performance for User, Network and network_campaign_id
+   * @param user_name: String, net_name: String, network_campaign_id: String
+   * @return play.api.mvc.Result
+   * @through Exception if request json body has no valid representation of TimeSlot
+   * POST /user/:user/net/:net/camp/:id/bannersstats
+   */
+  def createBannersPerformance(user_name: String, net_name: String, network_campaign_id: String) = IsAuth(
+    user_name,
+    (dao, user) => request => {
+      //select Campaign
+      dao.getCampaign(user_name, net_name, network_campaign_id) match {
+        case None => NotFound("""Can't find Campaign for given User: %s, Network: %s,
+          network_campaign_id: %s""".format(user_name, net_name, network_campaign_id))
+        case Some(c) =>
+          request.body.asJson match {
+            case None => BadRequest("Invalid json body")
+            case Some(jbody) =>
+              try {
+                val cur_dt = request.headers.get("current_datetime") map { dt =>
+                  format.ISODateTimeFormat.dateTime().parseDateTime(dt)
+                } getOrElse (new DateTime())
+
+                fromJson[serializers.GetBannersStatResponse](jbody) map { bsr =>
+                  val report = serializers.BannersPerformance.createBannerPhrasePerformanceReport(bsr, c, cur_dt)
+
+                  //save report in DB
+                  dao.createBannerPhrasesPerformanceReport(c, report) match {
+                    case true =>
+                      println("!!!!!!!!!!!!!!! CREATED BannersPERFORMANCE !!!!!!!!!!!!!!")
+                      Created("Report has been created")
+                    case false => BadRequest("Report has NOT been created. Post it agaign if you sure that Report content is OK")
+                  }
+                } getOrElse BadRequest("Report has NOT been serialized. Post it agaign if you sure that Report content is OK")
+              } catch {
+                case e =>
+                  e.printStackTrace //TODO: change to log
+                  BadRequest("exception caught: " + e)
+              }
+          }
+      }
+    })
+
   /**
    * recieve stats DURING the day! CREATE INITIAL PERMUTATION, CURVE, RECOMMENDATION,...
    * for - GetStats - BUTTON
