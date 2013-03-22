@@ -24,7 +24,10 @@ object CampaignController extends Controller with Secured {
       dao.getCampaigns(user_name, net_name) match {
         case Nil => NotFound("CAMPAIGNS are NOT FOUND...")
         case campaigns =>
-          val sCampaigns = campaigns map (serializers.Campaign._apply(_))
+          val sCampaigns = campaigns map { c =>
+            c.historyStartDate = c.startDate
+            serializers.Campaign._apply(c)
+          }
           Ok(toJson[List[serializers.Campaign]](sCampaigns)) as (JSON)
       }
     })
@@ -39,6 +42,7 @@ object CampaignController extends Controller with Secured {
       dao.getCampaign(user_name, net_name, network_campaign_id) match {
         case None => NotFound("CAMPAIGN is NOT FOUND...")
         case Some(c) =>
+          c.historyStartDate = c.startDate
           val sCampaign = serializers.Campaign._apply(c)
           Ok(toJson[List[serializers.Campaign]](List(sCampaign))) as (JSON)
       }

@@ -345,6 +345,7 @@ object Campaign {
       endDate = cc.endDate.get).put
 
     // return DB Campaign
+    c.historyStartDate = cc.startDate
     c
   }
 
