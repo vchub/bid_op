@@ -33,6 +33,8 @@ POST   /user/:user/net/:net/camp/:id/bannerreports  	controllers.CampaignControl
 
 GET   /user/:user/net/:net/camp/:id/recommendations		controllers.CampaignController.recommendations(user: String, net: String, id: String)
 
+GET   /user/:user/net/:net/camp/:id/charts				controllers.CampaignController.charts(user: String, net: String, id: String)
+
 
 # Misc development
 GET     /sample/:id/camp/:c   controllers.Application.sample(id: String, c: String)
