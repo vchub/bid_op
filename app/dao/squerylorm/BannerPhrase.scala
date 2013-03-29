@@ -105,6 +105,23 @@ object BannerPhrase {
           ph.network_phrase_id === network_phrase_id and
           r.network_region_id === network_region_id) select (bp)).toList
   }
+
+  /**
+   * select BannerPhrase for given Campaign, bannerphrase_id
+   * it should be 1 BannerPhrase
+   * @param Campaign, Long
+   * @return BannerPhrase
+   */ 
+  def select(campaign: Campaign, bannerphrase_id: Long): Option[BannerPhrase] = inTransaction {
+    val bpOpt = from(AppSchema.bannerphrases)(bp =>
+      where(
+        bp.campaign_id === campaign.id and
+          bp.id === bannerphrase_id) select (bp)).headOption
+    bpOpt map { bp =>
+      bp.campaign = Some(campaign)
+      Some(bp)
+    } getOrElse None
+  }
 }
 
 /**
