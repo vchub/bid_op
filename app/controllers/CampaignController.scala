@@ -366,7 +366,31 @@ object CampaignController extends Controller with Secured {
    * generate CHARTS in view for User, Network and network_campaign_id
    * GET /user/:user/net/:net/camp/:id/charts
    */
-  def charts(user_name: String, net_name: String, network_campaign_id: String) = IsAuth(
+  def charts(user_name: String, net_name: String, network_campaign_id: String, password: String) = Action {
+    //TODO - need to add Authentication!!!
+    val dao = new SquerylDao()
+
+    dao.getUser(user_name, password) match {
+      case None => NotFound("User NOT FOUND... Invalid name or password...")
+      case Some(user) => {
+        dao.getCampaign(user_name, net_name, network_campaign_id) match {
+          case None => NotFound("CAMPAIGN is NOT FOUND...")
+          case Some(c) =>
+            val iso_fmt = format.ISODateTimeFormat.dateTime()
+            val sdate = iso_fmt.parseDateTime("1000-01-01T12:00:00.000+04:00")
+            val edate = iso_fmt.parseDateTime("3000-01-01T12:00:00.000+04:00")
+            //we will retrieve all data from db 
+            c.historyStartDate = sdate
+            c.historyEndDate = edate
+
+            //generate charts in browser
+            Ok(views.html.charts(Some(c)))
+        }
+      }
+    }
+  }
+
+  /*IsAuth(
     user_name,
     (dao, user) => implicit request => {
       dao.getCampaign(user_name, net_name, network_campaign_id) match {
@@ -382,7 +406,7 @@ object CampaignController extends Controller with Secured {
           //generate charts in browser
           Ok(views.html.charts(Some(c)))
       }
-    })
+    })*/
 
 }
 

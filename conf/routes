@@ -33,7 +33,7 @@ POST   /user/:user/net/:net/camp/:id/bannerreports  	controllers.CampaignControl
 
 GET   /user/:user/net/:net/camp/:id/recommendations		controllers.CampaignController.recommendations(user: String, net: String, id: String)
 
-GET   /user/:user/net/:net/camp/:id/charts				controllers.CampaignController.charts(user: String, net: String, id: String)
+GET   /user/:user/net/:net/camp/:id/charts/:password	controllers.CampaignController.charts(user: String, net: String, id: String, password:String)
 
 
 # Misc development
