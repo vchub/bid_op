@@ -60,7 +60,7 @@ object Charts {
 
   //ActualBids and NetAdvisedBids evolution in time
   def getPositionPrices(oc: Option[Campaign], bpID: Long): List[(Long, Double, Double, Double, Double, Double)] = { //time,min,max,pmin,pmax,price
-    /*oc map { c =>
+    oc map { c =>
       val obp = BannerPhrase.select(c, bpID)
       obp map { bp =>
         val ab = bp.actualBidHistory
@@ -77,7 +77,7 @@ object Charts {
               ab(i).bid) //actual price
         }
       } getOrElse (Nil)
-    } getOrElse (Nil)*/ Nil
+    } getOrElse (Nil)
   }
 
   //CTR function
