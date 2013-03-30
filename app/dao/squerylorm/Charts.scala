@@ -34,7 +34,7 @@ object Charts {
 
   //BannerPhrase CTR evolution in time with cumulative clicks and shows
   def getBannerPhraseCTR(oc: Option[Campaign], bpID: Long): List[(Long, Double, Double, Double)] = {
-    oc map { c =>
+    /*oc map { c =>
       val obp = BannerPhrase.select(c, bpID)
 
       obp map { bp =>
@@ -55,7 +55,7 @@ object Charts {
               )
         }
       } getOrElse (Nil)
-    } getOrElse (Nil)
+    } getOrElse (Nil)*/ Nil
   }
 
   //ActualBids and NetAdvisedBids evolution in time
