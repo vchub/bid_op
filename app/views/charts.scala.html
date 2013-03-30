@@ -266,7 +266,7 @@
 				'vAxis': {
 					'title': 'Prices'
 				},
-				'pointSize': 5
+				'pointSize': 2
 			    //'hAxis': {'slantedText': false},
 			    //'vAxis': {'viewWindow': {'min': 0, 'max': 2000}},
 			    //'legend': {'position': 'none'}
@@ -282,15 +282,15 @@
 	    data.addColumn('number', 'Actual Price');
 	    var ar = [];
 	    
+	    
 	    @for(pp <- getPositionPrices(c,bp.id)) {
 		  	ar.push([new Date(@pp._1), @pp._2, @pp._3, @pp._4, @pp._5, @pp._6]);
 		};
 	    
 		data.addRows(ar);			
-			
+	    	    
 		dashboard.bind(control, chart);
-		dashboard.draw(data);
-	
+		dashboard.draw(data);	    
 	} 	
 	} 
 </script>
@@ -298,7 +298,7 @@
 				</div>
 @** bpCTR *********************************************************************************************@
 				<div class="tab-pane active" id="bpCTR">
-@**		
+		
 <!-- BannerPhrasePerformance CTR ------------------------------------------------------>
 <script type="text/javascript">
  	google.load('visualization', '1', { packages : [ 'controls' ] });
@@ -351,7 +351,7 @@
 				'vAxis': {
 					'title': 'CTR'
 				},
-				'pointSize': 5
+				'pointSize': 2
 			    //'hAxis': {'slantedText': false},
 			    //'vAxis': {'viewWindow': {'min': 0, 'max': 2000}},
 			    //'legend': {'position': 'none'}
@@ -377,7 +377,7 @@
 	} 	
 	} 
 </script>
-**@					
+				
 				</div>
 @***********************************************************************************************@
 			</div>
