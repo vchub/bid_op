@@ -7,13 +7,13 @@ object Charts {
   //Budget evolution in time
   def getBudget(oc: Option[Campaign]): List[(Long, Double)] =
     oc map {
-      c => c.budgetHistory.map(bh => (bh.date.getMillis(), bh.budget)).reverse.tail
+      c => c.budgetHistory.map(bh => (bh.date.getMillis(), bh.budget)).tail
     } getOrElse (Nil)
 
   //Campaign CTR evolution in time with cumulative clicks and shows
   def getCampaignCTR(oc: Option[Campaign]): List[(Long, Double, Double, Double)] = {
     oc map { c =>
-      val cp = c.performanceHistory.reverse
+      val cp = c.performanceHistory
       val cClicksContext = cp.map(_.clicks_context).scan(0)(_ + _).tail
       val cClicksSearch = cp.map(_.clicks_search).scan(0)(_ + _).tail
       val cShowsContext = cp.map(_.impress_context).scan(0)(_ + _).tail
@@ -38,7 +38,7 @@ object Charts {
       val obp = BannerPhrase.select(c, bpID)
 
       obp map { bp =>
-        val bpp = bp.performanceHistory.reverse
+        val bpp = bp.performanceHistory
         val cClicksContext = bpp.map(_.clicks_context).scan(0)(_ + _).tail
         val cClicksSearch = bpp.map(_.clicks_search).scan(0)(_ + _).tail
         val cShowsContext = bpp.map(_.impress_context).scan(0)(_ + _).tail
@@ -63,8 +63,8 @@ object Charts {
     oc map { c =>
       val obp = BannerPhrase.select(c, bpID)
       obp map { bp =>
-        val ab = bp.actualBidHistory.reverse
-        val nab = bp.netAdvisedBidsHistory.reverse
+        val ab = bp.actualBidHistory
+        val nab = bp.netAdvisedBidsHistory
 
         val pp = ab.map(_.date).zipWithIndex
         pp map {
