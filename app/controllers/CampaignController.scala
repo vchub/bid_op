@@ -398,8 +398,8 @@ object CampaignController extends Controller with Secured {
       // if service handles request too slow => return Timeout response
       val timeoutFuture = play.api.libs.concurrent.Promise.timeout(
         message = "Oops, TIMEOUT while calling BID server...",
-        duration = 2,
-        unit = TimeUnit.MINUTES)
+        duration = 60,
+        unit = TimeUnit.SECONDS)
 
       Async {
         Future.firstCompletedOf(Seq(futureResult, timeoutFuture)).map {
