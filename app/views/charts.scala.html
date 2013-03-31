@@ -221,7 +221,7 @@
 	google.setOnLoadCallback(drawVisualization);
 
 	function drawVisualization() {
-	@for(bp <- c.get.bannerPhrases){
+	@for(bp <- List(c.get.bannerPhrases.head)){
 		var uid = 'bpPP_'+@bp.id;
 
 		$('#PositionPrices').append(create_dashboardDiv(uid));
