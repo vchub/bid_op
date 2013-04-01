@@ -1,7 +1,10 @@
-@(c: Option[dao.squerylorm.Campaign]) 
+@(	c: 			Option[dao.squerylorm.Campaign],
+	cCTR_List: 	List[(Long, Double, Double, Double)],
+	b_List: 	List[(Long, Double)],
+	pp_List: 	Map[Long,List[(Long, Double, Double, Double, Double, Double)]],
+	bpCTR_List:	Map[Long,List[(Long, Double, Double, Double)]]) 
 
-@import org.joda.time.DateTime
-@import dao.squerylorm.Charts._
+@import org.joda.time.DateTime    
 
 @main(title = "BOS charts") {
 
@@ -56,16 +59,16 @@
 			<div class="tab-content">
 @** cpCTR + Budget *********************************************************************************************@
 				<div class="tab-pane active" id="cpCTR">					
-					
+									
 <!-- CampaignPerformance CTR ------------------------------------------------------>
 <script type="text/javascript">
  	google.load('visualization', '1', { packages : [ 'controls' ] });
 	google.setOnLoadCallback(drawVisualization);
 
 	function drawVisualization() {
-	@for(id <- 1 to 1){
-		var uid = 'cpCTR_'+@id;
-		
+
+		var uid = 'cpCTR_'+@c.get.id;
+				
 		$('#cpCTR').append(create_dashboardDiv(uid));	
 
 		var dashboard = new google.visualization.Dashboard(
@@ -122,7 +125,7 @@
 	    data.addColumn('number', 'CTR SUM');
 	    var ar = [];
 	    
-	    @for(ctr <- getCampaignCTR(c)) {
+	    @for(ctr <- cCTR_List) {
 		  	ar.push([new Date(@ctr._1), @ctr._2, @ctr._3, @ctr._4]);
 		};
 	    
@@ -132,7 +135,6 @@
 		dashboard.draw(data);
 	
 	} 	
-	} 
 </script>
 
 <!-- Budget --------------------------------------------------------------------->
@@ -141,8 +143,8 @@
 	google.setOnLoadCallback(drawVisualization);
 
 	function drawVisualization() {
-	@for(id <- 1 to 1){
-		var uid = 'b_'+@id;
+
+		var uid = 'b_'+@c.get.id;
 		
 		$('#cpCTR').append(create_dashboardDiv(uid));	
 
@@ -198,7 +200,7 @@
 	    data.addColumn('number', 'Budget');
 	    var ar = [];
 	        
-	    @for(dtb <- getBudget(c)) {
+	    @for(dtb <- b_List) {
 		  	ar.push([new Date(@dtb._1),@dtb._2]);
 		};
 
@@ -208,21 +210,19 @@
 		dashboard.draw(data);
 	
 	} 	
-	} 
 </script>
 				
 				</div>				
 @** Prices *********************************************************************************************@
 				<div class="tab-pane active" id="PositionPrices">					
 
-@for(bp <- c.get.bannerPhrases){					
 <!-- Position Prices ------------------------------------------------------>
-<script type="text/javascript" async="async"> 
+<script type="text/javascript"> 
  	google.load('visualization', '1', { packages : [ 'controls' ] });
 	google.setOnLoadCallback(drawVisualization);
 
 	function drawVisualization() {
-	
+		@for(bp <- c.get.bannerPhrases) {
 		var uid = 'bpPP_'+@bp.id;
 
 		$('#PositionPrices').append(create_dashboardDiv(uid));
@@ -284,7 +284,7 @@
 	    var ar = [];
 	    
 	    
-	    @for(pp <- getPositionPrices(c,bp.id)) {
+	    @for(pp <- pp_List(bp.id)) {
 		  	ar.push([new Date(@pp._1), @pp._2, @pp._3, @pp._4, @pp._5, @pp._6]);
 		};
 	    
@@ -293,8 +293,9 @@
 		dashboard.bind(control, chart);
 		dashboard.draw(data);	    
 	} 	
+	}
 </script>
-}		
+		
 			
 				</div>
 @** bpCTR *********************************************************************************************@
@@ -366,7 +367,7 @@
 	    data.addColumn('number', 'CTR SUM');
 	    var ar = [];
 	    
-	    @for(ctr <- getBannerPhraseCTR(c,bp.id)) {
+	    @for(ctr <- bpCTR_List(bp.id)) {
 		  	ar.push([new Date(@ctr._1), @ctr._2, @ctr._3, @ctr._4]);
 		};
 	    

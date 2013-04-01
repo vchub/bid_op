@@ -8,7 +8,7 @@ import json_api.Convert._
 import play.api.libs.json._
 
 import domain.{ User, Campaign, Network }
-import dao.squerylorm.SquerylDao
+import dao.squerylorm.{ SquerylDao, Charts }
 import serializers.yandex.XmlReport
 
 object CampaignController extends Controller with Secured {
@@ -371,6 +371,7 @@ object CampaignController extends Controller with Secured {
       import scala.concurrent.Future
       import scala.concurrent.ExecutionContext.Implicits.global
       import java.util.concurrent.TimeUnit
+      
       val futureResult = Future[Result] {
 
         val dao = new SquerylDao()
@@ -388,8 +389,26 @@ object CampaignController extends Controller with Secured {
                 c.historyStartDate = sdate
                 c.historyEndDate = edate
 
+                /*
+                 * start Consuming Computations - retrieve data from DB and calcs CTR
+                 */
+
+                val cCTR_List = Charts.getCampaignCTR(Some(c))
+
+                val b_List = Charts.getBudget(Some(c))
+
+                val pp_List = c.bannerPhrases map { bp =>
+                  bp.id -> Charts.getPositionPrices(Some(c), bp.id)
+                } toMap
+
+                val bpCTR_List = c.bannerPhrases map { bp =>
+                  bp.id -> Charts.getBannerPhraseCTR(Some(c), bp.id)
+                } toMap
+
+                /* ends */
+
                 //generate charts in browser
-                Ok(views.html.charts(Some(c)))
+                Ok(views.html.charts(Some(c), cCTR_List, b_List, pp_List, bpCTR_List))
             }
           }
         }
@@ -398,8 +417,8 @@ object CampaignController extends Controller with Secured {
       // if service handles request too slow => return Timeout response
       val timeoutFuture = play.api.libs.concurrent.Promise.timeout(
         message = "Oops, TIMEOUT while calling BID server...",
-        duration = 60,
-        unit = TimeUnit.SECONDS)
+        duration = 2,
+        unit = TimeUnit.MINUTES)
 
       Async {
         Future.firstCompletedOf(Seq(futureResult, timeoutFuture)).map {

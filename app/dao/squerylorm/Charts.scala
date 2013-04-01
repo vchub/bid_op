@@ -1,6 +1,10 @@
 package dao.squerylorm
 
 import org.joda.time.DateTime
+import scala.concurrent._
+import scala.concurrent.{ Future, Promise }
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 object Charts {
 
@@ -29,12 +33,12 @@ object Charts {
             ctr(cClicksSearch(i) + cClicksContext(i), cShowsSearch(i) + cShowsContext(i)) //CTR SUM
             )
       }
-    } getOrElse (Nil)
+    } getOrElse (Nil) // List((new DateTime().getMillis(), 1.2, 3.4, 5.6))
   }
 
   //BannerPhrase CTR evolution in time with cumulative clicks and shows
   def getBannerPhraseCTR(oc: Option[Campaign], bpID: Long): List[(Long, Double, Double, Double)] = {
-    /*oc map { c =>
+    oc map { c =>
       val obp = BannerPhrase.select(c, bpID)
 
       obp map { bp =>
@@ -55,7 +59,7 @@ object Charts {
               )
         }
       } getOrElse (Nil)
-    } getOrElse (Nil)*/ Nil
+    } getOrElse (Nil) // Nil
   }
 
   //ActualBids and NetAdvisedBids evolution in time
