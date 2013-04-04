@@ -378,11 +378,13 @@ object CampaignController extends Controller with Secured {
       import play.api.Play.current
       import play.api.libs.ws.WS
 
-      val keepAlive = Akka.system.scheduler.schedule(10 seconds, 10 seconds) {
+      val keepAlive = Akka.system.scheduler.schedule(0 seconds, 5 seconds) {
         //send head request to the client to keep alive
-        WS.url(request.headers.get("Referer").get).head().onSuccess {
-          case _ => println("!!! wake up client !!!" + request.headers.get("Referer").get)
-        }
+        //WS.url(request.headers.get("Referer").get).head().onSuccess {
+        //  case _ => println("!!! wake up client !!!" + request.headers.get("Referer").get)
+        //}
+        println("!!! Keep-Alive !!!")
+        Ok.withHeaders(("Connection" -> "keep-alive"))
       }
 
       val futureResult = Future[Result] {
