@@ -8,6 +8,7 @@ GET     /clearDB/:user              controllers.Application.clearDB(user:String)
 
 # The clock Comet stream
 GET     /clock                      controllers.Application.liveClock
+# GET 	/charts						controllers.Application.liveCharts
 
 # UserController
 #

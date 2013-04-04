@@ -367,11 +367,24 @@ object CampaignController extends Controller with Secured {
    * GET /user/:user/net/:net/camp/:id/charts
    */
   def charts(user_name: String, net_name: String, network_campaign_id: String, password: String) =
-    Action { //TODO - need to add Authentication!!!
+    Action { implicit request => //TODO - need to add Authentication!!!
       import scala.concurrent.Future
       import scala.concurrent.ExecutionContext.Implicits.global
       import java.util.concurrent.TimeUnit
-      
+
+      //send keep alive request to client
+      import play.api.libs.concurrent.Akka
+      import scala.concurrent.duration._
+      import play.api.Play.current
+      import play.api.libs.ws.WS
+
+      val keepAlive = Akka.system.scheduler.schedule(10 seconds, 10 seconds) {
+        //send head request to the client to keep alive
+        WS.url(request.headers.get("Referer").get).head().onSuccess {
+          case _ => println("!!! wake up client !!!" + request.headers.get("Referer").get)
+        }
+      }
+
       val futureResult = Future[Result] {
 
         val dao = new SquerylDao()
@@ -417,13 +430,17 @@ object CampaignController extends Controller with Secured {
       // if service handles request too slow => return Timeout response
       val timeoutFuture = play.api.libs.concurrent.Promise.timeout(
         message = "Oops, TIMEOUT while calling BID server...",
-        duration = 2,
+        duration = 3,
         unit = TimeUnit.MINUTES)
 
       Async {
         Future.firstCompletedOf(Seq(futureResult, timeoutFuture)).map {
-          case f: Result => f
-          case t: String => InternalServerError(t)
+          case f: Result =>
+            keepAlive.cancel
+            f
+          case t: String =>
+            keepAlive.cancel
+            InternalServerError(t)
         }
       }
     }
