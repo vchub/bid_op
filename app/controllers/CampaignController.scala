@@ -3,13 +3,12 @@ package controllers
 import play.api._
 import play.api.mvc._
 import org.joda.time._
-
 import json_api.Convert._
 import play.api.libs.json._
-
 import domain.{ User, Campaign, Network }
 import dao.squerylorm.{ SquerylDao, Charts }
 import serializers.yandex.XmlReport
+import org.jboss.netty.handler.timeout.IdleStateHandler
 
 object CampaignController extends Controller with Secured {
 
@@ -380,11 +379,9 @@ object CampaignController extends Controller with Secured {
 
       val keepAlive = Akka.system.scheduler.schedule(0 seconds, 5 seconds) {
         //send head request to the client to keep alive
-        //WS.url(request.headers.get("Referer").get).head().onSuccess {
-        //  case _ => println("!!! wake up client !!!" + request.headers.get("Referer").get)
-        //}
-        println("!!! Keep-Alive !!!")
-        Ok.withHeaders(("Connection" -> "keep-alive"))
+        WS.url(request.headers.get("Referer").get).get() onSuccess {
+          case r => println("!!! wake up client !!! : " + r.statusText + " " + r.status)
+        }
       }
 
       val futureResult = Future[Result] {
