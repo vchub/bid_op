@@ -9,6 +9,8 @@ GET     /clearDB/:user              controllers.Application.clearDB(user:String)
 # The clock Comet stream
 GET     /clock                      controllers.Application.liveClock
 # GET 	/charts						controllers.Application.liveCharts
+GET 	/ppChart 					controllers.Application.ppChart(user:String, net:String, cID:String, bpID:String)
+GET 	/bpChart 					controllers.Application.bpChart(user:String, net:String, cID:String, bpID:String)
 
 # UserController
 #

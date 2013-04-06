@@ -376,12 +376,16 @@ object CampaignController extends Controller with Secured {
       import scala.concurrent.duration._
       import play.api.Play.current
       import play.api.libs.ws.WS
+      import play.api.libs.iteratee._
+      import play.api.libs.Comet
 
-      val keepAlive = Akka.system.scheduler.schedule(0 seconds, 5 seconds) {
+      val keepAlive = Akka.system.scheduler.schedule(0 seconds, 100 milliseconds) {
         //send head request to the client to keep alive
-        WS.url(request.headers.get("Referer").get).get() onSuccess {
+        /*WS.url(request.headers.get("Referer").get).get() onSuccess {
           case r => println("!!! wake up client !!! : " + r.statusText + " " + r.status)
-        }
+        }*/
+        println("--- keep alive ---")
+        Ok.stream(Enumerator("! Keep alive !") &> Comet(callback = "console.log"))
       }
 
       val futureResult = Future[Result] {
@@ -403,7 +407,7 @@ object CampaignController extends Controller with Secured {
 
                 /*
                  * start Consuming Computations - retrieve data from DB and calcs CTR
-                 */
+                 
 
                 val cCTR_List = Charts.getCampaignCTR(Some(c))
 
@@ -417,10 +421,10 @@ object CampaignController extends Controller with Secured {
                   bp.id -> Charts.getBannerPhraseCTR(Some(c), bp.id)
                 } toMap
 
-                /* ends */
+                 ends */
 
                 //generate charts in browser
-                Ok(views.html.charts(Some(c), cCTR_List, b_List, pp_List, bpCTR_List))
+                Ok(views.html.charts(user.name, net_name, Some(c))) //, cCTR_List, b_List, pp_List, bpCTR_List))
             }
           }
         }

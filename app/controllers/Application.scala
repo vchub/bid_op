@@ -71,6 +71,74 @@ object Application extends Controller with Secured {
       CACHE_CONTROL -> "max-age=3600",
       ETAG -> "xx")
   }
+
+  /**
+   * Charts
+   */
+  import scala.concurrent.Future
+
+  def ppChart(u: String, n: String, cID: String, bpID: String) = Action {
+    Async {
+      Future {
+        val dao = new SquerylDao()
+        dao.getCampaign(u, n, cID) match {
+          case None => NotFound("CAMPAIGN is NOT FOUND...")
+          case Some(c) => {
+            val iso_fmt = org.joda.time.format.ISODateTimeFormat.dateTime()
+            val sdate = iso_fmt.parseDateTime("1000-01-01T12:00:00.000+04:00")
+            val edate = iso_fmt.parseDateTime("3000-01-01T12:00:00.000+04:00")
+            //we will retrieve all data from db 
+            c.historyStartDate = sdate
+            c.historyEndDate = edate
+
+            val pp = Charts.getPositionPrices(Some(c), bpID.toInt)
+            val jpp = Json.toJson(pp map { e =>
+              Json.arr(
+                JsNumber(e._1),
+                JsNumber(e._2),
+                JsNumber(e._3),
+                JsNumber(e._4),
+                JsNumber(e._5),
+                JsNumber(e._6))
+            })
+
+            Ok(jpp)
+          }
+        }
+      }
+    }
+  }
+
+  def bpChart(u: String, n: String, cID: String, bpID: String) = Action {
+    Async {
+      Future {
+        val dao = new SquerylDao()
+        dao.getCampaign(u, n, cID) match {
+          case None => NotFound("CAMPAIGN is NOT FOUND...")
+          case Some(c) => {
+            val iso_fmt = org.joda.time.format.ISODateTimeFormat.dateTime()
+            val sdate = iso_fmt.parseDateTime("1000-01-01T12:00:00.000+04:00")
+            val edate = iso_fmt.parseDateTime("3000-01-01T12:00:00.000+04:00")
+            //we will retrieve all data from db 
+            c.historyStartDate = sdate
+            c.historyEndDate = edate
+
+            val bp = Charts.getBannerPhraseCTR(Some(c), bpID.toInt)
+            val jbp = Json.toJson(bp map { e =>
+              Json.arr(
+                JsNumber(e._1),
+                JsNumber(e._2),
+                JsNumber(e._3),
+                JsNumber(e._4))
+            })
+
+            Ok(jbp)
+          }
+        }
+      }
+    }
+  }
+
 }
 
 
