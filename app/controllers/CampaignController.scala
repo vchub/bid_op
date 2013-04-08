@@ -371,23 +371,6 @@ object CampaignController extends Controller with Secured {
       import scala.concurrent.ExecutionContext.Implicits.global
       import java.util.concurrent.TimeUnit
 
-      //send keep alive request to client
-      import play.api.libs.concurrent.Akka
-      import scala.concurrent.duration._
-      import play.api.Play.current
-      import play.api.libs.ws.WS
-      import play.api.libs.iteratee._
-      import play.api.libs.Comet
-
-      val keepAlive = Akka.system.scheduler.schedule(0 seconds, 100 milliseconds) {
-        //send head request to the client to keep alive
-        /*WS.url(request.headers.get("Referer").get).get() onSuccess {
-          case r => println("!!! wake up client !!! : " + r.statusText + " " + r.status)
-        }*/
-        println("--- keep alive ---")
-        Ok.stream(Enumerator("! Keep alive !") &> Comet(callback = "console.log"))
-      }
-
       val futureResult = Future[Result] {
 
         val dao = new SquerylDao()
@@ -405,26 +388,8 @@ object CampaignController extends Controller with Secured {
                 c.historyStartDate = sdate
                 c.historyEndDate = edate
 
-                /*
-                 * start Consuming Computations - retrieve data from DB and calcs CTR
-                 
-
-                val cCTR_List = Charts.getCampaignCTR(Some(c))
-
-                val b_List = Charts.getBudget(Some(c))
-
-                val pp_List = c.bannerPhrases map { bp =>
-                  bp.id -> Charts.getPositionPrices(Some(c), bp.id)
-                } toMap
-
-                val bpCTR_List = c.bannerPhrases map { bp =>
-                  bp.id -> Charts.getBannerPhraseCTR(Some(c), bp.id)
-                } toMap
-
-                 ends */
-
                 //generate charts in browser
-                Ok(views.html.charts(user.name, net_name, Some(c))) //, cCTR_List, b_List, pp_List, bpCTR_List))
+                Ok(views.html.charts(user.name, net_name, Some(c)))
             }
           }
         }
@@ -438,33 +403,10 @@ object CampaignController extends Controller with Secured {
 
       Async {
         Future.firstCompletedOf(Seq(futureResult, timeoutFuture)).map {
-          case f: Result =>
-            keepAlive.cancel
-            f
-          case t: String =>
-            keepAlive.cancel
-            InternalServerError(t)
+          case f: Result => f
+          case t: String => InternalServerError(t)
         }
       }
     }
-
-  /*IsAuth(
-    user_name,
-    (dao, user) => implicit request => {
-      dao.getCampaign(user_name, net_name, network_campaign_id) match {
-        case None => NotFound("CAMPAIGN is NOT FOUND...")
-        case Some(c) =>
-          val iso_fmt = format.ISODateTimeFormat.dateTime()
-          val sdate = iso_fmt.parseDateTime("1000-01-01T12:00:00.000+04:00")
-          val edate = iso_fmt.parseDateTime("3000-01-01T12:00:00.000+04:00")
-          //we will retrieve all data from db 
-          c.historyStartDate = sdate
-          c.historyEndDate = edate
-
-          //generate charts in browser
-          Ok(views.html.charts(Some(c)))
-      }
-    })*/
-
 }
 

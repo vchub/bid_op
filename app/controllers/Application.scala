@@ -77,6 +77,7 @@ object Application extends Controller with Secured {
    */
   import scala.concurrent.Future
 
+  /* Position Prices */
   def ppChart(u: String, n: String, cID: String, bpID: String) = Action {
     Async {
       Future {
@@ -109,6 +110,7 @@ object Application extends Controller with Secured {
     }
   }
 
+  /* BannerPhrases CTR */
   def bpChart(u: String, n: String, cID: String, bpID: String) = Action {
     Async {
       Future {
