@@ -1,17 +1,52 @@
 
-# Bid Optimizer WebService API
+
+## Детали архитектуры и Варианты использования Сервисa Оптимизации Ставок.
 
 
+#### 1.  Package Diagram
 
-## Рекламодатель: Варинты Использования
+![Packages](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/Packages.png)
 
-#### 1. Общий вид для Рекламодателя
-<script type="text/javascript" language="javascript" src="https://creately.com/player/createlyplayerstart.js"></script><div id="creately-container-h7x14ybh1-e53f6jWO75hbtOsKsm4aY984o3Y="></div><script type="text/javascript">createlyPlayerStart( {container: "creately-container-h7x14ybh1-e53f6jWO75hbtOsKsm4aY984o3Y=",docid :"h7x14ybh1-e53f6jWO75hbtOsKsm4aY984o3Y=",title :"Advertiser",width :600,height :400,bgcolor :"#eeeeee"} );</script>
+#### 1.  Alternative Domain Diagram
 
-link: http://creately.com/diagram/example/h7x14ybh1
+![domain_alter](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter.png)
+
+#### 1.  Alternative Domain with "Histories" Diagram
+
+![domain_alter](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/domain_alter_w_histories.png)
+
+#### 1.  New ER Diagram
+
+![domain_new_er](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/er_alter.png)
 
 
+#### 1. Взаимодействие Рекламодателя с Рекламной Сетью и с Сервисом Оптимизации
 
-#### 1. Использования веб сервиса системы оптимизации
+![Gen User Case](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/Advertiser.png)
+
+
+#### 1.  Детали взаимодействия с Сервисом Оптимизации.
+
+![User Case](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/case1.png)
+
+#### 1.  Create Timeslot Activity Diagram
+
+![Packages](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/Activity_create_TimeSlot.png)
+
+
+#### 1. Архитектура Сервисa Оптимизации.
+
+![User Case](https://raw.github.com/vchub/bid_op/dev/docs/models/diagrams/Architecture.png)
+
+
+yandex API
+ daily data
+- 1 position in spe. placement (sure)
+- 1 right block (prob)
+- 1 right block (sure)
+- position in spec placement (prob)
+
+Timeslot add 4 abovementioned params.
+
 
 

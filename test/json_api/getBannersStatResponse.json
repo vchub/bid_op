@@ -1,0 +1,55 @@
+{
+      "CampaignID": 10,
+      "StartDate": "2013-01-01",
+      "EndDate": "2013-01-01",
+      "Stat": [
+         {  
+            "StatDate": "2013-01-01",
+            "BannerID": 11,
+            "PhraseID": 1,
+            "RubricID": 4,
+            "Phrase": "some",
+            "Sum": 12.3,
+            "SumSearch": 5.2,
+            "SumContext": 7.1,
+            "Clicks": 50,
+            "ClicksSearch": 20,
+            "ClicksContext": 30,
+            "Shows": 550,
+            "ShowsSearch": 200,
+            "ShowsContext": 350
+         },
+		 {  
+            "StatDate": "2013-01-01",
+            "BannerID": 11,
+            "PhraseID": 2,
+            "RubricID": 5,
+            "Phrase": "some",
+            "Sum": 12.3,
+            "SumSearch": 5.2,
+            "SumContext": 7.1,
+            "Clicks": 50,
+            "ClicksSearch": 20,
+            "ClicksContext": 30,
+            "Shows": 550,
+            "ShowsSearch": 200,
+            "ShowsContext": 350
+         },
+         {  
+            "StatDate": "2013-01-01",
+            "BannerID": 11,
+            "PhraseID": 3,
+            "RubricID": 6,
+            "Phrase": "some",
+            "Sum": 12.3,
+            "SumSearch": 5.2,
+            "SumContext": 7.1,
+            "Clicks": 50,
+            "ClicksSearch": 20,
+            "ClicksContext": 30,
+            "Shows": 550,
+            "ShowsSearch": 200,
+            "ShowsContext": 350
+         }
+      ]
+ }

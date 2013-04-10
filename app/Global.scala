@@ -1,7 +1,7 @@
 
-import org.squeryl.adapters.{H2Adapter, PostgreSqlAdapter, MySQLInnoDBAdapter}
+import org.squeryl.adapters.{ H2Adapter, PostgreSqlAdapter, MySQLInnoDBAdapter }
 import org.squeryl.internals.DatabaseAdapter
-import org.squeryl.{Session, SessionFactory}
+import org.squeryl.{ Session, SessionFactory }
 import play.api.db.DB
 import play.api.GlobalSettings
 
@@ -18,7 +18,6 @@ object Global extends GlobalSettings {
     }
   }
 
-  def getSession(adapter:DatabaseAdapter, app: Application) = Session.create(DB.getConnection()(app), adapter)
-
+  def getSession(adapter: DatabaseAdapter, app: Application) = Session.create(DB.getConnection()(app), adapter)
 }
 

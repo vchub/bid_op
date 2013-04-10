@@ -4,25 +4,39 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /clearDB/:user              controllers.Application.clearDB(user:String)
+
+# The clock Comet stream
+GET     /clock                      controllers.Application.liveClock
+# GET 	/charts						controllers.Application.liveCharts
+GET 	/ppChart 					controllers.Application.ppChart(user:String, net:String, cID:String, bpID:String)
+GET 	/bpChart 					controllers.Application.bpChart(user:String, net:String, cID:String, bpID:String)
 
 # UserController
 #
-GET   /user/:name               controllers.UserController.user(name: String)
-
+#GET   /user/:name               	controllers.UserController.user_old(name: String)
+GET    /user/:name                  controllers.UserController.user(name: String)
+POST   /user                		controllers.UserController.createUser
 
 # CampaignController
 #
-GET   /user/:user/net/:net/camp            controllers.CampaignController.campaigns(user: String, net: String)
+GET   /user/:user/net/:net/camp           			 	controllers.CampaignController.campaigns(user: String, net: String)
 
-GET   /user/:user/net/:net/camp/:id   controllers.CampaignController.campaign(user: String, net: String, id: String)
+GET   /user/:user/net/:net/camp/:id   					controllers.CampaignController.campaign(user: String, net: String, id: String)
 
-POST   /user/:user/net/:net/camp    controllers.CampaignController.create_Campaign(user: String, net: String)
+POST   /user/:user/net/:net/camp    					controllers.CampaignController.createCampaign(user: String, net: String)
 
-POST   /user/:user/net/:net/camp/:id/stats  controllers.CampaignController.create_TimeSlot(user: String, net: String, id: String)
+POST   /user/:user/net/:net/camp/:id/stats  			controllers.CampaignController.createCampaignPerformance(user: String, net: String, id: String)
 
-POST   /user/:user/net/:net/camp/:id/reports  controllers.CampaignController.create_Report(user: String, net: String, id: String)
+POST   /user/:user/net/:net/camp/:id/bannersstats  		controllers.CampaignController.createBannersPerformance(user: String, net: String, id: String)
 
-GET   /user/:user/net/:net/camp/:id/recommendations  controllers.CampaignController.recommendations(user: String, net: String, id: String)
+POST   /user/:user/net/:net/camp/:id/reports  			controllers.CampaignController.createXmlReport(user: String, net: String, id: String)
+
+POST   /user/:user/net/:net/camp/:id/bannerreports  	controllers.CampaignController.createBannerReport(user: String, net: String, id: String)
+
+GET   /user/:user/net/:net/camp/:id/recommendations		controllers.CampaignController.recommendations(user: String, net: String, id: String)
+
+GET   /user/:user/net/:net/camp/:id/charts/:password	controllers.CampaignController.charts(user: String, net: String, id: String, password:String)
 
 
 # Misc development

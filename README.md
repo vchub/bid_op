@@ -1,8 +1,6 @@
 
 # Bid Optimizer
 
-
-
 ### Github registration
 You're there. Register.
 

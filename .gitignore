@@ -7,6 +7,8 @@ tmp
 dist
 
 bin
+.idea
+.idea_modules
 .target
 .settings
 .project
@@ -15,8 +17,11 @@ bin
 
 # Scala IDE WorkSheet
 .worksheet
+*.sc
 
 *.py[co]
+*.pydevproject
+
 
 # Packages
 *.egg
@@ -43,3 +48,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+
